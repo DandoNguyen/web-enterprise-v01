@@ -1,9 +1,13 @@
 using System.IO;
 using System;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace WebEnterprise.Entities
 {
     public record Posts {
+
+        [BsonRepresentation(BsonType.String)]
         public Guid id { get; init; }
         public string Title { get; init; }
         public string Content { get; init; }
