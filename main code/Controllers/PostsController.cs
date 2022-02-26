@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebEnterprise.Repositories;
 using WebEnterprise.Entities;
 using WebEnterprise.Dtos;
+using System.Threading.Tasks;
 
 namespace WebEnterprise.Controller
 {
@@ -21,14 +22,15 @@ namespace WebEnterprise.Controller
 
         //GET /Posts
         [HttpGet]
-        public IEnumerable<PostDto> GetAllPosts() {
-            return repo.GetPosts().Select(post => post.AsDto());
+        public async Task<IEnumerable<PostDto>> GetAllPostsAsync() {
+            return (await repo.GetPostsAsync())
+                    .Select(post => post.AsDto());
         }
 
         //GET /Posts/{id}
         [HttpGet("{id}")]
-        public ActionResult<PostDto> GetPost(Guid id) {
-            var post = repo.GetPost(id);
+        public async Task<ActionResult<PostDto>> GetPostAsync(Guid id) {
+            var post = await repo.GetPostAsync(id);
             if(post is null) {
                 return NotFound();
             } 
@@ -37,7 +39,7 @@ namespace WebEnterprise.Controller
 
         //POST /posts
         [HttpPost]
-        public ActionResult<PostDto> CreatePost(CreatePostDto postDto) {
+        public async Task<ActionResult<PostDto>> CreatePostAsync(CreatePostDto postDto) {
             Posts post = new() {
                 id = Guid.NewGuid(),
                 Title = postDto.Title,
@@ -45,15 +47,15 @@ namespace WebEnterprise.Controller
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
-            repo.CreatePost(post);
+            await repo.CreatePostAsync(post);
 
-            return CreatedAtAction(nameof(GetPost), new {id = post.id}, post.AsDto());
+            return CreatedAtAction(nameof(GetPostAsync), new {id = post.id}, post.AsDto());
         }
 
         //PUT /posts/{id}
         [HttpPut("{id}")]
-        public ActionResult UpdatePost(Guid id, UpdatePostDto postDto) {
-            var post = repo.GetPost(id);
+        public async Task<ActionResult> UpdatePostAsync(Guid id, UpdatePostDto postDto) {
+            var post = await repo.GetPostAsync(id);
             if (post is null)
             {
                 return NotFound();
@@ -64,19 +66,19 @@ namespace WebEnterprise.Controller
                 Content = postDto.Content
             };
 
-            repo.UpdatePost(updatedPost);
-            return NotFound();
+            await repo.UpdatePostAsync(updatedPost);
+            return NoContent();
         }
 
         //DELETE /posts/{id}
         [HttpDelete("{id}")]
         public ActionResult DeletePost(Guid id) {
-            var postID = repo.GetPost(id);
+            var postID = repo.GetPostAsync(id);
             if(postID is null) {
                 return NotFound();
             }
             
-            repo.DeletePost(id);
+            repo.DeletePostAsync(id);
             return NoContent();
         }
     }

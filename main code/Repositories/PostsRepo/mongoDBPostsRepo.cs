@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using WebEnterprise.Entities;
@@ -21,32 +22,32 @@ namespace WebEnterprise.Repositories
             postsCollection = database.GetCollection<Posts>(collectionName);
         }
 
-        public void CreatePost(Posts post)
+        public async Task CreatePostAsync(Posts post)
         {
-            postsCollection.InsertOne(post);
+            await postsCollection.InsertOneAsync(post);
         }
 
-        public void DeletePost(Guid id)        
-        {
-            var filter = filterBuilder.Eq(x => x.id, id);
-            postsCollection.DeleteOne(filter);
-        }
-
-        public Posts GetPost(Guid id)
+        public async Task DeletePostAsync(Guid id)        
         {
             var filter = filterBuilder.Eq(x => x.id, id);
-            return postsCollection.Find(filter).SingleOrDefault();
+            await postsCollection.DeleteOneAsync(filter);
         }
 
-        public IEnumerable<Posts> GetPosts()
+        public async Task<Posts> GetPostAsync(Guid id)
         {
-            return postsCollection.Find(new BsonDocument()).ToList();
+            var filter = filterBuilder.Eq(x => x.id, id);
+            return await postsCollection.Find(filter).SingleOrDefaultAsync();
         }
 
-        public void UpdatePost(Posts post)
+        public async Task<IEnumerable<Posts>> GetPostsAsync()
+        {
+            return await postsCollection.Find(new BsonDocument()).ToListAsync();
+        }
+
+        public async Task UpdatePostAsync(Posts post)
         {
             var filter = filterBuilder.Eq(x => x.id, post.id);
-            postsCollection.ReplaceOne(filter, post);
+            await postsCollection.ReplaceOneAsync(filter, post);
         }
     }
 

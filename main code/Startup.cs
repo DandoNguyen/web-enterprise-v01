@@ -44,7 +44,9 @@ namespace WebEnterprise
 
             services.AddSingleton<IPostsRepo, MongoDBPostsRepository>();
             
-            services.AddControllers();
+            services.AddControllers(options => {
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebEnterprise", Version = "v1" });
