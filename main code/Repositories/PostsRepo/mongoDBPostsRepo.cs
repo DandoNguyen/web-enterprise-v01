@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using WebEnterprise.Entities;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using System.Linq;
 
 namespace WebEnterprise.Repositories
 {
@@ -11,6 +13,7 @@ namespace WebEnterprise.Repositories
         private const string databaseName = "Web-EnterPrise";
         private const string collectionName = "Posts";
         private readonly IMongoCollection<Posts> postsCollection;
+        private readonly FilterDefinitionBuilder<Posts> filterBuilder = Builders<Posts>.Filter;
         public MongoDBPostsRepository()
         {
             mongoClient = new MongoClient("mongodb+srv://user1:YysfcWc4YOFasq8z@cluster0.v6pra.mongodb.net/project1?retryWrites=true&w=majority");
@@ -23,24 +26,27 @@ namespace WebEnterprise.Repositories
             postsCollection.InsertOne(post);
         }
 
-        public void DeletePost(Guid id)
+        public void DeletePost(Guid id)        
         {
-            throw new NotImplementedException();
+            var filter = filterBuilder.Eq(x => x.id, id);
+            postsCollection.DeleteOne(filter);
         }
 
         public Posts GetPost(Guid id)
         {
-            throw new NotImplementedException();
+            var filter = filterBuilder.Eq(x => x.id, id);
+            return postsCollection.Find(filter).SingleOrDefault();
         }
 
         public IEnumerable<Posts> GetPosts()
         {
-            throw new NotImplementedException();
+            return postsCollection.Find(new BsonDocument()).ToList();
         }
 
         public void UpdatePost(Posts post)
         {
-            throw new NotImplementedException();
+            var filter = filterBuilder.Eq(x => x.id, post.id);
+            postsCollection.ReplaceOne(filter, post);
         }
     }
 
