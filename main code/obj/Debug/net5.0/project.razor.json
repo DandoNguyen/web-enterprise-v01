@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+  "FilePath": "c:\\Users\\USER\\Desktop\\dotnet5 Rest api\\WebEnterprise\\WebEnterprise.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "5.0",
@@ -15616,7 +15616,7 @@
     ],
     "CSharpLanguageVersion": 900
   },
-  "RootNamespace": "WebEnterprise_mssql",
+  "RootNamespace": "WebEnterprise",
   "Documents": [],
   "SerializationFormat": "0.2"
 }

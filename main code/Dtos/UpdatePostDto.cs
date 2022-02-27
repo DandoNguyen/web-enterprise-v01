@@ -1,8 +1,13 @@
-namespace WebEnterprise_mssql.Dtos
+using System.ComponentModel.DataAnnotations;
+
+namespace WebEnterprise.Dtos
 {
-    public class UpdatedPostDto
+    public record UpdatePostDto 
     {
-        public string title { get; set; }   
-        public string content { get; set; }
+        [Required]
+        [MinLength(5)]
+        public string Title { get; init; }
+
+        public string Content { get; init; }
     }
 }

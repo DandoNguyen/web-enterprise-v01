@@ -1,13 +1,14 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebEnterprise_mssql.Dtos
+namespace WebEnterprise.Dtos
 {
-    public class CreatePostDto
+    public record CreatePostDto
     {
         [Required]
-        public string title { get; set;}  
+        [MinLength(5)]
+        public string Title { get; init; }
 
-        [Required]
-        public string content { get; set; }
+        public string Content { get; init; }
     }
 }

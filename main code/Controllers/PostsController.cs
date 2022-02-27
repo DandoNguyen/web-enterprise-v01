@@ -1,89 +1,85 @@
-using System.Collections;
-using System.Reflection.Metadata.Ecma335;
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebEnterprise_mssql.Data;
-using WebEnterprise_mssql.Models;
-using WebEnterprise_mssql.Extensions;
-using System.Collections.Generic;
-using WebEnterprise_mssql.Dtos;
+using System.Runtime.CompilerServices;
 using System.Linq;
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using WebEnterprise.Repositories;
+using WebEnterprise.Entities;
+using WebEnterprise.Dtos;
+using System.Threading.Tasks;
 
-namespace Webenterprise_mssql.Controllers
+namespace WebEnterprise.Controller
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
-        private readonly ApiDbContext context;
-        public PostsController(ApiDbContext context)
-        {
-            this.context = context;
+        private readonly IPostsRepo repo;
+        public PostsController(IPostsRepo repo) {
+            this.repo = repo;
         }
 
+
+        //GET /Posts
         [HttpGet]
         public async Task<IEnumerable<PostDto>> GetAllPostsAsync() {
-            // var allposts = await context.Posts.ToListAsync();
-            // return Ok(allposts);
-            return (await context.Posts.ToListAsync()).Select(post => post.AsDto());
+            return (await repo.GetPostsAsync())
+                    .Select(post => post.AsDto());
         }
 
+        //GET /Posts/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostDto>> GetPostAsync(int id) {
-            var post = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
+        public async Task<ActionResult<PostDto>> GetPostAsync(Guid id) {
+            var post = await repo.GetPostAsync(id);
             if(post is null) {
                 return NotFound();
-            }
-
-            return Ok(post.AsDto());
+            } 
+            return post.AsDto();
         }
 
+        //POST /posts
         [HttpPost]
         public async Task<ActionResult<PostDto>> CreatePostAsync(CreatePostDto postDto) {
-            if(ModelState.IsValid) {
-                Posts newPost = new() {
-                    title = postDto.title,
-                    content = postDto.content,
-                    createdDate = DateTimeOffset.UtcNow
-                };
-                await context.Posts.AddAsync(newPost);
-                await context.SaveChangesAsync();
+            Posts post = new() {
+                // id = Guid.NewGuid(),
+                Title = postDto.Title,
+                Content = postDto.Content,
+                CreatedDate = DateTimeOffset.UtcNow
+            };
 
-                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, newPost.AsDto());
-            }
-            return new JsonResult("Error in creating Post") {StatusCode = 500};
+            await repo.CreatePostAsync(post);
+
+            return CreatedAtAction(nameof(GetPostAsync), new {id = post.id}, post.AsDto());
         }
 
+        //PUT /posts/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<PostDto>> UpdatePostsAsync(int id, Posts updatedPostDto) 
-        {    
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
-            if(existingPost is null) {
-                return NotFound();
-            }
-
-            existingPost.title = updatedPostDto.title;
-            existingPost.content = updatedPostDto.content;
-            existingPost.createdDate = DateTimeOffset.UtcNow;
-
-            //Better way to updating object is to use Automapper
-            await context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<PostDto>> DeletePostAsync(int id) {
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
-            if (existingPost is null)
+        public async Task<ActionResult> UpdatePostAsync(Guid id, UpdatePostDto postDto) {
+            var post = await repo.GetPostAsync(id);
+            if (post is null)
             {
                 return NotFound();
             }
-            context.Posts.Remove(existingPost);
-            await context.SaveChangesAsync();
 
-            return Ok(existingPost);
+            Posts updatedPost = post with {
+                Title = postDto.Title,
+                Content = postDto.Content
+            };
+
+            await repo.UpdatePostAsync(updatedPost);
+            return NoContent();
+        }
+
+        //DELETE /posts/{id}
+        [HttpDelete("{id}")]
+        public ActionResult DeletePost(Guid id) {
+            var postID = repo.GetPostAsync(id);
+            if(postID is null) {
+                return NotFound();
+            }
+            
+            repo.DeletePostAsync(id);
+            return NoContent();
         }
     }
 }

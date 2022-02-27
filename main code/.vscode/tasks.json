@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/WebEnterprise-mssql.csproj",
+                "${workspaceFolder}/WebEnterprise.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/WebEnterprise-mssql.csproj",
+                "${workspaceFolder}/WebEnterprise.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/WebEnterprise-mssql.csproj"
+                "${workspaceFolder}/WebEnterprise.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

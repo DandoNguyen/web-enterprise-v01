@@ -1,12 +1,11 @@
 using System;
 
-namespace WebEnterprise_mssql.Dtos
+namespace WebEnterprise.Dtos
 {
-    public record PostDto
-    {
-        public int id { get; set; }
-        public string title { get; set; }
-        public string content { get; set; }
-        public DateTimeOffset createdDate { get; set; }
+    public record PostDto {
+        public Guid id { get; init; }
+        public string Title { get; init; }
+        public string Content { get; init; }
+        public DateTimeOffset CreatedDate { get; init; }
     }
 }

@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using WebEnterprise_mssql.Models;
+using WebEnterprise.Entities;
 
-namespace WebEnterprise_mssql.Data
+namespace WebEnterprise.Data 
 {
     public class ApiDbContext : DbContext
     {
-        public virtual DbSet<Posts> Posts {get; set;}
+        public virtual DbSet<Posts> Posts { get; set;}
+
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
-
+            
         }
     }
 }
