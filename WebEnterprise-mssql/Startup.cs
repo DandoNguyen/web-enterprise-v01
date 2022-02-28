@@ -41,17 +41,9 @@ namespace WebEnterprise_mssql
                 )
             );
 
-            services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            })
-            .AddJwtBearer(jwt => {
-                var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
-
-                jwt.SaveToken = true;
-                jwt.TokenValidationParameters = new TokenValidationParameters {
+            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+            
+            var TokenValidationParams = new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
@@ -59,6 +51,18 @@ namespace WebEnterprise_mssql
                     ValidateLifetime = true,
                     RequireExpirationTime = false
                 };
+
+            services.AddSingleton(TokenValidationParams);
+
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+            .AddJwtBearer(jwt => {
+                jwt.SaveToken = true;
+                jwt.TokenValidationParameters = TokenValidationParams;
             });
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
