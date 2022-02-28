@@ -2,7 +2,7 @@ using System;
 
 namespace WebEnterprise_mssql.Models 
 {
-    public class Posts
+    public record Posts
     {   
         public int id { get; set; }
         public string title { get; set; }

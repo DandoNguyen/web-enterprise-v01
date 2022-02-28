@@ -10,11 +10,14 @@ using WebEnterprise_mssql.Extensions;
 using System.Collections.Generic;
 using WebEnterprise_mssql.Dtos;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace Webenterprise_mssql.Controllers
+namespace WebEnterprise_mssql.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PostsController : ControllerBase
     {
         private readonly ApiDbContext context;
