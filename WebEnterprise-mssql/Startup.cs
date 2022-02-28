@@ -68,6 +68,9 @@ namespace WebEnterprise_mssql
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<ApiDbContext>();
 
+            //Enable CORS
+            services.AddCors();
+
             services.AddControllers(options => {
                 options.SuppressAsyncSuffixInActionNames = false;
             });
@@ -88,6 +91,13 @@ namespace WebEnterprise_mssql
             }
 
             app.UseHttpsRedirection();
+
+            //Enable CORS
+            app.UseCors(options => {
+                options.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
 
             app.UseRouting();
 
