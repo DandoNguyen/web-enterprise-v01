@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using WebEnterprise_mssql.Configuration;
 using WebEnterprise_mssql.Data;
+using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql
 {
@@ -65,7 +66,7 @@ namespace WebEnterprise_mssql
                 jwt.TokenValidationParameters = TokenValidationParams;
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<ApiDbContext>();
 
             //Enable CORS

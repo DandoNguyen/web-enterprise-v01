@@ -10,6 +10,7 @@ using WebEnterprise_mssql.Data;
 using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Dtos;
 using System.Collections.Generic;
+using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -17,11 +18,11 @@ namespace WebEnterprise_mssql.Controllers
     [Route("api/[controller]")] // api/Roles
     public class RolesController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly ApiDbContext context;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<RolesController> logger;
-        public RolesController(ApiDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<RolesController> logger)
+        public RolesController(ApiDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<RolesController> logger)
         {
             this.context = context;
             this.userManager = userManager;

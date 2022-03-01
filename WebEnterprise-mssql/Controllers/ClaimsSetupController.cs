@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Data;
+using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -11,11 +12,11 @@ namespace WebEnterprise_mssql.Controllers
     [Route("api/[controller]")] // api/claimssetup
     public class ClaimsSetupController : ControllerBase 
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly ApiDbContext context;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<ClaimsSetupController> logger;
-        public ClaimsSetupController(ApiDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<ClaimsSetupController> logger)
+        public ClaimsSetupController(ApiDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<ClaimsSetupController> logger)
         {
             this.context = context;
             this.userManager = userManager;

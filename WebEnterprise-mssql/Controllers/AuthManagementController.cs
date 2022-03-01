@@ -23,7 +23,7 @@ namespace WebEnterprise_mssql.Controllers
     [ApiController]
     public class AuthManagementController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly JwtConfig jwtConfig;
         private readonly TokenValidationParameters tokenValidationParams;
         private readonly ApiDbContext context;
@@ -32,7 +32,7 @@ namespace WebEnterprise_mssql.Controllers
 
         public AuthManagementController(
             ILogger<AuthManagementController> logger,
-            UserManager<IdentityUser> userManager, 
+            UserManager<ApplicationUser> userManager, 
             IOptionsMonitor<JwtConfig> optionsManager,
             TokenValidationParameters tokenValidationParams,
             RoleManager<IdentityRole> roleManager,
@@ -63,7 +63,7 @@ namespace WebEnterprise_mssql.Controllers
                     });
                 }
 
-                var newUser = new IdentityUser() {
+                var newUser = new ApplicationUser() {
                     Email = usersRegistrationDto.Email,
                     UserName = usersRegistrationDto.Username
                 };
@@ -157,7 +157,7 @@ namespace WebEnterprise_mssql.Controllers
             });
         }
 
-        private async Task<AuthResult> GenerateJwtToken(IdentityUser user) {
+        private async Task<AuthResult> GenerateJwtToken(ApplicationUser user) {
             var JwtTokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(jwtConfig.Secret);
@@ -195,7 +195,7 @@ namespace WebEnterprise_mssql.Controllers
 
 
         //Get all vailda Claims for the user
-        private async Task<List<Claim>> GetAllValidclaims(IdentityUser user) {
+        private async Task<List<Claim>> GetAllValidclaims(ApplicationUser user) {
             var options = new IdentityOptions();
 
             var claims = new List<Claim> {

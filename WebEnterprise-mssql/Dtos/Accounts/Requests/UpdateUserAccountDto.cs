@@ -1,6 +1,6 @@
 namespace WebEnterprise_mssql.Dtos
 {
-    public class UserAccountDto
+    public class UpdateUserAccountDto
     {
         public string id { get; set; }
         public string UserName { get; set; }

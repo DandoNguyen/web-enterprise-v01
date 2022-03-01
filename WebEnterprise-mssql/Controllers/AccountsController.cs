@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Data;
 using WebEnterprise_mssql.Dtos;
 using WebEnterprise_mssql.Models;
@@ -13,10 +14,13 @@ namespace WebEnterprise_mssql.Controllers
     [Route("api/[controller]")] // api/accounts
     public class AccountsController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly IPasswordHasher<IdentityUser> passwordHasher;
+        private readonly UserManager<ApplicationUser> userManager; 
+        private readonly IPasswordHasher<ApplicationUser> passwordHasher;
         private readonly ApiDbContext context;
-        public AccountsController(UserManager<IdentityUser> userManager, ApiDbContext context, IPasswordHasher<IdentityUser> passwordHasher)
+        public AccountsController(
+            UserManager<ApplicationUser> userManager, 
+            ApiDbContext context, 
+            IPasswordHasher<ApplicationUser> passwordHasher)
         {
             this.context = context;
             this.userManager = userManager;
@@ -24,14 +28,20 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpGet] 
-        public IActionResult GetAllUsersAsync() {
-            var userList = context.Users.ToList();
-            return Ok(userList);
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
+            var userList = await context.Users.ToListAsync();
+            return userList;
         }
 
-        [HttpGet]
-        [Route("asd/{email}")]
+        [HttpGet("{email}")]
         public async Task<IActionResult> GetUserByEmailAsync(string email) {
+            if(email is null) {
+                return BadRequest(new AccountsControllerResponseDto() {
+                    Errors = new List<string>() {
+                        "The Parameter is null!!!"
+                    }
+                });
+            }
             
             if (ModelState.IsValid)
             {
@@ -48,13 +58,13 @@ namespace WebEnterprise_mssql.Controllers
             }
             return BadRequest(new AccountsControllerResponseDto() {
                 Errors = new List<string>() {
-                    "Ivalid Paylaod"
+                    "Ivalid Payload"
                 }
             });
         }
 
-        [HttpPost]
-        public async Task<ActionResult<AccountsControllerResponseDto>> UpdateUserAsync(UserAccountDto user) {
+        [HttpPut("{email}")]
+        public async Task<IActionResult> UpdateUserAsync(string email, UpdateUserAccountDto user) {
             
             //Check if the user account is exist 
             var existingUser = await userManager.FindByEmailAsync(user.Email);

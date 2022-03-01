@@ -16,6 +16,6 @@ namespace WebEnterprise_mssql.Models
         public DateTime ExpiryDate { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public IdentityUser User { get; set;}
+        public ApplicationUser User { get; set;}
     }
 }

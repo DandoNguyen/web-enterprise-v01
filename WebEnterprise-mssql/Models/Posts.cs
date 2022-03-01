@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Models
         public int ViewsCount { get; set; } 
 
         [InverseProperty("Posts")]
-        public virtual UsersAccount Users { get; set; }
+        public virtual ApplicationUser Users { get; set; }
         public int CategoryId { get; set; }
         public int SubmissionId { get; set; }
     }
@@ -29,8 +29,6 @@ namespace WebEnterprise_mssql.Models
     // CREATED_DATE NVARCHAR(100),
     // LAST_MODIFIED_DATE DATETIME,
     // VIEW_COUNT INT,
-
-
     // USER_ID INT,
     // CATEGORY_ID INT,
     // SUBMISSION_ID INT

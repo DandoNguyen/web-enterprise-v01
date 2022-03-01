@@ -4,10 +4,11 @@ using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql.Data
 {
-    public class ApiDbContext : IdentityDbContext
+    public class ApiDbContext : IdentityDbContext<ApplicationUser>
     {
         public virtual DbSet<Posts> Posts {get; set;}
         public virtual DbSet<RefreshToken> RefreshTokens { get; set;}
+        //public virtual DbSet<ApplicationUser> ApplicationUsers { get; set;}
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
 
