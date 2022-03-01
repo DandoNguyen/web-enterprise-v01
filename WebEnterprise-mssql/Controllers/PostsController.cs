@@ -17,7 +17,7 @@ namespace WebEnterprise_mssql.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
     public class PostsController : ControllerBase
     {
         private readonly ApiDbContext context;

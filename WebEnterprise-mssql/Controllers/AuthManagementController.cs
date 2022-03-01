@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using WebEnterprise_mssql.Data;
 using WebEnterprise_mssql.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -26,13 +27,19 @@ namespace WebEnterprise_mssql.Controllers
         private readonly JwtConfig jwtConfig;
         private readonly TokenValidationParameters tokenValidationParams;
         private readonly ApiDbContext context;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ILogger<AuthManagementController> logger;
 
         public AuthManagementController(
+            ILogger<AuthManagementController> logger,
             UserManager<IdentityUser> userManager, 
             IOptionsMonitor<JwtConfig> optionsManager,
             TokenValidationParameters tokenValidationParams,
+            RoleManager<IdentityRole> roleManager,
             ApiDbContext context)
         {
+            this.logger = logger;
+            this.roleManager = roleManager;
             this.context = context;
             this.userManager = userManager;
             this.jwtConfig = optionsManager.CurrentValue;
@@ -63,10 +70,16 @@ namespace WebEnterprise_mssql.Controllers
 
                 var isCreated = await userManager.CreateAsync(newUser, usersRegistrationDto.Password);
                 if(isCreated.Succeeded) {
+                    
+                    //Add the user to a role
+                    //await userManager.AddToRoleAsync(newUser, "staff");
 
                     var jwttoken = await GenerateJwtToken(newUser);
 
-                    return Ok(jwttoken);
+                    return Ok(new {
+                        jwttoken
+                        //message = "the account was assigned with role Staff by default"
+                    });
 
                 } else {
                     return BadRequest(new RegistrationResponseDto() {
@@ -149,13 +162,10 @@ namespace WebEnterprise_mssql.Controllers
 
             var key = Encoding.ASCII.GetBytes(jwtConfig.Secret);
 
+            var claims = await GetAllValidclaims(user);
+
             var tokenDescriptor = new SecurityTokenDescriptor {
-                Subject = new ClaimsIdentity(new [] {
-                    new Claim("Id", user.Id),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddSeconds(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -184,7 +194,43 @@ namespace WebEnterprise_mssql.Controllers
         }
 
 
-        public async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto) {
+        //Get all vailda Claims for the user
+        private async Task<List<Claim>> GetAllValidclaims(IdentityUser user) {
+            var options = new IdentityOptions();
+
+            var claims = new List<Claim> {
+                new Claim("Id", user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            //Getting the claims that we have assigned to the user
+            var userClaims = await userManager.GetClaimsAsync(user);
+            claims.AddRange(userClaims);
+
+            //Get the user role and add to the user
+            var userRoles = await userManager.GetRolesAsync(user);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+
+                var role = await roleManager.FindByNameAsync(userRole);
+
+                if(role is not null) {
+                    var roleClaims = await roleManager.GetClaimsAsync(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        claims.Add(roleClaim);
+                    }
+                }
+            }
+
+            return claims;
+        }
+
+
+        private async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto) {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             try

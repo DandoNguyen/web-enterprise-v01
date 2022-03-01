@@ -65,11 +65,19 @@ namespace WebEnterprise_mssql
                 jwt.TokenValidationParameters = TokenValidationParams;
             });
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<ApiDbContext>();
 
             //Enable CORS
             services.AddCors();
+
+            //============================================================
+            //Add the policy to the claims
+            // services.AddAuthorization(options => {
+            //     options.AddPolicy("[Policy Name]", 
+            //     policy => policy.RequireClaim("[Claim Name]"));
+            // });
+            //============================================================
 
             services.AddControllers(options => {
                 options.SuppressAsyncSuffixInActionNames = false;
