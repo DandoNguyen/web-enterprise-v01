@@ -80,6 +80,10 @@ namespace WebEnterprise_mssql
             // });
             //============================================================
 
+
+            //Add Automapper to mapping the domains models to Dtos 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddControllers(options => {
                 options.SuppressAsyncSuffixInActionNames = false;
             });

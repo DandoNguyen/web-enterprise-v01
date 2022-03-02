@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +16,25 @@ namespace WebEnterprise_mssql.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager; 
+        private readonly IMapper mapper;
         private readonly IPasswordHasher<ApplicationUser> passwordHasher;
         private readonly ApiDbContext context;
         public AccountsController(
             UserManager<ApplicationUser> userManager, 
+            IMapper mapper,
             ApiDbContext context, 
             IPasswordHasher<ApplicationUser> passwordHasher)
         {
+            this.mapper = mapper;
             this.context = context;
             this.userManager = userManager;
             this.passwordHasher = passwordHasher;
         }
 
         [HttpGet] 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
+        public async Task<IEnumerable<ApplicationUserDto>> GetAllUsersAsync() {
             var userList = await context.Users.ToListAsync();
-            return userList;
+            return mapper.Map<List<ApplicationUserDto>>(userList);
         }
 
         [HttpGet("{email}")]
@@ -54,7 +58,7 @@ namespace WebEnterprise_mssql.Controllers
                         }
                     });
                 }
-                return Ok(existingUser);
+                return Ok(mapper.Map<ApplicationUserDto>(existingUser));
             }
             return BadRequest(new AccountsControllerResponseDto() {
                 Errors = new List<string>() {
@@ -63,8 +67,8 @@ namespace WebEnterprise_mssql.Controllers
             });
         }
 
-        [HttpPut("{email}")]
-        public async Task<IActionResult> UpdateUserAsync(string email, UpdateUserAccountDto user) {
+        [HttpPut]
+        public async Task<IActionResult> UpdateUserAsync( UpdateApplicationUserDto user) {
             
             //Check if the user account is exist 
             var existingUser = await userManager.FindByEmailAsync(user.Email);
@@ -77,10 +81,7 @@ namespace WebEnterprise_mssql.Controllers
                 });
             }
 
-            //Update the user account
-            // var newUser = user with {
-            //     Password = user.Password
-            // };
+            mapper.Map(user, existingUser);
 
             var result = await userManager.UpdateAsync(existingUser);
 

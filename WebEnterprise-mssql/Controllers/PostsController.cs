@@ -12,6 +12,7 @@ using WebEnterprise_mssql.Dtos;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AutoMapper;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -21,55 +22,58 @@ namespace WebEnterprise_mssql.Controllers
     public class PostsController : ControllerBase
     {
         private readonly ApiDbContext context;
-        public PostsController(ApiDbContext context)
+        private readonly IMapper mapper;
+        public PostsController(ApiDbContext context, IMapper mapper)
         {
+            this.mapper = mapper;
             this.context = context;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<PostDto>> GetAllPostsAsync() {
+        public async Task<IActionResult> GetAllPostsAsync() {
             // var allposts = await context.Posts.ToListAsync();
             // return Ok(allposts);
-            return (await context.Posts.ToListAsync()).Select(post => post.AsDto());
+            // return (await context.Posts.ToListAsync()).Select(post => post.AsDto());
+            var posts = await context.Posts.ToListAsync();
+            var postsDto = mapper.Map<List<PostDto>>(posts);
+
+            return Ok(postsDto);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostDto>> GetPostAsync(int id) {
+        public async Task<IActionResult> GetPostAsync(int id) {
             var post = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if(post is null) {
                 return NotFound();
             }
 
-            return Ok(post.AsDto());
+            return Ok(mapper.Map<PostDto>(post));
         }
 
         [HttpPost]
-        public async Task<ActionResult<PostDto>> CreatePostAsync(CreatePostDto postDto) {
+        public async Task<IActionResult> CreatePostAsync(CreatePostDto postDto) {
             if(ModelState.IsValid) {
-                Posts newPost = new() {
-                    title = postDto.title,
-                    content = postDto.content,
-                    createdDate = DateTimeOffset.UtcNow
-                };
+                Posts newPost = mapper.Map<Posts>(postDto);
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, newPost.AsDto());
+                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, mapper.Map<PostDto>(newPost));
             }
             return new JsonResult("Error in creating Post") {StatusCode = 500};
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<PostDto>> UpdatePostsAsync(int id, Posts updatedPostDto) 
+        public async Task<IActionResult> UpdatePostsAsync(int id, UpdatedPostDto updatedPostDto) 
         {    
             var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if(existingPost is null) {
                 return NotFound();
             }
 
-            existingPost.title = updatedPostDto.title;
-            existingPost.content = updatedPostDto.content;
-            existingPost.createdDate = DateTimeOffset.UtcNow;
+            mapper.Map(updatedPostDto, existingPost);
+            existingPost.LastModifiedDate = DateTimeOffset.UtcNow;
+
+            context.Posts.Update(existingPost);
 
             //Better way to updating object is to use Automapper
             await context.SaveChangesAsync();
@@ -86,7 +90,7 @@ namespace WebEnterprise_mssql.Controllers
             context.Posts.Remove(existingPost);
             await context.SaveChangesAsync();
 
-            return Ok(existingPost);
+            return NoContent();
         }
     }
 }

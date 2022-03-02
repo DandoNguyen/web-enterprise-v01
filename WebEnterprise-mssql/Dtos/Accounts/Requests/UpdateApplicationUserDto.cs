@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql.Dtos
 {
-    public class ApplicationUserDto
+    public class UpdateApplicationUserDto
     {
-        public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public int? Age { get; set; }
@@ -15,7 +12,5 @@ namespace WebEnterprise_mssql.Dtos
         public string LastName { get; set; }
         public DateTime? DOB { get; set; }
 
-        //Foreign Key
-        public virtual ICollection<Posts> Posts { get; set; }
     }
 }
