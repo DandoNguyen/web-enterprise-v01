@@ -95,8 +95,8 @@ namespace WebEnterprise_mssql.Controllers
             if(post is null) {
                 return NotFound();
             }
-
-            return Ok(mapper.Map<PostDto>(post));
+            var getPost = mapper.Map<PostDto>(post);
+            return Ok(mapper.Map<PostDto>(getPost));
         }
 
         [HttpPost]
@@ -130,7 +130,7 @@ namespace WebEnterprise_mssql.Controllers
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 //Get user ID
                 var userId = await userManager.FindByEmailAsync(email);
-                newPost.UserId = userId;
+                newPost.UserId = userId.Id;
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
 

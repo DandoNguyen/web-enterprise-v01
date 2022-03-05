@@ -9,8 +9,8 @@ using WebEnterprise_mssql.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220305220217_modify postDTO and posts model")]
-    partial class modifypostDTOandpostsmodel
+    [Migration("20220305225239_fixing userID field in posts table")]
+    partial class fixinguserIDfieldinpoststable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -243,7 +243,7 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<int>("SubmissionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserIdId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ViewsCount")

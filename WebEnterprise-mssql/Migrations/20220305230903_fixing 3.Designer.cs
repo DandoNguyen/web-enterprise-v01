@@ -9,8 +9,8 @@ using WebEnterprise_mssql.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220305220217_modify postDTO and posts model")]
-    partial class modifypostDTOandpostsmodel
+    [Migration("20220305230903_fixing 3")]
+    partial class fixing3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -260,7 +260,7 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserIdId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -352,11 +352,11 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "UserId")
+                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Posts")
-                        .HasForeignKey("UserIdId");
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("UserId");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Models.RefreshToken", b =>

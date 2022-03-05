@@ -241,7 +241,7 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<int>("SubmissionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("UserIdId")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ViewsCount")
@@ -258,7 +258,7 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserIdId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
@@ -350,11 +350,11 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "UserId")
+                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Posts")
-                        .HasForeignKey("UserIdId");
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("UserId");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Models.RefreshToken", b =>
