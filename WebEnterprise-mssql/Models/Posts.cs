@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Models
         public int ViewsCount { get; set; } 
 
         [InverseProperty("Posts")]
-        public virtual ApplicationUser Users { get; set; }
+        public virtual ApplicationUser UserId { get; set; }
         public int CategoryId { get; set; }
         public int SubmissionId { get; set; }
     }

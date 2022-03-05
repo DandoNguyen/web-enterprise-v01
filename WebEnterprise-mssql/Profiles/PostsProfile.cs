@@ -9,6 +9,7 @@ namespace WebEnterprise_mssql.Profiles
         public PostsProfile()
         {
             CreateMap<Posts, PostDto>();
+            CreateMap<Posts, PostDto>().ReverseMap();
             CreateMap<Posts, CreatePostDto>().ReverseMap();
             CreateMap<Posts, UpdatedPostDto>().ReverseMap();
         }

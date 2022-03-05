@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using WebEnterprise_mssql.Configuration;
 using WebEnterprise_mssql.Data;
 using WebEnterprise_mssql.Models;
@@ -50,7 +51,9 @@ namespace WebEnterprise_mssql
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    RequireExpirationTime = false
+                    RequireExpirationTime = false,
+
+                    ClockSkew = TimeSpan.Zero
                 };
 
             services.AddSingleton(TokenValidationParams);
@@ -86,7 +89,7 @@ namespace WebEnterprise_mssql
 
             services.AddControllers(options => {
                 options.SuppressAsyncSuffixInActionNames = false;
-            });
+            }).AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebEnterprise_mssql", Version = "v1" });

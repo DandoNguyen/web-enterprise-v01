@@ -166,7 +166,7 @@ namespace WebEnterprise_mssql.Controllers
 
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddSeconds(30),
+                Expires = DateTime.UtcNow.Add(jwtConfig.ExpiryTimeFrame),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -235,80 +235,89 @@ namespace WebEnterprise_mssql.Controllers
 
             try
             {
-                //validation 1 - validate JWT token Format
+                // Validation 1 - Validation JWT token format
                 var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequestDto.Token, tokenValidationParams, out var validatedToken);
-                
-                //validation 2 - Validate the encryption Algorithms
-                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+
+                // Validation 2 - Validate encryption alg
+                if(validatedToken is JwtSecurityToken jwtSecurityToken)
                 {
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
 
-                    if (result is false)
-                    {
+                    if(result == false) {
                         return null;
                     }
                 }
 
-                //validation 3 - validate the expiry date
+                // Validation 3 - validate expiry date
                 var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
-                var expiryDate = UnixTimeStamptoDateTime(utcExpiryDate);
+                var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
 
-                if (expiryDate > DateTime.UtcNow)
-                {
+                if(expiryDate > DateTime.UtcNow) {
                     return new AuthResult() {
                         Success = false,
                         Errors = new List<string>() {
-                            "Token Has Not Yet Been Expired!!!"
+                            "Token has not yet expired"
                         }
                     };
                 }
 
-                //validation 4 - validate the existence of the token
+                // validation 4 - validate existence of the token
                 var storedToken = await context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequestDto.RefreshToken);
 
-                if (storedToken is null)
+                if(storedToken == null)
                 {
                     return new AuthResult() {
                         Success = false,
                         Errors = new List<string>() {
-                            "Token is not exist!!!"
+                            "Token does not exist"
                         }
                     };
                 }
 
-
-                //Validation 5 - validate if it is used or not
-                if (storedToken.IsUsed)
+                // Validation 5 - validate if used
+                if(storedToken.IsUsed)
                 {
                     return new AuthResult() {
                         Success = false,
                         Errors = new List<string>() {
-                            "Token has been used!!!"
+                            "Token has been used"
                         }
                     };
                 }
 
-                //validation 6 - validate if it is revoked
-                if (storedToken.IsRevoked)
+                // Validation 6 - validate if revoked
+                if(storedToken.IsRevoked)
                 {
                     return new AuthResult() {
                         Success = false,
                         Errors = new List<string>() {
-                            "Token has been revoked!!!"
+                            "Token has been revoked"
                         }
                     };
                 }
 
-                //validation 7 - validate the Id
+                // Validation 7 - validate the id
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-                if (storedToken.JwtId != jti)
+                if(storedToken.JwtId != jti)
                 {
                     return new AuthResult() {
                         Success = false,
                         Errors = new List<string>() {
-                            "Token does NOT match!!!"
+                            "Token doesn't match"
+                        }
+                    };
+                }
+
+                // Validation 8 - validate stored token expiry date
+                if (storedToken.ExpiryDate < DateTime.UtcNow)
+                {
+                    return new AuthResult()
+                    {
+                        Success = false,
+                        Errors = new List<string>() {
+                            "Refresh token has expired"
                         }
                     };
                 }
@@ -323,15 +332,31 @@ namespace WebEnterprise_mssql.Controllers
                 var dbUser = await userManager.FindByIdAsync(storedToken.UserId);
                 return await GenerateJwtToken(dbUser);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                if(ex.Message.Contains("Lifetime validation failed. The token is expired.")) {
+
+                      return new AuthResult() {
+                        Success = false,
+                        Errors = new List<string>() {
+                            "Token has expired please re-login"
+                        }
+                    };
+                
+                } else {
+                      return new AuthResult() {
+                        Success = false,
+                        Errors = new List<string>() {
+                            "Something went wrong."
+                        }
+                    };
+                }
             }
         }
 
-        public DateTime UnixTimeStamptoDateTime(long UnixTimeStamp)
+        public DateTime UnixTimeStampToDateTime(long UnixTimeStamp)
         {
-            var datetimeVal = new DateTime(1999, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var datetimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             datetimeVal = datetimeVal.AddSeconds(UnixTimeStamp).ToLocalTime();
             return datetimeVal;
         }

@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Collections;
 using System.Reflection.Metadata.Ecma335;
 using System;
@@ -13,6 +15,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -23,10 +27,55 @@ namespace WebEnterprise_mssql.Controllers
     {
         private readonly ApiDbContext context;
         private readonly IMapper mapper;
-        public PostsController(ApiDbContext context, IMapper mapper)
+        private readonly UserManager<ApplicationUser> userManager;
+        public PostsController(ApiDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
+            this.userManager = userManager;
             this.mapper = mapper;
             this.context = context;
+        }
+
+        //this method is for test purpose, shoule be DELETE later
+        [HttpGet]
+        [Route("LogTokenInfo")]
+        public IActionResult LogUserInfoFromToken([FromHeader] string Authorization) {
+            //var email = HttpContext.User.Claims;
+            //Request.Headers.TryGetValue("Authorization", out var getToken);
+            if (Authorization is null)
+            {
+                return BadRequest(new PostResponseDto() {
+                    Success = false,
+                    Errors = new List<string>() {
+                        "The Token param is NOT availablel!!!"
+                    }
+                });
+            }
+            //var handler = new JwtSecurityTokenHandler();
+            //var token = handler.ReadJwtToken(getToken);
+
+            // if (token is null)
+            // {
+            //     return BadRequest(new PostResponseDto() {
+            //         Errors = new List<string>() {
+            //             "The Token has NOT been read!!!"
+            //         }
+            //     });
+            // }
+            string[] Collection = Authorization.Split(" ");
+            
+            //Console.WriteLine(Collection[1]);
+
+            //Decode the token
+            var stream = Collection[1];  
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user's email
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+
+
+            return Ok(email);
         }
 
         [HttpGet]
@@ -51,9 +100,37 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync(CreatePostDto postDto) {
+        public async Task<IActionResult> CreatePostAsync(CreatePostDto postDto, [FromHeader] string Authorization) {
+            //Get current user
+            //Validate authorization state
+            if (Authorization is null)
+            {
+                return BadRequest(new PostResponseDto() {
+                    Success = false,
+                    Errors = new List<string>() {
+                        "The Authorization param is NOT availablel!!!"
+                    }
+                });
+            }
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];  
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user's email
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            
+            //Validating Post
             if(ModelState.IsValid) {
                 Posts newPost = mapper.Map<Posts>(postDto);
+                newPost.createdDate = DateTimeOffset.UtcNow;
+                //Get user ID
+                var userId = await userManager.FindByEmailAsync(email);
+                newPost.UserId = userId;
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
 
@@ -81,7 +158,7 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<PostDto>> DeletePostAsync(int id) {
+        public async Task<IActionResult> DeletePostAsync(int id) {
             var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if (existingPost is null)
             {
