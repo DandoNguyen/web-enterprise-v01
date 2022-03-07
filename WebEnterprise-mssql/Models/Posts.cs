@@ -14,9 +14,9 @@ namespace WebEnterprise_mssql.Models
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public int ViewsCount { get; set; } 
-        public string UserId { get; set; }
+        public string User { get; set; }
 
-        [ForeignKey("UserId")]
+        [ForeignKey("User")]
 
         [InverseProperty("Posts")]
         public virtual ApplicationUser ApplicationUser { get; set; }
