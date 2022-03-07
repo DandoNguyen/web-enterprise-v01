@@ -1,12 +1,9 @@
-import { render } from '@testing-library/react'
 import React from 'react';
-import { Routes,Route} from 'react-router-dom'
-import Homepage from './Homepage';
-import './UserLogin.css';
+import '../css/Login.css';
 
 
 
-export default class UserLogin extends React.Component{
+export default class Login extends React.Component{
     constructor(props){
         super(props)
         this.state={
@@ -58,7 +55,7 @@ export default class UserLogin extends React.Component{
     });;
     }
     render(){
-        return <form>
+        return <form className='loginpage'>
             <div className="login">
             <div className="title">Welcome</div>
             <div className="loginname"> 
@@ -74,9 +71,6 @@ export default class UserLogin extends React.Component{
                 <a href="/Home" className="fgpassword" >for get Password ?</a>
             </div>
             </div>
-            <Routes>
-                <Route path="/Home" element={<Homepage/>} />
-            </Routes>
         </form>
     }
 }
