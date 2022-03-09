@@ -1,11 +1,13 @@
 import React,{ useState } from 'react';
 import '../css/Management.css';
 import Modal from './Modal';
+import Navbar from './Navbar';
 
 
 function Management () {
   const [modalOpen, setModalOpen] = useState(false);
 	return <div>
+    <Navbar/>
     <section className='Managementpage'>
     <div className='manage-header'>
       <div className="text">Management</div>

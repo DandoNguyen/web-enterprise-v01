@@ -1,10 +1,12 @@
 import React from 'react';
 import '../css/UploadIdea.css';
+import Navbar from './Navbar';
 
 
 function UploadIdea() {
   return (
 <div>
+    <Navbar/>
     <section className='UploadIdeapage'>
         <div className="text">Upload Idea</div>
         <div className='IdeaFrom'>
@@ -27,6 +29,7 @@ function UploadIdea() {
                 <span className="inputtitle">Input File: </span>
                 <button>Select a File</button>
             </div>
+            <button className="CancelIdea">Cancel</button>
             <button className='SubmitIdea'>Submit</button>
         </div>
     </section>
