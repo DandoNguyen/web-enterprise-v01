@@ -14,14 +14,22 @@ namespace WebEnterprise_mssql.Models
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public int ViewsCount { get; set; } 
-        public string User { get; set; }
 
-        [ForeignKey("User")]
+        //public string User { get; set; }
+
+        [ForeignKey("Users")]
+        [ForeignKey("Categories")]
+        [ForeignKey("Submissions")]
+
 
         [InverseProperty("Posts")]
-        public virtual ApplicationUser ApplicationUser { get; set; }
-        public int CategoryId { get; set; }
-        public int SubmissionId { get; set; }
+            public virtual ApplicationUser ApplicationUser { get; set; }
+            public virtual Categories Categories { get; set; }
+            public virtual Submissions Submissions { get; set; }
+            public virtual Views Views { get; set; }
+
+            //public int CategoryId { get; set; }
+            //public int SubmissionId { get; set; 
     }
 }
 
