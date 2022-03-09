@@ -130,7 +130,7 @@ namespace WebEnterprise_mssql.Controllers
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 //Get user ID
                 var userId = await userManager.FindByEmailAsync(email);
-                newPost.User = userId.Id;
+                newPost.ApplicationUser.Id = userId.Id;
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
 

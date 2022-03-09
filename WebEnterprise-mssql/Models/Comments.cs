@@ -1,7 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System;
-using Microsoft.AspNetCore.Identity;
-using WebEnterprise_mssql.Dtos;
 
 namespace WebEnterprise_mssql.Models
 {
@@ -13,10 +10,11 @@ namespace WebEnterprise_mssql.Models
         public string LastModifiedDate { get; set; }
 
         [ForeignKey("Users")]
-        [ForeignKey("Posts")]
+        
 
         [InverseProperty("Comments")]
         public virtual ApplicationUser ApplicationUser { get; set; }
+        [ForeignKey("Posts")]
         public virtual Posts Posts { get; set; }
     }
 }

@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 
 namespace WebEnterprise_mssql.Models 
 {
@@ -15,18 +13,16 @@ namespace WebEnterprise_mssql.Models
         public DateTimeOffset LastModifiedDate { get; set; }
         public int ViewsCount { get; set; } 
 
+        //[ForeignKey("Users")]
         //public string User { get; set; }
 
-        [ForeignKey("Users")]
-        [ForeignKey("Categories")]
-        [ForeignKey("Submissions")]
-
-
         [InverseProperty("Posts")]
-            public virtual ApplicationUser ApplicationUser { get; set; }
-            public virtual Categories Categories { get; set; }
-            public virtual Submissions Submissions { get; set; }
-            public virtual Views Views { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
+        [ForeignKey("Categories")]
+        public virtual Categories Categories { get; set; }
+        [ForeignKey("Submissions")]
+        public virtual Submissions Submissions { get; set; }
+        public virtual Views Views { get; set; }
 
             //public int CategoryId { get; set; }
             //public int SubmissionId { get; set; 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
-using WebEnterprise_mssql.Dtos;
 
 namespace WebEnterprise_mssql.Models
 {
@@ -9,7 +8,7 @@ namespace WebEnterprise_mssql.Models
     {
         //public int? Age { get; set; }
 
-        Public int? StaffId { get; set; }
+        public int StaffId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? DOB { get; set; }
