@@ -37,6 +37,12 @@ namespace WebEnterprise_mssql
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
+            // services.AddDbContext<ApiDbContext>(options => 
+            //     options.UseSqlite(
+            //         Configuration.GetConnectionString("SQLiteConnection")
+            //     )
+            // );
+
             services.AddDbContext<ApiDbContext>(options => 
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")

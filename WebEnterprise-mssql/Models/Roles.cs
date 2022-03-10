@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEnterprise_mssql.Models
 {
     public class Roles
     {
-        public string RoleId { get; set; }
+        [KeyAttribute]
+        public Guid RoleId { get; set; }
         public string RoleName { get; set; }
 
         public virtual ICollection<ApplicationUser> ApplicationUser { get; set; }

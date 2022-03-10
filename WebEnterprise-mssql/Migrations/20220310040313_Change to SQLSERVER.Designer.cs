@@ -10,8 +10,8 @@ using WebEnterprise_mssql.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220307142410_initial connection to remote SQLSERVER")]
-    partial class initialconnectiontoremoteSQLSERVER
+    [Migration("20220310040313_Change to SQLSERVER")]
+    partial class ChangetoSQLSERVER
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -163,15 +163,18 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DOB")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DepartmentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("DepartmentsDepartmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -212,6 +215,9 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StaffId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -220,6 +226,8 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DepartmentsDepartmentId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -232,15 +240,103 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Categories", b =>
+                {
+                    b.Property<Guid>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Comments", b =>
+                {
+                    b.Property<Guid>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("Postsid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("userId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("Postsid");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Departments", b =>
+                {
+                    b.Property<Guid>("DepartmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DepartmentId");
+
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.FilesPath", b =>
+                {
+                    b.Property<Guid>("FilesPathID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Postsid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("filePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("FilesPathID");
+
+                    b.HasIndex("Postsid");
+
+                    b.ToTable("FilesPath");
+                });
+
             modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CategoriesCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CatogoriesId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Desc")
                         .HasColumnType("nvarchar(max)");
@@ -248,14 +344,17 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("SubmissionId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("SubmissionsId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("User")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ViewsCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("ViewsId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("content")
                         .HasColumnType("nvarchar(max)");
@@ -268,7 +367,13 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("User");
+                    b.HasIndex("CategoriesCategoryId");
+
+                    b.HasIndex("SubmissionsId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ViewsId");
 
                     b.ToTable("Posts");
                 });
@@ -306,6 +411,51 @@ namespace WebEnterprise_mssql.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Submissions", b =>
+                {
+                    b.Property<Guid>("SubmissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClosureDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionSubmission")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FinalClosureDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubmissionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubmissionId");
+
+                    b.ToTable("Submissions");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Views", b =>
+                {
+                    b.Property<Guid>("ViewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LastVistedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("userId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ViewId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Views");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -359,13 +509,64 @@ namespace WebEnterprise_mssql.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Models.Departments", "Departments")
+                        .WithMany("ApplicationUser")
+                        .HasForeignKey("DepartmentsDepartmentId");
+
+                    b.Navigation("Departments");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Comments", b =>
                 {
                     b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Posts")
-                        .HasForeignKey("User");
+                        .WithMany("Comments")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                        .WithMany("Comments")
+                        .HasForeignKey("Postsid");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.FilesPath", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                        .WithMany("filesPaths")
+                        .HasForeignKey("Postsid");
+
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Models.Categories", "Categories")
+                        .WithMany("Posts")
+                        .HasForeignKey("CategoriesCategoryId");
+
+                    b.HasOne("WebEnterprise_mssql.Models.Submissions", "Submissions")
+                        .WithMany("Posts")
+                        .HasForeignKey("SubmissionsId");
+
+                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("WebEnterprise_mssql.Models.Views", "Views")
+                        .WithMany("Posts")
+                        .HasForeignKey("ViewsId");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Categories");
+
+                    b.Navigation("Submissions");
+
+                    b.Navigation("Views");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Models.RefreshToken", b =>
@@ -377,7 +578,47 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Views", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Views")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("WebEnterprise_mssql.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Views");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Categories", b =>
+                {
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Departments", b =>
+                {
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("filesPaths");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Submissions", b =>
+                {
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Views", b =>
                 {
                     b.Navigation("Posts");
                 });

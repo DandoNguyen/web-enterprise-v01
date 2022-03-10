@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEnterprise_mssql.Models
 {
     public class Submissions
     {
-        public string SubmissionId { get; set; }
+        [KeyAttribute]
+        public Guid SubmissionId { get; set; }
         public string SubmissionName { get; set; }
         public string DescriptionSubmission { get; set; }
         public string ClosureDate { get; set; }

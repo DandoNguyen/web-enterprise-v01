@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AutoMapper;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace WebEnterprise_mssql.Controllers
 {
@@ -25,11 +28,13 @@ namespace WebEnterprise_mssql.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
     public class PostsController : ControllerBase
     {
+        private readonly IConfiguration configuration;
         private readonly ApiDbContext context;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
-        public PostsController(ApiDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public PostsController(ApiDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.userManager = userManager;
             this.mapper = mapper;
             this.context = context;
@@ -90,57 +95,95 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPostAsync(int id) {
+        public async Task<IActionResult> GetPostAsync(Guid id) {
             var post = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if(post is null) {
                 return NotFound();
             }
             var getPost = mapper.Map<PostDto>(post);
-            return Ok(mapper.Map<PostDto>(getPost));
+
+            //List<FilesPath> filesPathObj = await context.FilesPath.FindAsync(id); //Get id from post => return all object from filesPath
+            // if (filesPathObj is null)
+            // {
+            //     return Ok(new 
+            //     {
+            //         getPost,
+            //         filePath = "There is no file attached"
+            //     });
+            // }
+            return Ok(new 
+            {
+                getPost,
+                //filePath = filesPathObj.filePath
+            });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync(CreatePostDto postDto, [FromHeader] string Authorization) {
-            //Get current user
-            //Validate authorization state
+        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto postDto, [FromHeader] string Authorization,[FromForm] List<IFormFile> files) {
+            
             if (Authorization is null)
             {
-                return BadRequest(new PostResponseDto() {
-                    Success = false,
-                    Errors = new List<string>() {
-                        "The Authorization param is NOT availablel!!!"
-                    }
+                return BadRequest(new {
+                    error = "the Authorization params is NOT exist!!!"
                 });
             }
+            var user = await DecodeToken(Authorization);
 
-            string[] Collection = Authorization.Split(" ");
+            //Get the file path config
+            string rootPath = configuration["FileConfig:filePath"];
 
-            //Decode the token
-            var stream = Collection[1];  
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(stream);
-            var tokenS = jsonToken as JwtSecurityToken;
-
-            //get the user's email
-            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
-            
-            //Validating Post
-            if(ModelState.IsValid) {
-                Posts newPost = mapper.Map<Posts>(postDto);
+            if (ModelState.IsValid)
+            {
+                Posts newPost = new Posts();
+                newPost = mapper.Map<Posts>(postDto);
+                newPost.id = Guid.NewGuid();
                 newPost.createdDate = DateTimeOffset.UtcNow;
-                //Get user ID
-                var userId = await userManager.FindByEmailAsync(email);
-                newPost.ApplicationUser.Id = userId.Id;
+                newPost.UserId = user.Id;
+                var newPostDto = mapper.Map<PostDto>(newPost);
+
+                var listOfPaths = new List<string>();
+                //Check if there is files or not
+                if (!files.Count().Equals(0))
+                {
+                    
+                
+                    foreach (var formFile in files)
+                    {
+                        var newFilePathObj = new FilesPath();
+                        if (formFile.Length > 0)
+                        {
+                            var newRootPath = Path.Combine(rootPath, user.UserName);
+                            if (!Directory.Exists(newRootPath)) 
+                            {
+                                Directory.CreateDirectory(newRootPath); 
+                            } 
+
+                            var finalFilePath = Path.Combine(newRootPath, MakeValidFileName(formFile.FileName));
+                            newFilePathObj.PostId = newPost.id;
+                            newFilePathObj.filePath = finalFilePath;
+                            context.FilesPath.Add(newFilePathObj);
+                            await context.SaveChangesAsync();
+
+                            listOfPaths.Add(finalFilePath);
+
+                            using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
+                            {
+                                await formFile.CopyToAsync(fileStream);
+                            }
+                        }
+                    }
+                }
+
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, mapper.Map<PostDto>(newPost));
+                newPostDto.FilesPaths = listOfPaths;
+                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, newPostDto);
             }
             return new JsonResult("Error in creating Post") {StatusCode = 500};
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePostsAsync(int id, UpdatedPostDto updatedPostDto) 
+        public async Task<IActionResult> UpdatePostsAsync(Guid id, UpdatedPostDto updatedPostDto) 
         {    
             var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if(existingPost is null) {
@@ -158,7 +201,7 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePostAsync(int id) {
+        public async Task<IActionResult> DeletePostAsync(Guid id) {
             var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if (existingPost is null)
             {
@@ -168,6 +211,61 @@ namespace WebEnterprise_mssql.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+        private static string MakeValidFileName( string name )
+        {
+
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape( new string( System.IO.Path.GetInvalidFileNameChars() ) );
+            string invalidRegStr = string.Format( @"([{0}]*\.+$)|([{0}]+) ", invalidChars );
+            var newString = System.Text.RegularExpressions.Regex.Replace( name, invalidRegStr, "_" ).ToString();
+            return newString;
+        }
+        public async void UploadFile(List<IFormFile> files, string username, string postId) 
+        {
+                //Get the file path config
+                string rootPath = configuration["FileConfig:filePath"];
+            
+
+                foreach (var formFile in files)
+                {
+                    var newFilePathObj = new FilesPath();
+                    if (formFile.Length > 0)
+                    {
+                        var newRootPath = Path.Combine(rootPath, username);
+                        if (!Directory.Exists(newRootPath)) 
+                        { 
+                            Directory.CreateDirectory(newRootPath); 
+                        } 
+
+                        var finalFilePath = Path.Combine(newRootPath, formFile.FileName);
+                        newFilePathObj.filePath = finalFilePath;
+                        context.FilesPath.Add(newFilePathObj);
+                        await context.SaveChangesAsync();
+
+                        using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
+                        {
+                            await formFile.CopyToAsync(fileStream);
+                        }
+                    }
+                }
+        }
+
+        public async Task<ApplicationUser> DecodeToken(string Authorization) {
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];  
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var user = await userManager.FindByEmailAsync(email);
+
+            //return the username
+            return user;
         }
     }
 }

@@ -8,7 +8,8 @@ namespace WebEnterprise_mssql.Profiles
     {
         public PostsProfile()
         {
-            CreateMap<Posts, PostDto>();
+            CreateMap<Posts, PostDto>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
             CreateMap<Posts, PostDto>().ReverseMap();
             CreateMap<Posts, CreatePostDto>().ReverseMap();
             CreateMap<Posts, UpdatedPostDto>().ReverseMap();

@@ -1,11 +1,14 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEnterprise_mssql.Models
 {
     public class Reactions
     {
-        public string ReactionId { get; set; }
+        [KeyAttribute]
+        public Guid ReactionId { get; set; }
         public string ReactionType { get; set; }
         public string CreatedDate { get; set; }
 

@@ -1,11 +1,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEnterprise_mssql.Models 
 {
     public record Posts
     {   
-        public int id { get; set; }
+        [KeyAttribute]
+        public Guid id { get; set; }
         public string title { get; set; }
         public string Desc { get; set; }
         public string content { get; set; }
@@ -13,19 +16,24 @@ namespace WebEnterprise_mssql.Models
         public DateTimeOffset LastModifiedDate { get; set; }
         public int ViewsCount { get; set; } 
 
-        //[ForeignKey("Users")]
-        //public string User { get; set; }
-
+        
+        
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
         [InverseProperty("Posts")]
         public virtual ApplicationUser ApplicationUser { get; set; }
-        [ForeignKey("Categories")]
+
+        public Guid? CatogoriesId { get; set; }
         public virtual Categories Categories { get; set; }
-        [ForeignKey("Submissions")]
+
+        public Guid? SubmissionsId { get; set; }
         public virtual Submissions Submissions { get; set; }
+
+        public Guid? ViewsId { get; set; }
         public virtual Views Views { get; set; }
 
-            //public int CategoryId { get; set; }
-            //public int SubmissionId { get; set; 
+        public ICollection<Comments> Comments { get; set; }
+        public ICollection<FilesPath> filesPaths { get; set; }
     }
 }
 

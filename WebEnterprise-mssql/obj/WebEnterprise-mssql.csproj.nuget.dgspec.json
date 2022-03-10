@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj": {}
+    "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj": {}
   },
   "projects": {
-    "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj": {
+    "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+        "projectUniqueName": "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
         "projectName": "WebEnterprise-mssql",
-        "projectPath": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+        "projectPath": "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
         "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\obj\\",
+        "outputPath": "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -97,6 +97,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[5.0.13, 5.0.13]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -105,7 +111,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.405\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebEnterprise_mssql.Models
 {
     public class Departments
     {
-        public string DepartmentId { get; set; }
+        [KeyAttribute]
+        public Guid DepartmentId { get; set; }
         public string DepartmentName { get; set; }
 
 

@@ -16,6 +16,12 @@ namespace WebEnterprise_mssql.Models
 
         //Foreign Key
         public virtual ICollection<Posts> Posts { get; set; }
+        public virtual ICollection<Views> Views { get; set; }
+        public virtual ICollection<Comments> Comments { get; set; }
+
+        //
+        public string DepartmentId { get; set; }
+        public virtual Departments Departments { get; set; }
     }
 }
 
