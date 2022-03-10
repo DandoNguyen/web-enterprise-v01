@@ -18,8 +18,10 @@ namespace WebEnterprise_mssql.Dtos
         public DateTimeOffset LastModifiedDate { get; set; }
         public int ViewsCount { get; set; } 
         public string UserId { get; set; }
-        public int CategoryId { get; set; }
-        public int SubmissionId { get; set; }
+        public string username { get; set; }
+        public Guid CategoryId { get; set; }
+        public Guid SubmissionId { get; set; }
         public List<string> FilesPaths { get; set; }
+        public List<string> Message { get; set; }
     }
 }

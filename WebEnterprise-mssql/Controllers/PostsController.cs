@@ -39,49 +39,7 @@ namespace WebEnterprise_mssql.Controllers
             this.mapper = mapper;
             this.context = context;
         }
-
-        //this method is for test purpose, shoule be DELETE later
-        [HttpGet]
-        [Route("LogTokenInfo")]
-        public IActionResult LogUserInfoFromToken([FromHeader] string Authorization) {
-            //var email = HttpContext.User.Claims;
-            //Request.Headers.TryGetValue("Authorization", out var getToken);
-            if (Authorization is null)
-            {
-                return BadRequest(new PostResponseDto() {
-                    Success = false,
-                    Errors = new List<string>() {
-                        "The Token param is NOT availablel!!!"
-                    }
-                });
-            }
-            //var handler = new JwtSecurityTokenHandler();
-            //var token = handler.ReadJwtToken(getToken);
-
-            // if (token is null)
-            // {
-            //     return BadRequest(new PostResponseDto() {
-            //         Errors = new List<string>() {
-            //             "The Token has NOT been read!!!"
-            //         }
-            //     });
-            // }
-            string[] Collection = Authorization.Split(" ");
-            
-            //Console.WriteLine(Collection[1]);
-
-            //Decode the token
-            var stream = Collection[1];  
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(stream);
-            var tokenS = jsonToken as JwtSecurityToken;
-
-            //get the user's email
-            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
-
-
-            return Ok(email);
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> GetAllPostsAsync() {
@@ -149,6 +107,13 @@ namespace WebEnterprise_mssql.Controllers
                 
                     foreach (var formFile in files)
                     {
+
+                        if (!IsValidFileType(formFile))
+                        {
+                            newPostDto.Message.Add($"the file {formFile.FileName} is not accepted!!!");
+                            break;
+                        }
+
                         var newFilePathObj = new FilesPath();
                         if (formFile.Length > 0)
                         {
@@ -165,6 +130,7 @@ namespace WebEnterprise_mssql.Controllers
                             await context.SaveChangesAsync();
 
                             listOfPaths.Add(finalFilePath);
+                            newPostDto.Message.Add($"the file {formFile.FileName} uploaded successfully!!!");
 
                             using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
                             {
@@ -211,6 +177,19 @@ namespace WebEnterprise_mssql.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        //internal Methods
+
+        public bool IsValidFileType(IFormFile file) {
+            string fileExtension = Path.GetExtension(file.FileName).ToLower();
+            switch (fileExtension)
+            {
+                case ".doc": case ".docx": return true;
+                case ".xls": case ".xlsx": return true;
+                case ".jpg": case ".png": return true;
+                default: return false;
+            }
         }
         private static string MakeValidFileName( string name )
         {

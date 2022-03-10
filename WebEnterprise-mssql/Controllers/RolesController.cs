@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Net.NetworkInformation;
-using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -8,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Data;
 using Microsoft.EntityFrameworkCore;
-using WebEnterprise_mssql.Dtos;
-using System.Collections.Generic;
 using WebEnterprise_mssql.Models;
 
 namespace WebEnterprise_mssql.Controllers
