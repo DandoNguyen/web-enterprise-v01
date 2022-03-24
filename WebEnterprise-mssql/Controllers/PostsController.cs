@@ -40,13 +40,20 @@ namespace WebEnterprise_mssql.Controllers
             this.context = context;
         }
         
-
         [HttpGet]
         public async Task<IActionResult> GetAllPostsAsync() {
+            var posts = await context.Posts.ToListAsync();
+            var postsDto = mapper.Map<List<PostDto>>(posts);
+
+            return Ok(postsDto);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPostsFromUserIDAsync(string userId) {
             // var allposts = await context.Posts.ToListAsync();
             // return Ok(allposts);
             // return (await context.Posts.ToListAsync()).Select(post => post.AsDto());
-            var posts = await context.Posts.ToListAsync();
+            var posts = await context.Posts.Where(x => x.UserId == userId).ToListAsync();
             var postsDto = mapper.Map<List<PostDto>>(posts);
 
             return Ok(postsDto);
@@ -89,6 +96,7 @@ namespace WebEnterprise_mssql.Controllers
 
             //Get the file path config
             string rootPath = configuration["FileConfig:filePath"];
+            // string rootPath = Path.Combine("~", "App_Data");
 
             if (ModelState.IsValid)
             {
@@ -103,11 +111,10 @@ namespace WebEnterprise_mssql.Controllers
                 //Check if there is files or not
                 if (!files.Count().Equals(0))
                 {
-                    
-                
+
+                    //UploadFile(files, user.UserName, newPost.id, listOfPaths, newPostDto);
                     foreach (var formFile in files)
                     {
-
                         if (!IsValidFileType(formFile))
                         {
                             newPostDto.Message.Add($"the file {formFile.FileName} is not accepted!!!");
@@ -181,7 +188,7 @@ namespace WebEnterprise_mssql.Controllers
 
         //internal Methods
 
-        public bool IsValidFileType(IFormFile file) {
+        private static bool IsValidFileType(IFormFile file) {
             string fileExtension = Path.GetExtension(file.FileName).ToLower();
             switch (fileExtension)
             {
@@ -199,37 +206,47 @@ namespace WebEnterprise_mssql.Controllers
             var newString = System.Text.RegularExpressions.Regex.Replace( name, invalidRegStr, "_" ).ToString();
             return newString;
         }
-        public async void UploadFile(List<IFormFile> files, string username, string postId) 
-        {
-                //Get the file path config
-                string rootPath = configuration["FileConfig:filePath"];
+        // private async Task<FilesPath> UploadFile(IFormFile file, string username, Guid postId) 
+        // {
+        //     string Message;
+        //     Guid outPostId;
+        //     var newFilePathObj = new FilesPath();
+        //     //Get the file path config
+        //     string rootPath = configuration["FileConfig:filePath"];
+
+        //     if (!IsValidFileType(file))
+        //     {
+        //         Message = $"the file {file.FileName} is not accepted!!!";
+        //     }
+
             
+        //     if (file.Length > 0)
+        //     {
+        //         var newRootPath = Path.Combine(rootPath, username);
+        //         if (!Directory.Exists(newRootPath)) 
+        //         {
+        //             Directory.CreateDirectory(newRootPath); 
+        //         } 
 
-                foreach (var formFile in files)
-                {
-                    var newFilePathObj = new FilesPath();
-                    if (formFile.Length > 0)
-                    {
-                        var newRootPath = Path.Combine(rootPath, username);
-                        if (!Directory.Exists(newRootPath)) 
-                        { 
-                            Directory.CreateDirectory(newRootPath); 
-                        } 
+        //         var finalFilePath = Path.Combine(newRootPath, MakeValidFileName(file.FileName));
+        //         newFilePathObj.PostId = postId;
+        //         newFilePathObj.filePath = finalFilePath;
+        //         context.FilesPath.Add(newFilePathObj);
+        //         await context.SaveChangesAsync();
 
-                        var finalFilePath = Path.Combine(newRootPath, formFile.FileName);
-                        newFilePathObj.filePath = finalFilePath;
-                        context.FilesPath.Add(newFilePathObj);
-                        await context.SaveChangesAsync();
+        //         listOfPaths.Add(finalFilePath);
+        //         newPostDto.Message.Add($"the file {file.FileName} uploaded successfully!!!");
 
-                        using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
-                        {
-                            await formFile.CopyToAsync(fileStream);
-                        }
-                    }
-                }
-        }
+        //         using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
+        //         {
+        //             await file.CopyToAsync(fileStream);
+        //         }
+        //     }
 
-        public async Task<ApplicationUser> DecodeToken(string Authorization) {
+        //     return Message;  
+        // }
+
+        private async Task<ApplicationUser> DecodeToken(string Authorization) {
 
             string[] Collection = Authorization.Split(" ");
 

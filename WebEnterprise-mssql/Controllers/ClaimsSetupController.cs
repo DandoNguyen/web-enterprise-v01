@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebEnterprise_mssql.Configuration;
 using WebEnterprise_mssql.Data;
 using WebEnterprise_mssql.Models;
 
@@ -26,7 +28,11 @@ namespace WebEnterprise_mssql.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllClaimsAsync(string email) {
-            
+            //check if params email is null
+            if (email is null)
+            {
+                return BadRequest(new {error = "email param cannot be null!!!"});
+            }
             //Check if the user exist
             var user = await userManager.FindByEmailAsync(email);
 

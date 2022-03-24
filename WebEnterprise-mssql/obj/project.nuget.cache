@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bRoDa6nmcxxf5vAVvsGrqTDEcsOW5kfwfIYfjo7FYgq8qimcYY0s0H5Ly8TDzGD/gkR1Yy2bgh4HqGLGAZBkhQ==",
+  "dgSpecHash": "7s9TDHfMm2owhkHs8bOrwG/jJwru0lEI3xbku2KNPubNj1LzxIJvfm2KBjObLJRaUSMi4b5DexONtkmIWBTCAg==",
   "success": true,
-  "projectFilePath": "D:\\FPT\\FGW\\Web_Enterprise_Baohnp\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+  "projectFilePath": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\USER\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
@@ -134,8 +134,7 @@
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.13\\microsoft.netcore.app.host.win-x64.5.0.13.nupkg.sha512"
+    "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
   ],
   "logs": []
 }

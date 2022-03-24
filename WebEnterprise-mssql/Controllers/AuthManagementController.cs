@@ -354,14 +354,14 @@ namespace WebEnterprise_mssql.Controllers
             }
         }
 
-        public DateTime UnixTimeStampToDateTime(long UnixTimeStamp)
+        private DateTime UnixTimeStampToDateTime(long UnixTimeStamp)
         {
             var datetimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             datetimeVal = datetimeVal.AddSeconds(UnixTimeStamp).ToLocalTime();
             return datetimeVal;
         }
 
-        public string RandomString(int length) {
+        private string RandomString(int length) {
             var random = new Random();
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYIZ0123456789";
             
