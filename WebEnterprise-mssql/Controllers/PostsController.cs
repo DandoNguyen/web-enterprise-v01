@@ -20,12 +20,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using WebEnterprise_mssql.Configuration;
 
 namespace WebEnterprise_mssql.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "staff"*/)]
     public class PostsController : ControllerBase
     {
         private readonly IConfiguration configuration;
@@ -44,7 +45,6 @@ namespace WebEnterprise_mssql.Controllers
         public async Task<IActionResult> GetAllPostsAsync() {
             var posts = await context.Posts.ToListAsync();
             var postsDto = mapper.Map<List<PostDto>>(posts);
-
             return Ok(postsDto);
         }
 
@@ -59,29 +59,35 @@ namespace WebEnterprise_mssql.Controllers
             return Ok(postsDto);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPostAsync(Guid id) {
+        [HttpGet]
+        [Route("GetPost")]
+        public async Task<IActionResult> GetPostByIDAsync([FromHeader] Guid id, [FromHeader] string Authorization,[FromHeader] string username) {
+            var user = await DecodeToken(Authorization);
+            //Check if username is correct
+            if (!username.Equals(user.UserName))
+            {
+                return BadRequest(new AccountsResult() {
+                    Errors = new List<string>() {
+                        "username is NOT match with token!!!"
+                    },
+                    Success = false
+                });
+            }
+
+
             var post = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
             if(post is null) {
                 return NotFound();
             }
             var getPost = mapper.Map<PostDto>(post);
-
-            //List<FilesPath> filesPathObj = await context.FilesPath.FindAsync(id); //Get id from post => return all object from filesPath
-            // if (filesPathObj is null)
-            // {
-            //     return Ok(new 
-            //     {
-            //         getPost,
-            //         filePath = "There is no file attached"
-            //     });
-            // }
-            return Ok(new 
-            {
-                getPost,
-                //filePath = filesPathObj.filePath
-            });
+            getPost.ViewsCount = await CheckViewCount(user.UserName, post.id);
+            getPost.FilesPaths = await GetFilePaths(post.id);
+            
+            
+            return Ok(getPost);
         }
+
+        
 
         [HttpPost]
         public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto postDto, [FromHeader] string Authorization,[FromForm] List<IFormFile> files) {
@@ -105,9 +111,24 @@ namespace WebEnterprise_mssql.Controllers
                 newPost.id = Guid.NewGuid();
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 newPost.UserId = user.Id;
+                newPost.username = user.UserName;
                 var newPostDto = mapper.Map<PostDto>(newPost);
 
-                var listOfPaths = new List<string>();
+                
+
+                await context.Posts.AddAsync(newPost);
+                await context.SaveChangesAsync();
+                newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.id);
+                return CreatedAtAction(nameof(GetPostByIDAsync), new {newPost.id}, newPostDto);
+            }
+            return new JsonResult("Error in creating Post") {StatusCode = 500};
+        }
+
+        private async Task<List<string>> UploadFiles(List<IFormFile> files, string username, Guid postId) {
+
+            string rootPath = configuration["FileConfig:filePath"];
+
+            var listOfPaths = new List<string>();
                 //Check if there is files or not
                 if (!files.Count().Equals(0))
                 {
@@ -117,27 +138,26 @@ namespace WebEnterprise_mssql.Controllers
                     {
                         if (!IsValidFileType(formFile))
                         {
-                            newPostDto.Message.Add($"the file {formFile.FileName} is not accepted!!!");
-                            break;
+                            listOfPaths.Add($"the file {formFile.FileName} is not accepted!!!");
                         }
 
                         var newFilePathObj = new FilesPath();
                         if (formFile.Length > 0)
                         {
-                            var newRootPath = Path.Combine(rootPath, user.UserName);
+                            var newRootPath = Path.Combine(rootPath, username);
                             if (!Directory.Exists(newRootPath)) 
                             {
                                 Directory.CreateDirectory(newRootPath); 
                             } 
 
                             var finalFilePath = Path.Combine(newRootPath, MakeValidFileName(formFile.FileName));
-                            newFilePathObj.PostId = newPost.id;
+                            newFilePathObj.PostId = postId;
                             newFilePathObj.filePath = finalFilePath;
                             context.FilesPath.Add(newFilePathObj);
                             await context.SaveChangesAsync();
 
                             listOfPaths.Add(finalFilePath);
-                            newPostDto.Message.Add($"the file {formFile.FileName} uploaded successfully!!!");
+                            // newPostDto.Message.Add($"the file {formFile.FileName} uploaded successfully!!!");
 
                             using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
                             {
@@ -146,13 +166,7 @@ namespace WebEnterprise_mssql.Controllers
                         }
                     }
                 }
-
-                await context.Posts.AddAsync(newPost);
-                await context.SaveChangesAsync();
-                newPostDto.FilesPaths = listOfPaths;
-                return CreatedAtAction(nameof(GetPostAsync), new {newPost.id}, newPostDto);
-            }
-            return new JsonResult("Error in creating Post") {StatusCode = 500};
+            return listOfPaths;
         }
 
         [HttpPut("{id}")]
@@ -186,7 +200,84 @@ namespace WebEnterprise_mssql.Controllers
             return NoContent();
         }
 
-        //internal Methods
+        //=================================================================================================================================
+        //=================================================================================================================================
+        //INTERAL STATIC METHODS
+        //=================================================================================================================================
+        //=================================================================================================================================
+
+        private async Task<List<string>> GetFilePaths(Guid postId) {
+
+            var listFilePaths = await context.FilesPath.Where(x => x.PostId == postId).Select(x => x.filePath).ToListAsync();
+            if (!listFilePaths.Count().Equals(0))
+            {
+                return listFilePaths;
+            }
+            else
+            {
+                return new List<string>() {
+                    "No File Attached!!!"
+                };
+            }
+        }
+
+        private async Task<int> CheckViewCount(string username, Guid postId) {
+            // //check if the params are null
+            // if (username is null)
+            // {
+            //     return "username cannot be null!!!";
+            // }
+            
+            //check if user existed in view count of post
+            var listViewCount = await context.Views.Where(x => x.postId == postId).Select(x => x.userId).ToListAsync();
+
+            //get userID
+            var user = await userManager.FindByNameAsync(username);
+            var userID = user.Id.ToString();
+
+            var postAuthor = context.Posts.Where(x => x.id == postId).Select(x => x.username);
+            if (username.Equals(postAuthor))
+            {
+                return listViewCount.Count();
+            }
+
+            
+
+            if (ModelState.IsValid)
+            {
+                if(listViewCount.Count().Equals(0)) {
+                var newView = new Views() {
+                    ViewId = Guid.NewGuid(),
+                    LastVistedDate = DateTimeOffset.UtcNow,
+                    userId = userID,
+                    postId = postId
+                };
+                await context.Views.AddAsync(newView);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+
+                if(listViewCount.Contains(userID)) {
+                    return listViewCount.Count();
+                }
+                else {
+                    var newView = new Views() {
+                    ViewId = Guid.NewGuid(),
+                    LastVistedDate = DateTimeOffset.UtcNow,
+                    userId = userID,
+                    postId = postId
+                    };
+                    await context.Views.AddAsync(newView);
+                    await context.SaveChangesAsync();
+                }
+            }
+            }
+
+            
+            await context.SaveChangesAsync();
+            return listViewCount.Count();
+        }
 
         private static bool IsValidFileType(IFormFile file) {
             string fileExtension = Path.GetExtension(file.FileName).ToLower();
@@ -206,45 +297,6 @@ namespace WebEnterprise_mssql.Controllers
             var newString = System.Text.RegularExpressions.Regex.Replace( name, invalidRegStr, "_" ).ToString();
             return newString;
         }
-        // private async Task<FilesPath> UploadFile(IFormFile file, string username, Guid postId) 
-        // {
-        //     string Message;
-        //     Guid outPostId;
-        //     var newFilePathObj = new FilesPath();
-        //     //Get the file path config
-        //     string rootPath = configuration["FileConfig:filePath"];
-
-        //     if (!IsValidFileType(file))
-        //     {
-        //         Message = $"the file {file.FileName} is not accepted!!!";
-        //     }
-
-            
-        //     if (file.Length > 0)
-        //     {
-        //         var newRootPath = Path.Combine(rootPath, username);
-        //         if (!Directory.Exists(newRootPath)) 
-        //         {
-        //             Directory.CreateDirectory(newRootPath); 
-        //         } 
-
-        //         var finalFilePath = Path.Combine(newRootPath, MakeValidFileName(file.FileName));
-        //         newFilePathObj.PostId = postId;
-        //         newFilePathObj.filePath = finalFilePath;
-        //         context.FilesPath.Add(newFilePathObj);
-        //         await context.SaveChangesAsync();
-
-        //         listOfPaths.Add(finalFilePath);
-        //         newPostDto.Message.Add($"the file {file.FileName} uploaded successfully!!!");
-
-        //         using (var fileStream = new FileStream(finalFilePath, FileMode.OpenOrCreate))
-        //         {
-        //             await file.CopyToAsync(fileStream);
-        //         }
-        //     }
-
-        //     return Message;  
-        // }
 
         private async Task<ApplicationUser> DecodeToken(string Authorization) {
 
@@ -260,7 +312,7 @@ namespace WebEnterprise_mssql.Controllers
             var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
             var user = await userManager.FindByEmailAsync(email);
 
-            //return the username
+            //return the user
             return user;
         }
     }

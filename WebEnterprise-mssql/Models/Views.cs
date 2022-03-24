@@ -9,11 +9,12 @@ namespace WebEnterprise_mssql.Models
     {
         [KeyAttribute]
         public Guid ViewId { get; set; }
-        public string LastVistedDate { get; set; }
+        public DateTimeOffset LastVistedDate { get; set; }
 
         public string userId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        public ICollection<Posts> Posts { get; set; }
+        public Guid postId { get; set; }
+        public virtual Posts Posts { get; set; }
     }
 }

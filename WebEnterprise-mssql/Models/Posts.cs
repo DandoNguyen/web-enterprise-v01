@@ -12,9 +12,10 @@ namespace WebEnterprise_mssql.Models
         public string title { get; set; }
         public string Desc { get; set; }
         public string content { get; set; }
+        public string username { get; set; }
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
-        public int ViewsCount { get; set; } 
+        //public List<string> ViewsCount { get; set; } 
 
         
         
@@ -29,9 +30,9 @@ namespace WebEnterprise_mssql.Models
         public Guid? SubmissionsId { get; set; }
         public virtual Submissions Submissions { get; set; }
 
-        public Guid? ViewsId { get; set; }
-        public virtual Views Views { get; set; }
-
+        
+        //Collection of foreign objects
+        public ICollection<Views> Views { get; set; }
         public ICollection<Comments> Comments { get; set; }
         public ICollection<FilesPath> filesPaths { get; set; }
     }

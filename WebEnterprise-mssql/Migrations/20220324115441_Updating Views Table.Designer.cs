@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebEnterprise_mssql.Data;
 
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220324115441_Updating Views Table")]
+    partial class UpdatingViewsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,9 +350,6 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("username")
                         .HasColumnType("TEXT");
 
                     b.HasKey("id");
