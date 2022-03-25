@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebEnterprise_mssql.Migrations
 {
-    public partial class UpdatingViewsTable : Migration
+    public partial class addingVoteTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -212,6 +212,7 @@ namespace WebEnterprise_mssql.Migrations
                     title = table.Column<string>(type: "TEXT", nullable: true),
                     Desc = table.Column<string>(type: "TEXT", nullable: true),
                     content = table.Column<string>(type: "TEXT", nullable: true),
+                    username = table.Column<string>(type: "TEXT", nullable: true),
                     createdDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
@@ -345,6 +346,27 @@ namespace WebEnterprise_mssql.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Votes",
+                columns: table => new
+                {
+                    voteId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    postId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Postsid = table.Column<Guid>(type: "TEXT", nullable: true),
+                    userUpvote = table.Column<string>(type: "TEXT", nullable: true),
+                    userDownVote = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Votes", x => x.voteId);
+                    table.ForeignKey(
+                        name: "FK_Votes_Posts_Postsid",
+                        column: x => x.Postsid,
+                        principalTable: "Posts",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -431,6 +453,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "IX_Views_Postsid",
                 table: "Views",
                 column: "Postsid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Votes_Postsid",
+                table: "Votes",
+                column: "Postsid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -461,6 +488,9 @@ namespace WebEnterprise_mssql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Views");
+
+            migrationBuilder.DropTable(
+                name: "Votes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

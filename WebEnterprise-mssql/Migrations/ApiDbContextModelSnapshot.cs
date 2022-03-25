@@ -451,6 +451,31 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("Views");
                 });
 
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Votes", b =>
+                {
+                    b.Property<Guid>("voteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("Postsid")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("postId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("userDownVote")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("userUpvote")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("voteId");
+
+                    b.HasIndex("Postsid");
+
+                    b.ToTable("Votes");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -576,6 +601,15 @@ namespace WebEnterprise_mssql.Migrations
                         .HasForeignKey("Postsid");
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Models.Votes", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                        .WithMany()
+                        .HasForeignKey("Postsid");
 
                     b.Navigation("Posts");
                 });

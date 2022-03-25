@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,6 +36,25 @@ namespace WebEnterprise_mssql.Controllers
         public async Task<IEnumerable<ApplicationUserDto>> GetAllUsersAsync() {
             var userList = await context.Users.ToListAsync();
             return mapper.Map<List<ApplicationUserDto>>(userList);
+        }
+
+        [HttpGet] //Convert list string id to list string username
+        [Route("usernameList")]
+        public async Task<List<string>> GetListUsername(List<string> userIdList) {
+            var newListUsername = new List<string>();
+            foreach (var userId in userIdList)
+            {
+                var user = await userManager.FindByIdAsync(userId);
+                newListUsername.Add(user.UserName);
+            }
+            return newListUsername;
+        }
+
+        [HttpGet] //convert string id to string username
+        [Route("GetUsername")]
+        public async Task<string> GetUsername(string userId) {
+            var user = await userManager.FindByIdAsync(userId);
+            return user.UserName;
         }
 
         [HttpGet("{email}")]
