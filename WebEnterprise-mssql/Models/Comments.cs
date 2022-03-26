@@ -9,8 +9,10 @@ namespace WebEnterprise_mssql.Models
         [KeyAttribute]
         public Guid CommentId { get; set; }
         public string Content { get; set; }
-        public string CreatedDate { get; set; }
-        public string LastModifiedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset LastModifiedDate { get; set; }
+        public bool IsChild { get; set; }
+        public Guid ParentId { get; set; }
 
         public string userId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }

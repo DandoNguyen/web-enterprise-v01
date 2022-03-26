@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebEnterprise_mssql.Data;
 
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220326152023_add local sql server")]
+    partial class addlocalsqlserver
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,17 +266,11 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<string>("CreatedDate")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsChild")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("LastModifiedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostId")
                         .HasColumnType("nvarchar(max)");

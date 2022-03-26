@@ -41,6 +41,7 @@ namespace WebEnterprise_mssql.Controllers
         public async Task<IActionResult> GetAllPostsAsync()
         {
             var posts = await context.Posts.ToListAsync();
+            //var posts = context.Views.FromSqlRaw("Execute test_post");
             var postsDto = mapper.Map<List<PostDto>>(posts);
             return Ok(postsDto);
         }
@@ -90,7 +91,7 @@ namespace WebEnterprise_mssql.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto postDto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> CreatePostAsync([FromHeader] CreatePostDto postDto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
 
             if (Authorization is null)
@@ -185,14 +186,14 @@ namespace WebEnterprise_mssql.Controllers
                     var newFilePathObj = new FilesPath();
                     if (formFile.Length > 0)
                     {
-                        var newRootPath = Path.Combine(rootPath, username);
+                        var newRootPath = Path.Combine(rootPath, username, postId.ToString());
                         if (!Directory.Exists(newRootPath))
                         {
                             Directory.CreateDirectory(newRootPath);
                         }
 
                         //Config final File Paths that has username and post ID as parents folders directory
-                        var finalFilePath = Path.Combine(newRootPath, postId.ToString(), MakeValidFileName(formFile.FileName));
+                        var finalFilePath = Path.Combine(newRootPath, /*MakeValidFileName(postId.ToString()),*/ MakeValidFileName(formFile.FileName));
 
                         newFilePathObj.PostId = postId;
                         newFilePathObj.filePath = finalFilePath;
@@ -215,6 +216,8 @@ namespace WebEnterprise_mssql.Controllers
         {
 
             var listFilePaths = await context.FilesPath.Where(x => x.PostId == postId).Select(x => x.filePath).ToListAsync();
+
+
             if (!listFilePaths.Count().Equals(0))
             {
                 return listFilePaths;

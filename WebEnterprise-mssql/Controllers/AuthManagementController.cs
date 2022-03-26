@@ -189,7 +189,7 @@ namespace WebEnterprise_mssql.Controllers
             return new AuthResult() {
                 Token = jwtToken,
                 Success = true,
-                RefreshToken = refreshToken.Token
+                //RefreshToken = refreshToken.Token
             };
         }
 

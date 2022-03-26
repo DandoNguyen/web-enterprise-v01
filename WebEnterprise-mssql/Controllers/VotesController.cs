@@ -15,15 +15,15 @@ using WebEnterprise_mssql.Models;
 namespace WebEnterprise_mssql.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")] // /api/votesandcomments
+    [Route("/api/[controller]")] // /api/vote
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles = "staff"*/)]
-    public class VotesAndCommentsController : ControllerBase
+    public class VotesController : ControllerBase
     {
 
         private readonly ApiDbContext context;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
-        public VotesAndCommentsController(
+        public VotesController(
             ApiDbContext context,
             UserManager<ApplicationUser> userManager,
             IMapper mapper
@@ -60,9 +60,7 @@ namespace WebEnterprise_mssql.Controllers
                         }
                         else if (downVoteList.Contains(voteBtnRequestDto.UserId))
                         {
-                            var voteId = vote.Where(x => x.userDownVote.Equals(voteBtnRequestDto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, voteBtnRequestDto.UserId, false);
-                            AddUpVote(Guid.Parse(voteBtnRequestDto.postId), voteBtnRequestDto.UserId);
+                            SwitchVoteTo(true, voteBtnRequestDto.postId, voteBtnRequestDto.UserId);
                         }
                         else
                         {
@@ -80,9 +78,7 @@ namespace WebEnterprise_mssql.Controllers
                         }
                         else if (upVoteList.Contains(voteBtnRequestDto.UserId))
                         {
-                            var voteId = vote.Where(x => x.userUpvote.Equals(voteBtnRequestDto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, voteBtnRequestDto.UserId, true);
-                            AddDownVote(Guid.Parse(voteBtnRequestDto.postId), voteBtnRequestDto.UserId);
+                            SwitchVoteTo(false, voteBtnRequestDto.postId, voteBtnRequestDto.UserId);
                         }
                         else
                         {
@@ -136,7 +132,7 @@ namespace WebEnterprise_mssql.Controllers
         //     return Ok(newVoteResponse);
         // }
 
-        public async void SwitchVoteTo(bool UpDown, string postId, string userId)
+        private async void SwitchVoteTo(bool UpDown, string postId, string userId)
         {
             var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
             switch (UpDown) //Up = true, Down = false

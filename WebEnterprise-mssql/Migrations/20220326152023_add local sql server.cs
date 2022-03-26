@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebEnterprise_mssql.Migrations
 {
-    public partial class addingVoteTable : Migration
+    public partial class addlocalsqlserver : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,10 +11,10 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -25,8 +25,8 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CategoryName = table.Column<string>(type: "TEXT", nullable: true)
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,8 +37,8 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    DepartmentId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DepartmentName = table.Column<string>(type: "TEXT", nullable: true)
+                    DepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DepartmentName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -49,11 +49,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Submissions",
                 columns: table => new
                 {
-                    SubmissionId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    SubmissionName = table.Column<string>(type: "TEXT", nullable: true),
-                    DescriptionSubmission = table.Column<string>(type: "TEXT", nullable: true),
-                    ClosureDate = table.Column<string>(type: "TEXT", nullable: true),
-                    FinalClosureDate = table.Column<string>(type: "TEXT", nullable: true)
+                    SubmissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SubmissionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DescriptionSubmission = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClosureDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FinalClosureDate = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,11 +64,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,28 +85,28 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
-                    DOB = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
-                    DepartmentId = table.Column<string>(type: "TEXT", nullable: true),
-                    DepartmentsDepartmentId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StaffId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DOB = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DepartmentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DepartmentsDepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,11 +123,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,10 +144,10 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -164,8 +164,8 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -188,10 +188,10 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -208,17 +208,17 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Posts",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    title = table.Column<string>(type: "TEXT", nullable: true),
-                    Desc = table.Column<string>(type: "TEXT", nullable: true),
-                    content = table.Column<string>(type: "TEXT", nullable: true),
-                    username = table.Column<string>(type: "TEXT", nullable: true),
-                    createdDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    LastModifiedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    CatogoriesId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    CategoriesCategoryId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    SubmissionsId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    username = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createdDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CatogoriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CategoriesCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SubmissionsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -247,15 +247,15 @@ namespace WebEnterprise_mssql.Migrations
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    Token = table.Column<string>(type: "TEXT", nullable: true),
-                    JwtId = table.Column<string>(type: "TEXT", nullable: true),
-                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AddedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    AddedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -272,14 +272,14 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Comments",
                 columns: table => new
                 {
-                    CommentId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Content = table.Column<string>(type: "TEXT", nullable: true),
-                    CreatedDate = table.Column<string>(type: "TEXT", nullable: true),
-                    LastModifiedDate = table.Column<string>(type: "TEXT", nullable: true),
-                    userId = table.Column<string>(type: "TEXT", nullable: true),
-                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
-                    PostId = table.Column<string>(type: "TEXT", nullable: true),
-                    Postsid = table.Column<Guid>(type: "TEXT", nullable: true)
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    userId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PostId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Postsid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -302,10 +302,10 @@ namespace WebEnterprise_mssql.Migrations
                 name: "FilesPath",
                 columns: table => new
                 {
-                    FilesPathID = table.Column<Guid>(type: "TEXT", nullable: false),
-                    filePath = table.Column<string>(type: "TEXT", nullable: true),
-                    PostId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Postsid = table.Column<Guid>(type: "TEXT", nullable: true)
+                    FilesPathID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    filePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Postsid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -322,12 +322,12 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Views",
                 columns: table => new
                 {
-                    ViewId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LastVistedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    userId = table.Column<string>(type: "TEXT", nullable: true),
-                    ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
-                    postId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Postsid = table.Column<Guid>(type: "TEXT", nullable: true)
+                    ViewId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LastVistedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    userId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    postId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Postsid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -350,11 +350,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "Votes",
                 columns: table => new
                 {
-                    voteId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    postId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Postsid = table.Column<Guid>(type: "TEXT", nullable: true),
-                    userUpvote = table.Column<string>(type: "TEXT", nullable: true),
-                    userDownVote = table.Column<string>(type: "TEXT", nullable: true)
+                    voteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    postId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Postsid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    userUpvote = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    userDownVote = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -376,7 +376,8 @@ namespace WebEnterprise_mssql.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -407,7 +408,8 @@ namespace WebEnterprise_mssql.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ApplicationUserId",
