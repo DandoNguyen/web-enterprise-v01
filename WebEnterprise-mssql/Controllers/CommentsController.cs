@@ -40,7 +40,7 @@ namespace WebEnterprise_mssql.Controllers
             var resultList = new List<ParentItemDto>();
             foreach (var parent in listParent)
             {
-                var newParent = await GetChildren(parent.CommentId.ToString());
+                var newParent = await GetChildrenToParent(parent.CommentId.ToString());
                 var user = await userManager.FindByIdAsync(parent.userId);
                 newParent.Username = user.UserName;
                 resultList.Add(newParent);
@@ -48,7 +48,7 @@ namespace WebEnterprise_mssql.Controllers
             return resultList;
         }
 
-        private async Task<ParentItemDto> GetChildren(string ParentId) {
+        private async Task<ParentItemDto> GetChildrenToParent(string ParentId) {
             var parent = await context.Comments
                 .Where(x => x.CommentId.Equals(Guid.Parse(ParentId)))
                 .FirstOrDefaultAsync();
@@ -69,15 +69,36 @@ namespace WebEnterprise_mssql.Controllers
             return parentDto;
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public async void DeleteComment(Guid id) {
+         [HttpDelete]
+        public async Task<IActionResult> DeleteBtnClick(DeleteCommentDto deleteCommentDto) {
+            var parent = await GetChildrenToParent(deleteCommentDto.commentId.ToString());
+
+            if (parent.childItems.Count().Equals(0))
+            {
+                DeleteComment(parent.CommentId);
+            } 
+            else
+            {
+                DeleteRangeComment(parent.CommentId);
+                DeleteComment(parent.CommentId);
+            }
+            
+            return RedirectToAction(nameof(GetAllComment), new {deleteCommentDto.PostId});
+        }
+
+        private async void DeleteRangeComment(Guid parentId) {
+            var childrenCommentArray = await context.Comments.Where(x => x.ParentId.Equals(parentId)).ToArrayAsync();
+            
+            context.Comments.RemoveRange(childrenCommentArray);
+        }
+        private async void DeleteComment(Guid commentId) {
             var existingComment = await context.Comments
-                .Where(x => x.CommentId == id)
+                .Where(x => x.CommentId == commentId)
                 .FirstOrDefaultAsync();
             context.Comments.Remove(existingComment);
             await context.SaveChangesAsync();
         }
+
 
         [HttpPut]
         public async void UpdateComment(CommentDto CommentDto) {
