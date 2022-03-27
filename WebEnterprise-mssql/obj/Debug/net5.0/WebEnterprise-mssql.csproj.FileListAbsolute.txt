@@ -301,3 +301,4 @@ D:\FPT\FGW\Web_Enterprise_Baohnp\WebEnterprise-mssql\obj\Debug\net5.0\WebEnterpr
 D:\FPT\FGW\Web_Enterprise_Baohnp\WebEnterprise-mssql\obj\Debug\net5.0\ref\WebEnterprise-mssql.dll
 D:\FPT\FGW\Web_Enterprise_Baohnp\WebEnterprise-mssql\obj\Debug\net5.0\WebEnterprise-mssql.pdb
 D:\FPT\FGW\Web_Enterprise_Baohnp\WebEnterprise-mssql\obj\Debug\net5.0\WebEnterprise-mssql.genruntimeconfig.cache
+C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\bin\Debug\net5.0\global.json

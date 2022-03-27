@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fi5iW1cyGW1/J0MgQoIHSa/7xXbxj/gzwWqxmnYa75mMIxzmeyXFVNJQM4DznNh9+Zw5HSb2dolSPfASjl8vAg==",
+  "dgSpecHash": "DCBNcFslAgam/8EhVesuqzdSJEx5ysI4dCMEtAcxYKVB4LiHeK9BgwRYGALTxuN08evPW29QMOXLtPZrsf71LA==",
   "success": true,
   "projectFilePath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
   "expectedPackageFiles": [
@@ -134,8 +134,7 @@
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
-    "C:\\Users\\USER\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.13\\microsoft.netcore.app.host.win-x64.5.0.13.nupkg.sha512"
+    "C:\\Users\\USER\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
   ],
   "logs": []
 }
