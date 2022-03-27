@@ -42,6 +42,7 @@
     color: #000;
     font-size: 30px;
     font-weight: bold;
+    border: rgba(255, 255, 255, 0.048);
 }
       
 .xbtn:hover, .xbtn:focus {
@@ -86,11 +87,17 @@
     border-radius: 3px;
 }
 
-.cancelBtn:hover , .SummitBtn:hover{
+.SubmitBtn:hover{
     background-color: var(--primary-color);
 }
 
-.cancelBtn:hover , .SummitBtn:hover{
+.SubmitBtn:hover{
+    color: var(--sidebar-color);
+}
+.cancelBtn:hover{
+    background-color: red;
+}
+.cancelBtn:hover{
     color: var(--sidebar-color);
 }
 

@@ -8,7 +8,8 @@ export default class Login extends React.Component{
         super(props)
         this.state={
             "email" : "",
-            "password" : ""
+            "password" : "",
+            isLogin: localStorage.getItem("accessToken") != null
         }
     }
     
@@ -18,7 +19,6 @@ export default class Login extends React.Component{
     }
 
     login = () => {
-            var myHeaders = new Headers();
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic TmFtQGdtYWlsLmNvbTpOQG0xMjM=");
             myHeaders.append("Content-Type", "application/json");
@@ -40,7 +40,7 @@ export default class Login extends React.Component{
         .then(response => {
             console.log(response)
             if (response.ok) {
-                return response.text()
+                return response.json()
             }
             throw Error(response.status)
         })
@@ -48,6 +48,8 @@ export default class Login extends React.Component{
             console.log(result)
             localStorage.setItem("accessToken", result.accessToken)
             alert("Thanh cong")
+            this.setState({ isLogin : true })
+            this.props.history.push("/Home");
         })
         .catch(error => { 
             console.log('error', error)
@@ -56,7 +58,7 @@ export default class Login extends React.Component{
     }
     render(){
         return <form className='loginpage'>
-            <div className="login">
+            <div className="login-form">
             <div className="title">Welcome</div>
             <div className="loginname"> 
                 <label className="username" >Email</label>

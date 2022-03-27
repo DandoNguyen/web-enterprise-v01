@@ -6663,19 +6663,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\hophu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+      "projectUniqueName": "C:\\Users\\hophu\\OneDrive\\Desktop\\lolDungAPI\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
       "projectName": "WebEnterprise-mssql",
-      "projectPath": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER\\Desktop\\dotnet5 Rest api\\webEnterprise-mssql\\WebEnterprise-mssql\\obj\\",
+      "projectPath": "C:\\Users\\hophu\\OneDrive\\Desktop\\lolDungAPI\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.csproj",
+      "packagesPath": "C:\\Users\\hophu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hophu\\OneDrive\\Desktop\\lolDungAPI\\web-enterprise-v01\\WebEnterprise-mssql\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hophu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

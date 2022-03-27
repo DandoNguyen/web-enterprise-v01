@@ -5,10 +5,7 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-.loginpage {
-    background-image: url("https://www.gre.ac.uk/__data/assets/image/0024/119652/gr-domes-lawn.jpg");
-}
-.login{
+.login-form{
     background-color: rgba(255, 255, 255, 0.815);
     width: 300px;
     border-radius: 5px;
