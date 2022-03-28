@@ -8,7 +8,7 @@ namespace WebEnterprise_mssql.Dtos
 {
     public record PostDto
     {
-        public Guid id { get; set; }
+        public Guid PostId { get; set; }
         [Required]
         public string title { get; set; }
         public string Desc { get; set; }

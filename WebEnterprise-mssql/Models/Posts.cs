@@ -8,7 +8,7 @@ namespace WebEnterprise_mssql.Models
     public record Posts
     {   
         [KeyAttribute]
-        public Guid id { get; set; }
+        public Guid PostId { get; set; }
         public string title { get; set; }
         public string Desc { get; set; }
         public string content { get; set; }

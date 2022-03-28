@@ -51,7 +51,8 @@ namespace WebEnterprise_mssql.Controllers
         public async Task<IActionResult> GetAllPostsFromUserIDAsync(getPostReqDto getPostReqDto)
         {
 
-            var posts = await context.Posts.Where(x => x.UserId == getPostReqDto.userId).ToListAsync();
+            // var posts = await context.Posts.Where(x => x.UserId == getPostReqDto.userId).ToListAsync();
+            var posts = await context.Posts.FromSqlRaw("Execute GetAllPostsFromUserIDAsync @UserId = {0}", getPostReqDto.userId).ToListAsync();
             var postsDto = mapper.Map<List<PostDto>>(posts);
 
             return Ok(postsDto);
@@ -77,14 +78,14 @@ namespace WebEnterprise_mssql.Controllers
             }
 
 
-            var post = await context.Posts.FirstOrDefaultAsync(x => x.id == getPostReqDto.postId);
+            var post = await context.Posts.FirstOrDefaultAsync(x => x.PostId == getPostReqDto.postId);
             if (post is null)
             {
                 return NotFound();
             }
             var getPost = mapper.Map<PostDto>(post);
-            getPost.ViewsCount = await CheckViewCount(user.UserName, post.id);
-            getPost.FilesPaths = await GetFilePaths(post.id);
+            getPost.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
+            getPost.FilesPaths = await GetFilePaths(post.PostId);
 
 
             return Ok(getPost);
@@ -103,51 +104,53 @@ namespace WebEnterprise_mssql.Controllers
             }
             var user = await DecodeToken(Authorization);
 
-            //Get the file path config
-            string rootPath = configuration["FileConfig:filePath"];
-            // string rootPath = Path.Combine("~", "App_Data");
-
             if (ModelState.IsValid)
             {
-                Posts newPost = new Posts();
-                newPost = mapper.Map<Posts>(postDto);
-                newPost.id = Guid.NewGuid();
+                var newPost = mapper.Map<Posts>(postDto);
+
+                newPost.PostId = Guid.NewGuid();
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
-                var newPostDto = mapper.Map<PostDto>(newPost);
 
                 await context.Posts.AddAsync(newPost);
                 await context.SaveChangesAsync();
-                newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.id);
-                return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.id }, newPostDto);
+
+                var newPostDto = mapper.Map<PostDto>(newPost);
+                newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
+
+                return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.PostId }, newPostDto);
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePostsAsync(Guid id, UpdatedPostDto updatedPostDto)
+        public async Task<IActionResult> UpdatePostsAsync(UpdatedPostDto updatedPostDto)
         {
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
+            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == updatedPostDto.postId);
             if (existingPost is null)
             {
                 return NotFound();
             }
 
+            //update new value to var existingPost
             mapper.Map(updatedPostDto, existingPost);
             existingPost.LastModifiedDate = DateTimeOffset.UtcNow;
 
             context.Posts.Update(existingPost);
-
-            //Better way to updating object is to use Automapper
             await context.SaveChangesAsync();
-            return NoContent();
+
+            var newPostDto = mapper.Map<PostDto>(existingPost);
+            newPostDto.FilesPaths = await UploadFiles(updatedPostDto.files, existingPost.username, existingPost.PostId);
+
+            return CreatedAtAction(nameof(GetPostByIDAsync), newPostDto);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePostAsync(Guid id)
+        [HttpDelete]
+        [Route("Deletepost")]
+        public async Task<IActionResult> DeletePostAsync([FromHeader] Guid id)
         {
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.id == id);
+            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
             if (existingPost is null)
             {
                 return NotFound();
@@ -155,7 +158,10 @@ namespace WebEnterprise_mssql.Controllers
             context.Posts.Remove(existingPost);
             await context.SaveChangesAsync();
 
-            return NoContent();
+            //Delete Files in directory
+            DeleteFiles(existingPost.PostId, existingPost.username);
+
+            return new JsonResult($"Post {id} had been deleted successfully!") { StatusCode = 200 };
         }
 
         //=================================================================================================================================
@@ -164,8 +170,62 @@ namespace WebEnterprise_mssql.Controllers
         //=================================================================================================================================
         //=================================================================================================================================
 
+        private async void DeleteFiles(Guid postId, string username)
+        {
+            string rootPath = configuration["FileConfig:filePath"];
+            var userRootPath = Path.Combine(rootPath, username, postId.ToString());
+            if (Directory.Exists(userRootPath))
+            {
+                while (!Directory.GetFiles(userRootPath).Count().Equals(0))
+                {
+                    var files = Directory.GetFiles(userRootPath);
+                    foreach (var fileItem in files)
+                    {
+                        System.IO.File.Delete(fileItem);
+                        var filePathsArray = await context.FilesPath
+                            .Where(x => x.PostId.Equals(postId.ToString()))
+                            .ToArrayAsync();
+                        context.FilesPath.RemoveRange(filePathsArray);
+                        await context.SaveChangesAsync();
+                        Console.WriteLine($"file {fileItem} deleted!");
+                    }
+                }
 
-        private async Task<List<string>> UploadFiles(List<IFormFile> files, string username, Guid postId)
+                var postRootPath = Path.Combine(rootPath, username);
+                if (!Directory.Exists(postRootPath))
+                {
+                    Console.WriteLine("can't get postRootPath");
+                }
+                else
+                {
+                    foreach (var path in Directory.GetDirectories(postRootPath))
+                    {
+                        if (path.Equals(userRootPath))
+                        {
+                            try
+                            {
+                                Console.WriteLine($"path : {path}");
+                                Directory.Delete(path);
+                            }
+                            catch (System.Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                Console.WriteLine("path doesn't exist!!!");
+            }
+        }
+        private async Task<List<string>> UploadFiles( //upload files to table FilePaths and return list of string of file paths
+            List<IFormFile> files,
+            string username,
+            Guid postId
+        )
         {
 
             string rootPath = configuration["FileConfig:filePath"];
@@ -174,8 +234,6 @@ namespace WebEnterprise_mssql.Controllers
             //Check if there is files or not
             if (!files.Count().Equals(0))
             {
-
-                //UploadFile(files, user.UserName, newPost.id, listOfPaths, newPostDto);
                 foreach (var formFile in files)
                 {
                     if (!IsValidFileType(formFile))
@@ -193,7 +251,7 @@ namespace WebEnterprise_mssql.Controllers
                         }
 
                         //Config final File Paths that has username and post ID as parents folders directory
-                        var finalFilePath = Path.Combine(newRootPath, /*MakeValidFileName(postId.ToString()),*/ MakeValidFileName(formFile.FileName));
+                        var finalFilePath = Path.Combine(newRootPath, MakeValidFileName(formFile.FileName));
 
                         newFilePathObj.PostId = postId;
                         newFilePathObj.filePath = finalFilePath;
@@ -245,7 +303,7 @@ namespace WebEnterprise_mssql.Controllers
             var user = await userManager.FindByNameAsync(username);
             var userID = user.Id.ToString();
 
-            var postAuthor = context.Posts.Where(x => x.id == postId).Select(x => x.username);
+            var postAuthor = context.Posts.Where(x => x.PostId == postId).Select(x => x.username);
             if (username.Equals(postAuthor))
             {
                 return listViewCount.Count();
