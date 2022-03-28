@@ -1,5 +1,6 @@
-import React from 'react';
+import React , { Fragment }  from 'react';
 import '../css/Login.css';
+import Home from './Home';
 
 
 
@@ -47,17 +48,20 @@ export default class Login extends React.Component{
         .then(result =>{ 
             console.log(result)
             localStorage.setItem("accessToken", result.accessToken)
-            alert("Thanh cong")
             this.setState({ isLogin : true })
-            this.props.history.push("/Home");
         })
         .catch(error => { 
             console.log('error', error)
             alert("Email,password are wrong")
     });;
     }
+    onLogoutSucces = () => {
+        this.setState({ isLogin : false })
+    }
     render(){
-        return <form className='loginpage'>
+        return <div>
+            {this.state.isLogin ? <Home key={this.state.isLogin} onLogoutSucces={this.onLogoutSucces} /> :
+        <form className='loginpage'>
             <div className="login-form">
             <div className="title">Welcome</div>
             <div className="loginname"> 
@@ -74,5 +78,7 @@ export default class Login extends React.Component{
             </div>
             </div>
         </form>
+            }
+        </div>
     }
 }

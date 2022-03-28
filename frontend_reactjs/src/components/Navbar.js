@@ -4,6 +4,10 @@ import '../css/Navbar.css';
 
 
 function Navbar() {
+   const logout =() =>{
+        localStorage.removeItem("accessToken")
+        alert("logout success")
+    }
   return (
         <div>
             <nav className="sidebar ">
@@ -83,7 +87,7 @@ function Navbar() {
                         <li className="">
                             <Link to="/">
                                 <i className='bx bx-log-out icon' ></i>
-                                <span className="text nav-text">Logout</span>
+                                <span className="text nav-text" onClick={logout}>Logout</span>
                             </Link>
                         </li>
                     </div>

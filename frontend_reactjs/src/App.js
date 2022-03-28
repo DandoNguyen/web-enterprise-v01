@@ -7,6 +7,7 @@ import Management from './components/Management';
 import UploadIdea from './components/UploadIdea';
 import './App.css';
 
+
 class App extends Component {
 render() {
 	return (
@@ -17,6 +18,7 @@ render() {
                 <Route exact path='/UploadIdea' element={< UploadIdea />}></Route>
                 <Route exact path='/Management' element={< Management/>}></Route>
 				<Route exact path='/about' element={< AboutUs />}></Route>
+				{/* <Route exact path='/Profile' element={< Profile />}></Route> */}
 				
 		</Routes>
 	</Router>
