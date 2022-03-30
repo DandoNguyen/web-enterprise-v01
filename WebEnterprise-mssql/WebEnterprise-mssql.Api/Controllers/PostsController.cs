@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using WebEnterprise_mssql.Api.Configuration;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -25,12 +26,19 @@ namespace WebEnterprise_mssql.Api.Controllers
     public class PostsController : ControllerBase
     {
         private readonly IConfiguration configuration;
+        private readonly IPostsRepository repo;
         private readonly ApiDbContext context;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
-        public PostsController(ApiDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public PostsController(
+            ApiDbContext context, 
+            IMapper mapper, 
+            UserManager<ApplicationUser> userManager, 
+            IConfiguration configuration, 
+            IPostsRepository repo)
         {
             this.configuration = configuration;
+            this.repo = repo;
             this.userManager = userManager;
             this.mapper = mapper;
             this.context = context;
@@ -40,8 +48,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("PostFeed")]
         public async Task<IActionResult> GetAllPostsAsync()
         {
-            var posts = await context.Posts.ToListAsync();
-            //var posts = context.Views.FromSqlRaw("Execute test_post");
+            var posts = await repo.GetAllPostsAsync();
             var postsDto = mapper.Map<List<PostDto>>(posts);
             return Ok(postsDto);
         }
@@ -50,9 +57,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("AllPost")]
         public async Task<IActionResult> GetAllPostsFromUserIDAsync(getPostReqDto getPostReqDto)
         {
-
-            // var posts = await context.Posts.Where(x => x.UserId == getPostReqDto.userId).ToListAsync();
-            var posts = await context.Posts.FromSqlRaw("Execute GetAllPostsFromUserIDAsync @UserId = {0}", getPostReqDto.userId).ToListAsync();
+            var posts = await repo.GetAllPostsFromUserIDAsync(getPostReqDto.userId);
             var postsDto = mapper.Map<List<PostDto>>(posts);
 
             return Ok(postsDto);
@@ -78,7 +83,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
 
-            var post = await context.Posts.FirstOrDefaultAsync(x => x.PostId == getPostReqDto.postId);
+            var post = await repo.GetPostByIDAsync(getPostReqDto.postId);
             if (post is null)
             {
                 return NotFound();

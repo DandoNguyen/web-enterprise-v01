@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "etfkQtAF+cThxZ1kHDvCPKKbKtcxd30HQlALFiCBZnFG9I+/3v0t5Zzh+efSU6UZkUOIgXnlz35fL6rHjQB6bQ==",
+  "dgSpecHash": "MGptcOLDcmzBFaS9SieS80s4cto2JNkzX7+c0tkvfe0VTMc5SQBaXtE9esGekRVzr9Jvm5KNCJoXl5MO4lDeXw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
+  "projectFilePath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.api\\WebEnterprise-mssql.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\USER\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",

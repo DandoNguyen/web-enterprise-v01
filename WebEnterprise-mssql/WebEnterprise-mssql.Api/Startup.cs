@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using WebEnterprise_mssql.Api.Configuration;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api
 {
@@ -54,6 +55,8 @@ namespace WebEnterprise_mssql.Api
                     Configuration.GetConnectionString("LocalConnection")
                 )
             );
+
+            services.AddTransient<IPostsRepository, PostsRepository>();
 
             var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
             

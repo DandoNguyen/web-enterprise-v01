@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.tests\\WebEnterprise-mssql.Tests.csproj": {}
+    "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Tests\\WebEnterprise-mssql.Tests.csproj": {}
   },
   "projects": {
     "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj": {
@@ -109,14 +109,14 @@
         }
       }
     },
-    "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.tests\\WebEnterprise-mssql.Tests.csproj": {
+    "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Tests\\WebEnterprise-mssql.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.tests\\WebEnterprise-mssql.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Tests\\WebEnterprise-mssql.Tests.csproj",
         "projectName": "WebEnterprise-mssql.Tests",
-        "projectPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.tests\\WebEnterprise-mssql.Tests.csproj",
+        "projectPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Tests\\WebEnterprise-mssql.Tests.csproj",
         "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.tests\\obj\\",
+        "outputPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
