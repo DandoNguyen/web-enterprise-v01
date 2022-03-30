@@ -118,8 +118,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
 
-                await context.Posts.AddAsync(newPost);
-                await context.SaveChangesAsync();
+                repo.CreatePostAsync(newPost);
 
                 var newPostDto = mapper.Map<PostDto>(newPost);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);

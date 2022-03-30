@@ -17,6 +17,11 @@ namespace WebEnterprise_mssql.Api.Repository
             this.context = context;
         }
 
+        public void CreatePostAsync(Posts post)
+        {
+            Create(post);
+        }
+
         public async Task<List<Posts>> GetAllPostsAsync()
         {
             var posts = await FindAll().ToListAsync();
@@ -35,6 +40,11 @@ namespace WebEnterprise_mssql.Api.Repository
             var post = await FindByCondition(x => x.PostId.Equals(postId))
                 .FirstOrDefaultAsync();
             return post;
+        }
+
+        public void UpdatePostsAsync(Posts post)
+        {
+            Update(post);
         }
     }
 }
