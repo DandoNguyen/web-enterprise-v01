@@ -23,5 +23,11 @@ namespace WebEnterprise_mssql.Api.Repository
         public void Create(T entity) => context.Set<T>().Add(entity);
         public void Update(T entity) => context.Set<T>().Update(entity);
         public void Delete(T entity) => context.Set<T>().Remove(entity);
+
+        public async void DeleteRange(IEnumerable<T> entities)
+        {
+            context.Set<T>().RemoveRange(entities);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -56,24 +56,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             };
             return userProfileDto;
         }
-        private async Task<ApplicationUser> DecodeToken(string Authorization)
-        {
-
-            string[] Collection = Authorization.Split(" ");
-
-            //Decode the token
-            var stream = Collection[1];
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(stream);
-            var tokenS = jsonToken as JwtSecurityToken;
-
-            //get the user
-            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
-            var user = await userManager.FindByEmailAsync(email);
-
-            //return the user
-            return user;
-        }
+        
         [HttpPost] 
         [Route("Register")]
         public async Task<IActionResult> RegisterAsync([FromBody] UsersRegistrationDto usersRegistrationDto) {
@@ -183,6 +166,25 @@ namespace WebEnterprise_mssql.Api.Controllers
                 },
                 Success = false
             });
+        }
+
+        private async Task<ApplicationUser> DecodeToken(string Authorization)
+        {
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var user = await userManager.FindByEmailAsync(email);
+
+            //return the user
+            return user;
         }
 
         private async Task<AuthResult> GenerateJwtToken(ApplicationUser user) {

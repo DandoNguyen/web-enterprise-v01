@@ -10,16 +10,18 @@ namespace WebEnterprise_mssql.Api.Repository
 {
     public class PostsRepository : Repository<Posts>, IPostsRepository
     {
-        private readonly ApiDbContext context;
-
         public PostsRepository(ApiDbContext context) : base(context)
         {
-            this.context = context;
         }
 
         public void CreatePostAsync(Posts post)
         {
             Create(post);
+        }
+
+        public void DeletePostAsync(Posts post)
+        {
+            Delete(post);
         }
 
         public async Task<List<Posts>> GetAllPostsAsync()
@@ -33,6 +35,21 @@ namespace WebEnterprise_mssql.Api.Repository
             var posts = await FindByCondition(x => x.UserId.Equals(userId))
                 .ToListAsync();
             return posts;
+        }
+
+        public async Task<Posts> GetPostAsync(string postId)
+        {
+            var post = await FindByCondition(x => x.PostId.Equals(postId))
+                .FirstOrDefaultAsync();
+            return post;
+        }
+
+        public async Task<string> GetPostAuthorAsync(string postId)
+        {
+            var author = await FindByCondition(x => x.PostId.Equals(postId))
+                .Select(x => x.username)
+                .FirstOrDefaultAsync();
+            return author;
         }
 
         public async Task<Posts> GetPostByIDAsync(Guid postId)

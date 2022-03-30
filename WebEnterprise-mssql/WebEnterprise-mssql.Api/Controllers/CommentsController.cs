@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -17,26 +18,30 @@ namespace WebEnterprise_mssql.Api.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly IMapper mapper;
-        private readonly ApiDbContext context;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IRepositoryWrapper repo;
+
         public CommentsController(
             IMapper mapper, 
-            ApiDbContext context,
-            UserManager<ApplicationUser> userManager
+            UserManager<ApplicationUser> userManager,
+            IRepositoryWrapper repo
         )
         {
             this.userManager = userManager;
+            this.repo = repo;
             this.mapper = mapper;
-            this.context = context;
         }
 
         [HttpGet]
         [Route("AllComments")]
         public async Task<List<ParentItemDto>> GetAllComment(string PostId) {
-            var listParent = await context.Comments
-                .Where(x => x.PostId.Equals(PostId))
-                .Where(x => x.IsChild.Equals(false))
-                .ToListAsync();
+
+            // var listParent = await context.Comments
+            //     .Where(x => x.PostId.Equals(PostId))
+            //     .Where(x => x.IsChild.Equals(false))
+            //     .ToListAsync();
+            var listParent = await repo.Comments.GetListParentAsync(PostId);
+
             var resultList = new List<ParentItemDto>();
             foreach (var parent in listParent)
             {
@@ -49,14 +54,18 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         private async Task<ParentItemDto> GetChildrenToParent(string ParentId) {
+
             var parent = await context.Comments
                 .Where(x => x.CommentId.Equals(Guid.Parse(ParentId)))
                 .FirstOrDefaultAsync();
+
             var parentDto = mapper.Map<ParentItemDto>(parent);
+
             var ListChildren = await context.Comments
                 .Where(x => x.IsChild.Equals(true))
                 .Where(x => x.ParentId.Equals(Guid.Parse(ParentId)))
                 .ToListAsync();
+                
             var newListChildren = new List<ChildItemDto>();
             foreach (var child in ListChildren)
             {

@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
 using System.Collections.Generic;
 using WebEnterprise_mssql.Api.Dtos;
@@ -26,29 +24,26 @@ namespace WebEnterprise_mssql.Api.Controllers
     public class PostsController : ControllerBase
     {
         private readonly IConfiguration configuration;
-        private readonly IPostsRepository repo;
-        private readonly ApiDbContext context;
+        private readonly IRepositoryWrapper repo;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
-        public PostsController(
-            ApiDbContext context, 
+        public PostsController( 
             IMapper mapper, 
             UserManager<ApplicationUser> userManager, 
             IConfiguration configuration, 
-            IPostsRepository repo)
+            IRepositoryWrapper repo)
         {
             this.configuration = configuration;
             this.repo = repo;
             this.userManager = userManager;
             this.mapper = mapper;
-            this.context = context;
         }
 
         [HttpGet]
         [Route("PostFeed")]
         public async Task<IActionResult> GetAllPostsAsync()
         {
-            var posts = await repo.GetAllPostsAsync();
+            var posts = await repo.Post.GetAllPostsAsync();
             var postsDto = mapper.Map<List<PostDto>>(posts);
             return Ok(postsDto);
         }
@@ -57,7 +52,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("AllPost")]
         public async Task<IActionResult> GetAllPostsFromUserIDAsync(getPostReqDto getPostReqDto)
         {
-            var posts = await repo.GetAllPostsFromUserIDAsync(getPostReqDto.userId);
+            var posts = await repo.Post.GetAllPostsFromUserIDAsync(getPostReqDto.userId);
             var postsDto = mapper.Map<List<PostDto>>(posts);
 
             return Ok(postsDto);
@@ -83,7 +78,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
 
-            var post = await repo.GetPostByIDAsync(getPostReqDto.postId);
+            var post = await repo.Post.GetPostByIDAsync(getPostReqDto.postId);
             if (post is null)
             {
                 return NotFound();
@@ -118,7 +113,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
 
-                repo.CreatePostAsync(newPost);
+                repo.Post.CreatePostAsync(newPost);
+                repo.Save();
 
                 var newPostDto = mapper.Map<PostDto>(newPost);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
@@ -131,7 +127,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePostsAsync(UpdatedPostDto updatedPostDto)
         {
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == updatedPostDto.postId);
+            // var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == updatedPostDto.postId);
+            var existingPost = await repo.Post.GetPostAsync(updatedPostDto.postId.ToString());
             if (existingPost is null)
             {
                 return NotFound();
@@ -141,8 +138,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             mapper.Map(updatedPostDto, existingPost);
             existingPost.LastModifiedDate = DateTimeOffset.UtcNow;
 
-            context.Posts.Update(existingPost);
-            await context.SaveChangesAsync();
+            // context.Posts.Update(existingPost);
+            // await context.SaveChangesAsync();
+            repo.Post.Update(existingPost);
+            repo.Save();
 
             var newPostDto = mapper.Map<PostDto>(existingPost);
             newPostDto.FilesPaths = await UploadFiles(updatedPostDto.files, existingPost.username, existingPost.PostId);
@@ -152,20 +151,21 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpDelete]
         [Route("Deletepost")]
-        public async Task<IActionResult> DeletePostAsync([FromHeader] Guid id)
+        public async Task<IActionResult> DeletePostAsync([FromHeader] Guid postId)
         {
-            var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
+            // var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
+            var existingPost = await repo.Post.GetPostByIDAsync(postId);
             if (existingPost is null)
             {
                 return NotFound();
             }
-            context.Posts.Remove(existingPost);
-            await context.SaveChangesAsync();
+            repo.Post.DeletePostAsync(existingPost);
+            repo.Save();
 
             //Delete Files in directory
             DeleteFiles(existingPost.PostId, existingPost.username);
 
-            return new JsonResult($"Post {id} had been deleted successfully!") { StatusCode = 200 };
+            return new JsonResult($"Post {postId} had been deleted successfully!") { StatusCode = 200 };
         }
 
         //=================================================================================================================================
@@ -186,11 +186,11 @@ namespace WebEnterprise_mssql.Api.Controllers
                     foreach (var fileItem in files)
                     {
                         System.IO.File.Delete(fileItem);
-                        var filePathsArray = await context.FilesPath
-                            .Where(x => x.PostId.Equals(postId.ToString()))
-                            .ToArrayAsync();
-                        context.FilesPath.RemoveRange(filePathsArray);
-                        await context.SaveChangesAsync();
+
+                        var filePathsArray = await repo.FilesPath.GetListObj(postId.ToString());
+                        repo.FilesPath.RemoveListOfFilesPaths(filePathsArray);
+                        repo.Save();
+
                         Console.WriteLine($"file {fileItem} deleted!");
                     }
                 }
@@ -259,8 +259,9 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                         newFilePathObj.PostId = postId;
                         newFilePathObj.filePath = finalFilePath;
-                        context.FilesPath.Add(newFilePathObj);
-                        await context.SaveChangesAsync();
+
+                        repo.FilesPath.Create(newFilePathObj);
+                        repo.Save();
 
                         listOfPaths.Add(finalFilePath);
 
@@ -277,9 +278,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task<List<string>> GetFilePaths(Guid postId)
         {
 
-            var listFilePaths = await context.FilesPath.Where(x => x.PostId == postId).Select(x => x.filePath).ToListAsync();
-
-
+            var listFilePaths = await repo.FilesPath.GetListStringFilesPath(postId.ToString());
+            
             if (!listFilePaths.Count().Equals(0))
             {
                 return listFilePaths;
@@ -301,13 +301,13 @@ namespace WebEnterprise_mssql.Api.Controllers
             // }
 
             //check if user existed in view count of post
-            var listViewCount = await context.Views.Where(x => x.postId == postId).Select(x => x.userId).ToListAsync();
+            var listViewCount = await repo.Views.GetListUserIdString(postId);
 
             //get userID
             var user = await userManager.FindByNameAsync(username);
             var userID = user.Id.ToString();
 
-            var postAuthor = context.Posts.Where(x => x.PostId == postId).Select(x => x.username);
+            var postAuthor = await repo.Post.GetPostAuthorAsync(postId.ToString());
             if (username.Equals(postAuthor))
             {
                 return listViewCount.Count();
@@ -326,8 +326,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                         userId = userID,
                         postId = postId
                     };
-                    await context.Views.AddAsync(newView);
-                    await context.SaveChangesAsync();
+                    
+                    repo.Views.Create(newView);
+                    repo.Save();
                 }
                 else
                 {
@@ -345,14 +346,14 @@ namespace WebEnterprise_mssql.Api.Controllers
                             userId = userID,
                             postId = postId
                         };
-                        await context.Views.AddAsync(newView);
-                        await context.SaveChangesAsync();
+                        repo.Views.Create(newView);
+                        repo.Save();
                     }
                 }
             }
 
 
-            await context.SaveChangesAsync();
+            repo.Save();
             return listViewCount.Count();
         }
 

@@ -14,12 +14,10 @@ namespace WebEnterprise_mssql.Api.Controllers
     public class RolesController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly ApiDbContext context;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<RolesController> logger;
-        public RolesController(ApiDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<RolesController> logger)
+        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<RolesController> logger)
         {
-            this.context = context;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.logger = logger;

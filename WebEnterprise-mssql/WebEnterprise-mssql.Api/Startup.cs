@@ -57,6 +57,8 @@ namespace WebEnterprise_mssql.Api
             );
 
             services.AddTransient<IPostsRepository, PostsRepository>();
+            services.AddTransient<IFilesPathRepository, FilesPathRepository>();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
             var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
             
