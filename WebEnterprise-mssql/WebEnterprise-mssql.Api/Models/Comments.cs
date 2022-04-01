@@ -11,6 +11,7 @@ namespace WebEnterprise_mssql.Api.Models
         public string Content { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
+        [Required]
         public bool IsChild { get; set; }
         public Guid ParentId { get; set; }
 
