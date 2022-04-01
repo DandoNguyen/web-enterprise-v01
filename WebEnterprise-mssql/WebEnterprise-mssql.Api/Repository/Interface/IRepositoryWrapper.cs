@@ -6,6 +6,7 @@ namespace WebEnterprise_mssql.Api.Repository
         IFilesPathRepository FilesPath { get; }
         IViewsRepository Views { get; }
         ICommentsRepository Comments { get; }
+        IVoteRepository Vote { get; }
         void Save();
     }
 }

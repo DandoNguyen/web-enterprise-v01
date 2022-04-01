@@ -6663,26 +6663,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\ASUS\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.api\\WebEnterprise-mssql.Api.csproj",
+      "projectUniqueName": "F:\\web\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
       "projectName": "WebEnterprise-mssql.Api",
-      "projectPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.api\\WebEnterprise-mssql.Api.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\webenterprise-mssql.api\\obj\\",
+      "projectPath": "F:\\web\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
+      "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+      "outputPath": "F:\\web\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

@@ -9,6 +9,7 @@ namespace WebEnterprise_mssql.Api.Repository
         private IFilesPathRepository _filesPath;
         private IViewsRepository _view;
         private ICommentsRepository _comment;
+        private IVoteRepository _Vote;
         public IPostsRepository Post
         {
             get
@@ -53,6 +54,17 @@ namespace WebEnterprise_mssql.Api.Repository
                     _comment = new CommentsRepository(context);
                 }
                 return _comment;
+            }
+        }
+
+        public IVoteRepository Vote {
+            get
+            {
+                if (_Vote is null)
+                {
+                    _Vote = new VoteRepository(context);
+                }
+                return _Vote;
             }
         }
 

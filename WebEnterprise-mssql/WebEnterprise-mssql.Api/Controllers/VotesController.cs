@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -20,18 +21,22 @@ namespace WebEnterprise_mssql.Api.Controllers
     public class VotesController : ControllerBase
     {
 
-        private readonly ApiDbContext context;
+        
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper mapper;
+        private readonly IRepositoryWrapper repo;
+
         public VotesController(
             ApiDbContext context,
             UserManager<ApplicationUser> userManager,
-            IMapper mapper
+            IMapper mapper,
+            IRepositoryWrapper repo
         )
         {
             this.mapper = mapper;
             this.userManager = userManager;
-            this.context = context;
+            this.repo = repo;
+            
         }
 
         [HttpGet]
@@ -46,7 +51,9 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("voteBtnClick")]
         public async Task<IActionResult> VoteBtnClick(VoteBtnRequestDto voteBtnRequestDto)
         {
-            var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
+            var vote = await repo.Vote.GetlistVoteAsync(Guid.Parse(voteBtnRequestDto.postId));
+
             var upVoteList = vote.Select(x => x.userUpvote).ToList();
             var downVoteList = vote.Select(x => x.userDownVote).ToList();
             switch (voteBtnRequestDto.VoteInput)
@@ -93,7 +100,9 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         private async Task<VoteDto> GetVote(Guid postId)
         {
-            var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            var vote = await repo.Vote.GetlistVoteAsync(postId);
+
             var voteDto = new VoteDto() {
                 UpvoteCount = vote.Select(x => x.userUpvote).Count(),
                 DownVoteCount = vote.Select(x => x.userDownVote).Count(),
@@ -134,7 +143,9 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         private async void SwitchVoteTo(bool UpDown, string postId, string userId)
         {
-            var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            var vote = await repo.Vote.GetlistVoteAsync(Guid.Parse(postId));
+
             switch (UpDown) //Up = true, Down = false
             {
                 case true:
@@ -152,44 +163,62 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
         private async void removeVotes(Guid voteId, string userId, bool UpDown)
         {
-            var vote = await context.Votes.Where(x => x.voteId.Equals(voteId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.voteId.Equals(voteId)).ToListAsync();
+            var vote = await repo.Vote. GetListVoteByVoteId(voteId);
+            
             switch (UpDown)
             {
                 case true: {
                     var upVote = vote.Where(x => x.userUpvote == userId).FirstOrDefault();
-                    context.Votes.Remove(upVote);
+
+                    //context.Votes.Remove(upVote);
+                    repo.Vote.Delete(upVote);
+
                     break;
                 }
                 case false: {
                     var downVote = vote.Where(x => x.userDownVote == userId).FirstOrDefault();
-                    context.Votes.Remove(downVote);
+
+                    //context.Votes.Remove(downVote);
+                    repo.Vote.Delete(downVote);
+
                     break;
                 }
             }
-            await context.SaveChangesAsync();
+            repo.Save();
         }
         private async void AddUpVote(Guid postId, string userId)
         {
-            var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            var vote = await repo.Vote.GetlistVoteAsync(postId);
+
             var upVote = vote.Select(x => x.userUpvote).ToList();
             var newUpVote = new Votes() {
                     postId = postId,
                     userDownVote = userId
                 };
-            context.Votes.Add(newUpVote);
-            await context.SaveChangesAsync();
+
+            //context.Votes.Add(newUpVote);
+            repo.Vote.Create(newUpVote);
+
+            repo.Save();
         }
 
         private async void AddDownVote(Guid postId, string userId)
         {
-            var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
+            var vote = await repo.Vote.GetlistVoteAsync(postId);
+
             var downVote = vote.Select(x => x.userDownVote).ToList();
             var newDownVote = new Votes() {
                     postId = postId,
                     userDownVote = userId
                 };
-            context.Votes.Add(newDownVote);
-            await context.SaveChangesAsync();
+
+            //context.Votes.Add(newDownVote);
+            repo.Vote.Create(newDownVote);
+
+            repo.Save();
         }
     }
 }

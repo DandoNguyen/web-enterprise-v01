@@ -14,10 +14,40 @@ namespace WebEnterprise_mssql.Api.Repository
         {
         }
 
+
+        public void DeleteListChildren(List<Comments> ListChildren)
+        {
+            DeleteRange(ListChildren);
+        }
+
+        
+
+        public async Task<Comments> GetComments(Guid commentId)
+        {
+            var GetComments = await FindByCondition(x => x.CommentId.Equals(commentId)).FirstOrDefaultAsync();
+            return GetComments;
+        }
+
+    
+
+        public async Task<List<Comments>> GetListChildrenByParentIdAsync(Guid parentId)
+        {
+            var GetListChildrent = await FindByCondition(x => x.ParentId.Equals(parentId)).ToListAsync();
+            return GetListChildrent;
+        }
+
         public async Task<List<Comments>> GetListParentAsync(string PostId)
         {
             var listParent = await FindByCondition(x => x.PostId.Equals(PostId)).ToListAsync();
             return listParent;
         }
+
+        public async Task<Comments> GetParentByCommentIdAsync(string commentId)
+        {
+            var parent = await FindByCondition(x => x.CommentId.Equals(Guid.Parse(commentId))).FirstOrDefaultAsync();
+            return parent;
+        }
+
+        
     }
 }
