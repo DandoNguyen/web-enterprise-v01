@@ -1,11 +1,14 @@
 import React from 'react';
 import '../css/Home.css';
+import Navbar from './Navbar';
 
 
 function Home (){
 	return <div>
+        <Navbar/>
     <section className="home">
-    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'/>
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'/>
+
     <div className="text">HOME PAGE</div>
     <div className="posts">
         <div className="header_posts">
@@ -18,24 +21,24 @@ function Home (){
             </div>
             <a href="#" className="title-posts">List groups are a flexible and powerful component for displaying a series of content. Modify and extend them to support just about any content within.</a>
         </div>
-        <div className="icons">
-            <a href="#">
+        <div className="icons posts-icon">
+            <button className='btldc'>
                 <i className='bx bx-upvote'>
                     <span className='like'>12.5k</span>
                 </i>
-            </a>
-            <a href="#">
+            </button>
+            <button className='btldc'>
                 <i className='bx bx-downvote' >
                 <span className='dislike'>12.5k</span>
                 </i>
-            </a>
-            <a href="#">
+            </button>
+            <button className='btldc'>
                 <i className='bx bx-comment'>
                 <span className='cmt'>12.5k</span>
                 </i>
-            </a>
+            </button>
             <span>
-                <i class='bx bx-show-alt'>
+                <i className='bx bx-show-alt'>
                 <span className='view'>12.5k</span>
                 </i>
             </span>
@@ -52,24 +55,24 @@ function Home (){
             </div>
             <a href="#" className="title-posts">List groups are a flexible and powerful component for displaying a series of content. Modify and extend them to support just about any content within.</a>
         </div>
-        <div className="icons">
-            <a href="#">
+        <div className="icons posts-icon">
+            <button className='btldc'>
                 <i className='bx bx-upvote'>
                     <span className='like'>12.5k</span>
                 </i>
-            </a>
-            <a href="#">
+            </button>
+            <button className='btldc'>
                 <i className='bx bx-downvote' >
                 <span className='dislike'>12.5k</span>
                 </i>
-            </a>
-            <a href="#">
+            </button>
+            <button className='btldc'>
                 <i className='bx bx-comment'>
                 <span className='cmt'>12.5k</span>
                 </i>
-            </a>
+            </button>
             <span>
-                <i class='bx bx-show-alt'>
+                <i className='bx bx-show-alt'>
                 <span className='view'>12.5k</span>
                 </i>
             </span>

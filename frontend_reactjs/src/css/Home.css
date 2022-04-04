@@ -43,32 +43,45 @@
     margin-left: 30px;
     font-size: 13px;
 }
+.btldc{
+    border: rgba(252, 252, 252, 0);
+    background-color: rgba(255, 255, 255, 0);
+}
+.posts-icon{
+    margin-left: 85px;
+}
 .bx-upvote{
-    margin-left: 150px;
+    margin-left: 40px;
     font-size: 20px;
-    min-width: 60px;
-    border-radius: 6px;
+    min-width: 80px;
+    border-radius: 3px;
     height: 100%;
     align-items: center;
     justify-content: center;
+    color: rgba(74, 83, 83, 0.808);
+    transition: var(--tran-03);
 }
 .bx-downvote{
-    margin-left: 40px;
+    margin-left: 20px;
     font-size: 20px;
-    min-width: 60px;
-    border-radius: 6px;
+    min-width: 80px;
+    border-radius: 3px;
     height: 100%;
     align-items: center;
     justify-content: center;
+    color: rgba(74, 83, 83, 0.808);
+    transition: var(--tran-03);
 }
 .bx-comment{
-    margin-left: 40px;
+    margin-left: 20px;
     font-size: 20px;
-    min-width: 60px;
-    border-radius: 6px;
+    min-width: 80px;
+    border-radius: 3px;
     height: 100%;
     align-items: center;
     justify-content: center;
+    color: rgba(74, 83, 83, 0.808);
+    transition: var(--tran-03);
 }
 .bx-show-alt{
     margin-left: 40px;
@@ -94,4 +107,11 @@
 .view{
     margin-left: 5px;
     font-size: 15px;
+}
+.bx-upvote:hover , .bx-downvote:hover , .bx-comment:hover  {
+    background-color: var(--primary-color);
+}
+
+.bx-upvote:hover , .bx-downvote:hover , .bx-comment:hover  {
+    color: var(--sidebar-color);
 }

@@ -28,8 +28,9 @@ table {
     padding: 8px;
   }
 .tableuser{
-    background-color: #ffffff;
-    border-left: 10px;
+    background-color: rgb(250, 250, 250);
+ 
+    
 }
 .manage-header{
     display: flex;

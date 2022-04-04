@@ -35,12 +35,25 @@
     transition: var(--tran-03);
     border-radius: 3px;
 }
+.CancelIdea{
+    height: 50px;
+    width: 100px;
+    margin: 12px;
+    transition: var(--tran-03);
+    border-radius: 3px;
+}
 
 .SubmitIdea:hover{
     background-color: var(--primary-color);
 }
 
 .SubmitIdea:hover{
+    color: var(--sidebar-color);
+}
+.CancelIdea:hover{
+    background-color: red;
+}
+.CancelIdea:hover{
     color: var(--sidebar-color);
 }
 .IdeaTile{
