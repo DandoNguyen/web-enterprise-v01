@@ -60,7 +60,9 @@ namespace WebEnterprise_mssql.Api
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
-            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+            // var secret = "GRdn5Am12XF9EPfU2d06xazg1LXQ3GdS";
+            var secret = Configuration["JwtConfig:Secret"];
+            var key = Encoding.ASCII.GetBytes(secret);
             
             var TokenValidationParams = new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,

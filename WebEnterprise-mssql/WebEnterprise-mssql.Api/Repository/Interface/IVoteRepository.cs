@@ -10,9 +10,6 @@ namespace WebEnterprise_mssql.Api.Repository
     {
         Task<List<Votes>> GetlistVoteAsync(Guid postId);
         Task<List<Votes>> GetListVoteByVoteId(Guid voteId);
-
-        
-        
     }
 
 }

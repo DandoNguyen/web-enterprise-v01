@@ -46,9 +46,9 @@ namespace WebEnterprise_mssql.Api.Controllers
             this.tokenValidationParams = tokenValidationParams;
         }
 
-        [HttpGet("{token}")]
+        [HttpGet]
         [Route("GetUser")]
-        public async Task<UserProfileResponseDto> GetUserProfileAsync(string token) {
+        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string token) {
             var user = await DecodeToken(token);
             var userProfileDto = new UserProfileResponseDto() {
                 username = user.UserName,

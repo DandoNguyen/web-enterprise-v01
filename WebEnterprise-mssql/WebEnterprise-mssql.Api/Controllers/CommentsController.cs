@@ -150,16 +150,15 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddComment(CommentDto CommentDto)
+        public IActionResult AddComment(CommentDto CommentDto)
         {
             var newComment = mapper.Map<Comments>(CommentDto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
 
-           // await context.Comments.AddAsync(newComment);
-             repo.Comments.Create(newComment);
+            // await context.Comments.AddAsync(newComment);
+            repo.Comments.Create(newComment);
 
-             repo.Save();
-
+            repo.Save();
             return RedirectToAction(nameof(GetAllComment), new { CommentDto.PostId });
         }
     }
