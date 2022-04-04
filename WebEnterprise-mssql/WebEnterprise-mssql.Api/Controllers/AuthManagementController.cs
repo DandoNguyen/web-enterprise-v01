@@ -48,18 +48,20 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetUser")]
-        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string token) {
-            var user = await DecodeToken(token);
+        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization) {
+            var user = await DecodeToken(Authorization);
             var userProfileDto = new UserProfileResponseDto();
             if (user is not null)
             {
                 userProfileDto.username = user.UserName;
                 userProfileDto.email = user.Email;
+                userProfileDto.message = "Token Verified";
             } else
             {
                 return new UserProfileResponseDto() {
                     username = null,
-                    email = null
+                    email = null,
+                    message = "Cannot get JWT Token!!!"
                 };
             }
             return userProfileDto;
