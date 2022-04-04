@@ -50,10 +50,18 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("GetUser")]
         public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string token) {
             var user = await DecodeToken(token);
-            var userProfileDto = new UserProfileResponseDto() {
-                username = user.UserName,
-                email = user.Email
-            };
+            var userProfileDto = new UserProfileResponseDto();
+            if (user is not null)
+            {
+                userProfileDto.username = user.UserName;
+                userProfileDto.email = user.Email;
+            } else
+            {
+                return new UserProfileResponseDto() {
+                    username = null,
+                    email = null
+                };
+            }
             return userProfileDto;
         }
         
@@ -170,6 +178,10 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         private async Task<ApplicationUser> DecodeToken(string Authorization)
         {
+            if (Authorization is null)
+            {
+                return null;
+            }
 
             string[] Collection = Authorization.Split(" ");
 
