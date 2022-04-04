@@ -6663,19 +6663,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\hophu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
+      "projectUniqueName": "C:\\Users\\hophu\\OneDrive\\Desktop\\WEB-V5\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
       "projectName": "WebEnterprise-mssql.Api",
-      "projectPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER\\Desktop\\new git clone\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\obj\\",
+      "projectPath": "C:\\Users\\hophu\\OneDrive\\Desktop\\WEB-V5\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\WebEnterprise-mssql.Api.csproj",
+      "packagesPath": "C:\\Users\\hophu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hophu\\OneDrive\\Desktop\\WEB-V5\\web-enterprise-v01\\WebEnterprise-mssql\\WebEnterprise-mssql.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hophu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
