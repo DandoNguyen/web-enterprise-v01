@@ -7,6 +7,8 @@ namespace WebEnterprise_mssql.Api.Repository
         IViewsRepository Views { get; }
         ICommentsRepository Comments { get; }
         IVoteRepository Vote { get; }
+        IDepartmentRepository Departments { get; }
+        IUserRepository User { get; }
         void Save();
     }
 }

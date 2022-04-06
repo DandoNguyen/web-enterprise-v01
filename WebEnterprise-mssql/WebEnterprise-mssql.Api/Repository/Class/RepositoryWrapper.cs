@@ -10,6 +10,10 @@ namespace WebEnterprise_mssql.Api.Repository
         private IViewsRepository _view;
         private ICommentsRepository _comment;
         private IVoteRepository _Vote;
+        private IDepartmentRepository _Department;
+        private IUserRepository _User;
+
+        //===================================================
         public IPostsRepository Post
         {
             get
@@ -65,6 +69,28 @@ namespace WebEnterprise_mssql.Api.Repository
                     _Vote = new VoteRepository(context);
                 }
                 return _Vote;
+            }
+        }
+
+        public IDepartmentRepository Departments {
+            get
+            {
+                if (_Department is null)
+                {
+                    _Department = new DepartmentRepository(context);
+                }
+                return _Department;
+            }
+        }
+
+        public IUserRepository User {
+            get
+            {
+                if (_User is null)
+                {
+                    _User = new UserRepository(context);
+                }
+                return _User;
             }
         }
 
