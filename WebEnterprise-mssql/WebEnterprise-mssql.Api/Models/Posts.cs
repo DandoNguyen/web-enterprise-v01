@@ -13,6 +13,14 @@ namespace WebEnterprise_mssql.Api.Models
         public string Desc { get; set; }
         public string content { get; set; }
         public string username { get; set; }
+        public bool isAnonymous { get; set; }
+        
+        //QAC Section
+        public bool IsApproved { get; set; }
+        public string feedback { get; set; }
+        public bool IsAssigned { get; set; }
+        public string QACUserId { get; set; }
+        
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         //public List<string> ViewsCount { get; set; } 
@@ -24,14 +32,15 @@ namespace WebEnterprise_mssql.Api.Models
         [InverseProperty("Posts")]
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        public Guid? CatogoriesId { get; set; }
-        public virtual Categories Categories { get; set; }
+        // public Guid? CatogoriesId { get; set; }
+        // public virtual Categories Categories { get; set; }
 
         public Guid? SubmissionsId { get; set; }
         public virtual Submissions Submissions { get; set; }
 
         
         //Collection of foreign objects
+        public virtual ICollection<Categories> Categories { get; set; }
         public ICollection<Views> Views { get; set; }
         public ICollection<Comments> Comments { get; set; }
         public ICollection<FilesPath> filesPaths { get; set; }

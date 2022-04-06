@@ -16,6 +16,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string content { get; set; }
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
+        public bool isAnonymous { get; set; }
         public int ViewsCount { get; set; } 
         public string UserId { get; set; }
         public string username { get; set; }

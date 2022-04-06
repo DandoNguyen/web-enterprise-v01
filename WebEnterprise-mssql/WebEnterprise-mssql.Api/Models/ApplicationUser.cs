@@ -23,7 +23,7 @@ namespace WebEnterprise_mssql.Api.Models
         public string DepartmentId { get; set; }
         public virtual Departments Departments { get; set; }
         public string RoleId { get; set; }
-        public virtual Departments RoleName { get; set; }
+        public virtual Roles RoleName { get; set; }
     }
 }
 

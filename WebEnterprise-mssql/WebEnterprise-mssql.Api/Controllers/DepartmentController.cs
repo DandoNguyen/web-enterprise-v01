@@ -31,7 +31,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await userManager.FindByIdAsync(newDepartmentUserDto.UserId.ToString());
             var department = await repo.Departments.FindByCondition(x => x.DepartmentId.Equals(newDepartmentUserDto.DepartmentId)).FirstOrDefaultAsync();
             user.DepartmentId = newDepartmentUserDto.DepartmentId.ToString();
-            repo.User.Update(user);
+            repo.Users.Update(user);
             repo.Save();
 
             return new JsonResult($"User {user.UserName} has been assigned to Department {department.DepartmentName}") {StatusCode = 200};
@@ -41,7 +41,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet]
         [Route("GetAllUserFromDepartment")]
         public async Task<IActionResult> GetAllUserFromDepartment(string departmentId) {
-            var listUser = await repo.User.FindByCondition(x => x.DepartmentId.Equals(departmentId)).ToListAsync();
+            var listUser = await repo.Users.FindByCondition(x => x.DepartmentId.Equals(departmentId)).ToListAsync();
             return Ok(listUser);
         }
 

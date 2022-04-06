@@ -12,9 +12,11 @@ namespace WebEnterprise_mssql.Api.Repository
         private IVoteRepository _Vote;
         private IDepartmentRepository _Department;
         private IUserRepository _User;
+        private ITopicRepository _Topic;
+        private ICategoryRepository _Category;
 
         //===================================================
-        public IPostsRepository Post
+        public IPostsRepository Posts
         {
             get
             {
@@ -26,7 +28,7 @@ namespace WebEnterprise_mssql.Api.Repository
             }
         }
 
-        public IFilesPathRepository FilesPath
+        public IFilesPathRepository FilesPaths
         {
             get
             {
@@ -61,7 +63,7 @@ namespace WebEnterprise_mssql.Api.Repository
             }
         }
 
-        public IVoteRepository Vote {
+        public IVoteRepository Votes {
             get
             {
                 if (_Vote is null)
@@ -83,7 +85,7 @@ namespace WebEnterprise_mssql.Api.Repository
             }
         }
 
-        public IUserRepository User {
+        public IUserRepository Users {
             get
             {
                 if (_User is null)
@@ -91,6 +93,28 @@ namespace WebEnterprise_mssql.Api.Repository
                     _User = new UserRepository(context);
                 }
                 return _User;
+            }
+        }
+
+        public ITopicRepository Topics {
+            get
+            {
+                if (_Topic is null)
+                {
+                    _Topic = new TopicRepository(context);
+                }
+                return _Topic;
+            }
+        }
+
+        public ICategoryRepository Categories {
+            get
+            {
+                if (_Category is null)
+                {
+                    _Category = new CategoryRepository(context);
+                }
+                return _Category;
             }
         }
 

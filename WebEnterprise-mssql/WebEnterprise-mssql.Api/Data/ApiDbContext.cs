@@ -13,7 +13,8 @@ namespace WebEnterprise_mssql.Api.Data
         public virtual DbSet<Comments> Comments { get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens { get; set;}
         public virtual DbSet<Departments> Department { get; set; }
-        //public virtual DbSet<ApplicationUser> ApplicationUsers { get; set;}
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set;}
+        public virtual DbSet<Topics> Topics { get; set; }
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
 

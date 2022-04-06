@@ -38,11 +38,11 @@ namespace WebEnterprise_mssql.Api
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
-            // services.AddDbContext<ApiDbContext>(options => 
-            //     options.UseSqlite(
-            //         Configuration.GetConnectionString("SQLiteConnection")
-            //     )
-            // );
+            services.AddDbContext<ApiDbContext>(options => 
+                options.UseSqlite(
+                    Configuration.GetConnectionString("SQLiteConnection")
+                )
+            );
 
             // services.AddDbContext<ApiDbContext>(options => 
             //     options.UseSqlServer(
@@ -50,11 +50,11 @@ namespace WebEnterprise_mssql.Api
             //     )
             // );
 
-            services.AddDbContext<ApiDbContext>(options => 
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("LocalConnection")
-                )
-            );
+            // services.AddDbContext<ApiDbContext>(options => 
+            //     options.UseSqlServer(
+            //         Configuration.GetConnectionString("LocalConnection")
+            //     )
+            // );
 
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();
