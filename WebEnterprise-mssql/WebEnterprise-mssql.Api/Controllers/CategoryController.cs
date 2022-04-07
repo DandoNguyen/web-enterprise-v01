@@ -62,21 +62,26 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> AddCateTagToPostAsync(PostCateGoryDto postCategoryDto) {
             var cate = await repo.Categories.FindByCondition(x => x.CategoryId.Equals(postCategoryDto.CategoryId)).FirstOrDefaultAsync();
             var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(postCategoryDto.PostId)).FirstOrDefaultAsync();
-            post.Categories.Add(cate);
-            repo.Categories.Update(cate);
-            repo.Save();
-
-            return Ok($"Category Tag {cate.CategoryName} added to post successfully!");
+            
+            var newCatePost = new CatePost();
+            newCatePost.CateId = cate.CategoryId.ToString();
+            newCatePost.PostId = post.PostId.ToString();
+            if (ModelState.IsValid)
+            {
+                repo.CatePost.Create(newCatePost);
+                repo.Save();
+                return Ok($"Category Tag {cate.CategoryName} added to post successfully!");
+            }
+            return BadRequest("Error in add Tag to Post");
         }
 
         //DELETE delete Cata tag
         [HttpDelete]
         [Route("DeleteCate")]
         public async Task<IActionResult> DeleteCateTagAsync(string cateId) {
-            var cate = await repo.Categories.FindByCondition(x => x.CategoryId.Equals(cateId)).FirstOrDefaultAsync();
-            
-            var listPosts = await repo.Posts.FindByCondition(x => x.Categories.Contains(cate)).ToListAsync();
-            if (listPosts.Count().Equals(0))
+            var cate = await repo.Categories.FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId))).FirstOrDefaultAsync();
+            var listCatePost = await repo.CatePost.FindByCondition(x => x.CateId.Equals(cateId)).ToListAsync();
+            if (listCatePost.Count().Equals(0))
             {
                 repo.Categories.Delete(cate);
                 repo.Save();

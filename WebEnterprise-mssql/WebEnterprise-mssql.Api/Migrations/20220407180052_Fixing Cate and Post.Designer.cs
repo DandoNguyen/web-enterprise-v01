@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebEnterprise_mssql.Api.Data;
 
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220407180052_Fixing Cate and Post")]
+    partial class FixingCateandPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,20 +258,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("CatePost");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
-                {
-                    b.Property<Guid>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CategoryName")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("Categories");
-                });
-
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Comments", b =>
                 {
                     b.Property<Guid>("CommentId")
@@ -354,9 +342,6 @@ namespace WebEnterprise_mssql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("CategoriesCategoryId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Desc")
                         .HasColumnType("TEXT");
 
@@ -404,8 +389,6 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("PostId");
-
-                    b.HasIndex("CategoriesCategoryId");
 
                     b.HasIndex("SubmissionsId");
 
@@ -654,10 +637,6 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Api.Models.Categories", null)
-                        .WithMany("posts")
-                        .HasForeignKey("CategoriesCategoryId");
-
                     b.HasOne("WebEnterprise_mssql.Api.Models.Submissions", "Submissions")
                         .WithMany("Posts")
                         .HasForeignKey("SubmissionsId");
@@ -717,11 +696,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("Posts");
 
                     b.Navigation("Views");
-                });
-
-            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
-                {
-                    b.Navigation("posts");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Departments", b =>

@@ -9,8 +9,8 @@ using WebEnterprise_mssql.Api.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220406192711_Sqlite Reinitialize")]
-    partial class SqliteReinitialize
+    [Migration("20220407181215_Add Category table")]
+    partial class AddCategorytable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -241,6 +241,23 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.CatePost", b =>
+                {
+                    b.Property<Guid>("CatePostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CateId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CatePostId");
+
+                    b.ToTable("CatePost");
+                });
+
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
                 {
                     b.Property<Guid>("CategoryId")
@@ -250,15 +267,7 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("CategoryName")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("PostId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("CategoryId");
-
-                    b.HasIndex("PostsPostId");
 
                     b.ToTable("Categories");
                 });
@@ -347,6 +356,9 @@ namespace WebEnterprise_mssql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("CategoriesCategoryId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Desc")
                         .HasColumnType("TEXT");
 
@@ -363,6 +375,13 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("SubmissionsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TopicId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TopicsTopicId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
@@ -388,7 +407,11 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.HasKey("PostId");
 
+                    b.HasIndex("CategoriesCategoryId");
+
                     b.HasIndex("SubmissionsId");
+
+                    b.HasIndex("TopicsTopicId");
 
                     b.HasIndex("UserId");
 
@@ -607,15 +630,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("RoleName");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
-                {
-                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", "Posts")
-                        .WithMany("Categories")
-                        .HasForeignKey("PostsPostId");
-
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Comments", b =>
                 {
                     b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "ApplicationUser")
@@ -642,9 +656,17 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Categories", null)
+                        .WithMany("posts")
+                        .HasForeignKey("CategoriesCategoryId");
+
                     b.HasOne("WebEnterprise_mssql.Api.Models.Submissions", "Submissions")
                         .WithMany("Posts")
                         .HasForeignKey("SubmissionsId");
+
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Topics", "Topics")
+                        .WithMany("posts")
+                        .HasForeignKey("TopicsTopicId");
 
                     b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Posts")
@@ -653,6 +675,8 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Submissions");
+
+                    b.Navigation("Topics");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.RefreshToken", b =>
@@ -697,6 +721,11 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("Views");
                 });
 
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
+                {
+                    b.Navigation("posts");
+                });
+
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Departments", b =>
                 {
                     b.Navigation("ApplicationUser");
@@ -704,8 +733,6 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("Comments");
 
                     b.Navigation("filesPaths");
@@ -721,6 +748,11 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Submissions", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Topics", b =>
+                {
+                    b.Navigation("posts");
                 });
 #pragma warning restore 612, 618
         }

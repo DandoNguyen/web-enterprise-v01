@@ -13,6 +13,7 @@ namespace WebEnterprise_mssql.Api.Profiles
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
             CreateMap<Posts, PostDto>().ReverseMap();
             CreateMap<Posts, CreatePostDto>().ReverseMap();
+            CreateMap<Posts, CreatePostDto>();
             CreateMap<Posts, UpdatedPostDto>().ReverseMap();
             CreateMap<Posts, QACFeedbackDto>().ReverseMap();
             CreateMap<Posts, PostDetailDto>().ReverseMap();

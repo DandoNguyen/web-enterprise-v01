@@ -26,14 +26,6 @@ namespace WebEnterprise_mssql.Api.Models
         public Guid? TopicId { get; set; }
         public virtual Topics Topics { get; set; }
 
-        //Cate Tag Section
-        public virtual ICollection<Categories> Categories { get; set; }
-        public Posts()
-        {
-            this.Categories = new HashSet<Categories>();
-        }
-
-
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         //public List<string> ViewsCount { get; set; } 

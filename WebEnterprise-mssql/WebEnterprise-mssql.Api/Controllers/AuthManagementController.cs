@@ -50,12 +50,14 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("GetUser")]
         public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization) {
             var user = await DecodeToken(Authorization);
-            var userProfileDto = new UserProfileResponseDto();
+            var userDto = new UserProfileResponseDto();
+            var role = await userManager.GetRolesAsync(user);
             if (user is not null)
             {
-                userProfileDto.username = user.UserName;
-                userProfileDto.email = user.Email;
-                userProfileDto.message = "Token Verified";
+                userDto.username = user.UserName;
+                userDto.email = user.Email;
+                userDto.role = role.ToList();
+                userDto.message = "Token Verified";
             } else
             {
                 return new UserProfileResponseDto() {
@@ -64,7 +66,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     message = "Cannot get JWT Token!!!"
                 };
             }
-            return userProfileDto;
+            return userDto;
         }
         
         [HttpPost] 

@@ -92,8 +92,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 if (post.IsApproved.Equals(true))
                 {
-                    var postDetailDto = new PostDetailDto();
-                    var result = GetCategoriesName(post, postDetailDto);
+                    var result = await GetCategoriesNameAsync(post);
                     allApprovedPosts.Add(result);
                 }
             }
@@ -111,8 +110,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPostsDto = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
-                var postDetailDto = new PostDetailDto();
-                var result = GetCategoriesName(post, postDetailDto);
+                var result = await GetCategoriesNameAsync(post);
                 listPostsDto.Add(result);
             }
 
@@ -142,8 +140,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound();
             }
-            var postDetailDto = new PostDetailDto();
-            var result = GetCategoriesName(post, postDetailDto);
+            var result = await GetCategoriesNameAsync(post);
             
             result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
             result.FilesPaths = await GetFilePaths(post.PostId);
@@ -155,14 +152,14 @@ namespace WebEnterprise_mssql.Api.Controllers
         
 
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
             var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
                 .FirstOrDefaultAsync();
             if (topic.ClosureDate <= DateTimeOffset.UtcNow)
             {
-                return Forbid($"no more Post can be created for Topic {topic.TopicName} after Date {topic.ClosureDate.UtcDateTime}");
+                return BadRequest($"no more Post can be created for Topic {topic.TopicName} after Date {topic.ClosureDate.UtcDateTime}");
             }
 
             if (Authorization is null)
@@ -173,20 +170,37 @@ namespace WebEnterprise_mssql.Api.Controllers
                 });
             }
             var user = await DecodeToken(Authorization);
-
+            var requestCateName = dto.CategoryName;
             if (ModelState.IsValid)
             {
                 var newPost = mapper.Map<Posts>(dto);
-
                 newPost.PostId = Guid.NewGuid();
+                foreach (var cateItem in requestCateName)
+                {
+                    var cate = await repo.Categories
+                        .FindByCondition(x => x.CategoryName.ToLower().Equals(cateItem.ToLower()))
+                        .FirstOrDefaultAsync();
+                    var catePost = new CatePost();
+                    catePost.CateId = cate.CategoryId.ToString();
+                    catePost.PostId = newPost.PostId.ToString();
+                    if (ModelState.IsValid)
+                    {
+                        repo.CatePost.Create(catePost);
+                        repo.Save();
+                    }
+                }
+
+                
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
 
-                repo.Posts.CreatePostAsync(newPost);
-                repo.Save();
-
-                var newPostDto = mapper.Map<PostDto>(newPost);
+                if (ModelState.IsValid)
+                {
+                    repo.Posts.CreatePostAsync(newPost);
+                    repo.Save();
+                }
+                var newPostDto = await GetCategoriesNameAsync(newPost);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
                 return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.PostId }, newPostDto);
@@ -262,13 +276,19 @@ namespace WebEnterprise_mssql.Api.Controllers
         //=================================================================================================================================
         //=================================================================================================================================
 
-        private PostDetailDto GetCategoriesName(Posts post, PostDetailDto postDetailDto) {
-            var listCate = post.Categories;
+        private async Task<PostDetailDto> GetCategoriesNameAsync(Posts post) {
+            var listCatePost = await repo.CatePost.FindByCondition(x => x.PostId.Equals(post.PostId.ToString())).ToListAsync();
             var resultDto = mapper.Map<PostDetailDto>(post);
-            foreach (var cateItem in listCate)
+            var listNameCate = new List<string>();
+            foreach (var catePostItem in listCatePost)
             {
-                resultDto.CategoryName.Add(cateItem.CategoryName);
+                var cateName = await repo.Categories
+                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(catePostItem.CateId)))
+                    .Select(x => x.CategoryName)
+                    .FirstOrDefaultAsync();
+                listNameCate.Add(cateName);
             }
+            resultDto.CategoryName = listNameCate;
             return resultDto;
         }
 

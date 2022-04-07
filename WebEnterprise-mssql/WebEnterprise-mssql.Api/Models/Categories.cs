@@ -10,9 +10,5 @@ namespace WebEnterprise_mssql.Api.Models
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
         public virtual ICollection<Posts> posts { get; set; }
-        public Categories()
-        {
-            this.posts = new HashSet<Posts>();
-        }
     }
 }

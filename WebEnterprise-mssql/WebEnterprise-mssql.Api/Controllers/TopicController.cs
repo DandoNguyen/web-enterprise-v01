@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -35,16 +37,22 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("GetAllPostFromTopic")]
         public async Task<IActionResult> GetListPostsFromThisTopicAsync(string TopicId) {
             var listPosts = await repo.Posts
-                .FindByCondition(x => x.TopicId.Equals(TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
                 .ToListAsync();
             var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
                 .FirstOrDefaultAsync();
             if (listPosts.Count().Equals(0))
             {
                 return NotFound($"No Post Available in Topic {topic.TopicName}");
             }
-            return Ok(listPosts);
+            var listPostsDto = new List<PostDetailDto>();
+            foreach (var post in listPosts)
+            {
+                var postDto = await GetCategoriesNameAsync(post);
+                listPostsDto.Add(postDto);
+            }
+            return Ok(listPostsDto);
         }
 
         //GET get all Topic 
@@ -103,7 +111,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.TopicId.Equals(removeTopicDto.TopicId))
                 .ToListAsync();
             var Topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(removeTopicDto.TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(removeTopicDto.TopicId)))
                 .FirstOrDefaultAsync();
             if (listPosts.Count().Equals(0))
             {
@@ -133,6 +141,22 @@ namespace WebEnterprise_mssql.Api.Controllers
                 return Ok($"Topic {newTopic.TopicName} has been updated");
             }
             return BadRequest($"Error in updating Topic {dto.TopicName}");
+        }
+
+        private async Task<PostDetailDto> GetCategoriesNameAsync(Posts post) {
+            var listCatePost = await repo.CatePost.FindByCondition(x => x.PostId.Equals(post.PostId.ToString())).ToListAsync();
+            var resultDto = mapper.Map<PostDetailDto>(post);
+            var listNameCate = new List<string>();
+            foreach (var catePostItem in listCatePost)
+            {
+                var cateName = await repo.Categories
+                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(catePostItem.CateId)))
+                    .Select(x => x.CategoryName)
+                    .FirstOrDefaultAsync();
+                listNameCate.Add(cateName);
+            }
+            resultDto.CategoryName = listNameCate;
+            return resultDto;
         }
         
     }

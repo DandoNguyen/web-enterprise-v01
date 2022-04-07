@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebEnterprise_mssql.Migrations
 {
-    public partial class SqliteReinitialize : Migration
+    public partial class FixingCateandPost : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,6 +19,19 @@ namespace WebEnterprise_mssql.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CatePost",
+                columns: table => new
+                {
+                    CatePostId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PostId = table.Column<string>(type: "TEXT", nullable: true),
+                    CateId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CatePost", x => x.CatePostId);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,6 +253,8 @@ namespace WebEnterprise_mssql.Migrations
                     feedback = table.Column<string>(type: "TEXT", nullable: true),
                     IsAssigned = table.Column<bool>(type: "INTEGER", nullable: false),
                     QACUserId = table.Column<string>(type: "TEXT", nullable: true),
+                    TopicId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TopicsTopicId = table.Column<Guid>(type: "TEXT", nullable: true),
                     createdDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: true),
@@ -259,6 +274,12 @@ namespace WebEnterprise_mssql.Migrations
                         column: x => x.SubmissionsId,
                         principalTable: "Submissions",
                         principalColumn: "SubmissionId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Posts_Topics_TopicsTopicId",
+                        column: x => x.TopicsTopicId,
+                        principalTable: "Topics",
+                        principalColumn: "TopicId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -284,26 +305,6 @@ namespace WebEnterprise_mssql.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    CategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CategoryName = table.Column<string>(type: "TEXT", nullable: true),
-                    PostId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    PostsPostId = table.Column<Guid>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
-                    table.ForeignKey(
-                        name: "FK_Categories_Posts_PostsPostId",
-                        column: x => x.PostsPostId,
-                        principalTable: "Posts",
-                        principalColumn: "PostId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -456,11 +457,6 @@ namespace WebEnterprise_mssql.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categories_PostsPostId",
-                table: "Categories",
-                column: "PostsPostId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ApplicationUserId",
                 table: "Comments",
                 column: "ApplicationUserId");
@@ -479,6 +475,11 @@ namespace WebEnterprise_mssql.Migrations
                 name: "IX_Posts_SubmissionsId",
                 table: "Posts",
                 column: "SubmissionsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_TopicsTopicId",
+                table: "Posts",
+                column: "TopicsTopicId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_UserId",
@@ -524,7 +525,7 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "CatePost");
 
             migrationBuilder.DropTable(
                 name: "Comments");
@@ -534,9 +535,6 @@ namespace WebEnterprise_mssql.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
-
-            migrationBuilder.DropTable(
-                name: "Topics");
 
             migrationBuilder.DropTable(
                 name: "Views");
@@ -555,6 +553,9 @@ namespace WebEnterprise_mssql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Submissions");
+
+            migrationBuilder.DropTable(
+                name: "Topics");
 
             migrationBuilder.DropTable(
                 name: "Department");

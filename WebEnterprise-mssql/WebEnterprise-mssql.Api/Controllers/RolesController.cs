@@ -57,7 +57,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetAllUsers")]
-        public async Task<IActionResult> GetAddlUsersAsync() {
+        public async Task<IActionResult> GetAllUsersAsync() {
             var users = await userManager.Users.ToListAsync();
             return Ok(users);
         }
