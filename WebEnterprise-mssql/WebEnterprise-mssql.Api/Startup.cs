@@ -38,17 +38,31 @@ namespace WebEnterprise_mssql.Api
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
-            // services.AddDbContext<ApiDbContext>(options => 
-            //     options.UseSqlite(
-            //         Configuration.GetConnectionString("SQLiteConnection")
-            //     )
-            // );
+            services.AddDbContext<ApiDbContext>(options => 
+                options.UseSqlite(
+                    Configuration.GetConnectionString("SQLiteConnection")
+                )
+            );
 
+<<<<<<< HEAD
             services.AddDbContext<ApiDbContext>(options => 
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")
                 )
             );
+=======
+            // services.AddDbContext<ApiDbContext>(options => 
+            //     options.UseSqlServer(
+            //         Configuration.GetConnectionString("DefaultConnection")
+            //     )
+            // );
+
+            // services.AddDbContext<ApiDbContext>(options => 
+            //     options.UseSqlServer(
+            //         Configuration.GetConnectionString("LocalConnection")
+            //     )
+            // );
+>>>>>>> 375e855a7d2b34bdf576807e5e6e6ebecc322d67
 
             // services.AddDbContext<ApiDbContext>(options => 
             //     options.UseSqlServer(

@@ -10,7 +10,14 @@ namespace WebEnterprise_mssql.Api.Repository
         private IViewsRepository _view;
         private ICommentsRepository _comment;
         private IVoteRepository _Vote;
-        public IPostsRepository Post
+        private IDepartmentRepository _Department;
+        private IUserRepository _User;
+        private ITopicRepository _Topic;
+        private ICategoryRepository _Category;
+        private ICatePostRepository _CatePost;
+
+        //===================================================
+        public IPostsRepository Posts
         {
             get
             {
@@ -22,7 +29,7 @@ namespace WebEnterprise_mssql.Api.Repository
             }
         }
 
-        public IFilesPathRepository FilesPath
+        public IFilesPathRepository FilesPaths
         {
             get
             {
@@ -57,7 +64,7 @@ namespace WebEnterprise_mssql.Api.Repository
             }
         }
 
-        public IVoteRepository Vote {
+        public IVoteRepository Votes {
             get
             {
                 if (_Vote is null)
@@ -65,6 +72,61 @@ namespace WebEnterprise_mssql.Api.Repository
                     _Vote = new VoteRepository(context);
                 }
                 return _Vote;
+            }
+        }
+
+        public IDepartmentRepository Departments {
+            get
+            {
+                if (_Department is null)
+                {
+                    _Department = new DepartmentRepository(context);
+                }
+                return _Department;
+            }
+        }
+
+        public IUserRepository Users {
+            get
+            {
+                if (_User is null)
+                {
+                    _User = new UserRepository(context);
+                }
+                return _User;
+            }
+        }
+
+        public ITopicRepository Topics {
+            get
+            {
+                if (_Topic is null)
+                {
+                    _Topic = new TopicRepository(context);
+                }
+                return _Topic;
+            }
+        }
+
+        public ICategoryRepository Categories {
+            get
+            {
+                if (_Category is null)
+                {
+                    _Category = new CategoryRepository(context);
+                }
+                return _Category;
+            }
+        }
+
+        public ICatePostRepository CatePost {
+            get
+            {
+                if (_CatePost is null)
+                {
+                    _CatePost = new CatePostRepository(context);
+                }
+                return _CatePost;
             }
         }
 

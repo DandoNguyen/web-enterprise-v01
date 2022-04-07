@@ -9,7 +9,6 @@ namespace WebEnterprise_mssql.Api.Models
         [KeyAttribute]
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
-
-        public virtual ICollection<Posts> Posts { get; set; }
+        public virtual ICollection<Posts> posts { get; set; }
     }
 }

@@ -45,7 +45,8 @@ export default class Login extends React.Component{
         })
         .then(result =>{ 
             console.log(result)
-            localStorage.setItem("accessToken", result.accessToken)
+            localStorage.setItem("accessToken", result.Token)
+            console.log(result.Token)
             alert("Thanh cong")
 
         })

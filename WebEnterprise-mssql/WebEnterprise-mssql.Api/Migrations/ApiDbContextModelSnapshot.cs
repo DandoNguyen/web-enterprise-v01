@@ -2,11 +2,10 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebEnterprise_mssql.Api.Data;
 
-namespace WebEnterprise_mssql.Api.Migrations
+namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
     partial class ApiDbContextModelSnapshot : ModelSnapshot
@@ -15,33 +14,30 @@ namespace WebEnterprise_mssql.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -50,18 +46,17 @@ namespace WebEnterprise_mssql.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -74,18 +69,17 @@ namespace WebEnterprise_mssql.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -97,17 +91,17 @@ namespace WebEnterprise_mssql.Api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -119,10 +113,10 @@ namespace WebEnterprise_mssql.Api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -134,94 +128,100 @@ namespace WebEnterprise_mssql.Api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.ApplicationUser", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("DOB")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DepartmentId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("DepartmentsDepartmentId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("RoleNameRoleId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("StaffId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -232,58 +232,76 @@ namespace WebEnterprise_mssql.Api.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("RoleNameRoleId");
 
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Categories", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.CatePost", b =>
+                {
+                    b.Property<Guid>("CatePostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CateId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CatePostId");
+
+                    b.ToTable("CatePost");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
                 {
                     b.Property<Guid>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CategoryName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Comments", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Comments", b =>
                 {
                     b.Property<Guid>("CommentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsChild")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("ParentId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PostId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("userId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("CommentId");
 
@@ -294,34 +312,34 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Departments", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Departments", b =>
                 {
                     b.Property<Guid>("DepartmentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DepartmentName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Department");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.FilesPath", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.FilesPath", b =>
                 {
                     b.Property<Guid>("FilesPathID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("filePath")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("FilesPathID");
 
@@ -330,41 +348,60 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.ToTable("FilesPath");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
                     b.Property<Guid>("PostId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("CategoriesCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CatogoriesId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsAssigned")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QACUserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("SubmissionsId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TopicId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("TopicsTopicId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("createdDate")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("feedback")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("isAnonymous")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("username")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("PostId");
 
@@ -372,38 +409,39 @@ namespace WebEnterprise_mssql.Api.Migrations
 
                     b.HasIndex("SubmissionsId");
 
+                    b.HasIndex("TopicsTopicId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.RefreshToken", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.RefreshToken", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("AddedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("JwtId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("id");
 
@@ -412,49 +450,83 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Submissions", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Roles", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Submissions", b =>
                 {
                     b.Property<Guid>("SubmissionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClosureDate")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DescriptionSubmission")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FinalClosureDate")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("SubmissionName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("SubmissionId");
 
                     b.ToTable("Submissions");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Views", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Topics", b =>
+                {
+                    b.Property<Guid>("TopicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ClosureDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("FinalClosureDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TopicName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TopicId");
+
+                    b.ToTable("Topics");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Views", b =>
                 {
                     b.Property<Guid>("ViewId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("LastVistedDate")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("postId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("userId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ViewId");
 
@@ -465,23 +537,23 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.ToTable("Views");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Votes", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Votes", b =>
                 {
                     b.Property<Guid>("voteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("postId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("userDownVote")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("userUpvote")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("voteId");
 
@@ -501,7 +573,7 @@ namespace WebEnterprise_mssql.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", null)
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -510,7 +582,7 @@ namespace WebEnterprise_mssql.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", null)
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -525,7 +597,7 @@ namespace WebEnterprise_mssql.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", null)
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -534,29 +606,35 @@ namespace WebEnterprise_mssql.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", null)
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.ApplicationUser", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.Departments", "Departments")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Departments", "Departments")
                         .WithMany("ApplicationUser")
                         .HasForeignKey("DepartmentsDepartmentId");
 
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Roles", "RoleName")
+                        .WithMany("ApplicationUser")
+                        .HasForeignKey("RoleNameRoleId");
+
                     b.Navigation("Departments");
+
+                    b.Navigation("RoleName");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Comments", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Comments", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Comments")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", "Posts")
                         .WithMany("Comments")
                         .HasForeignKey("PostsPostId");
 
@@ -565,52 +643,56 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.FilesPath", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.FilesPath", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", "Posts")
                         .WithMany("filesPaths")
                         .HasForeignKey("PostsPostId");
 
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.Categories", "Categories")
-                        .WithMany("Posts")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Categories", null)
+                        .WithMany("posts")
                         .HasForeignKey("CategoriesCategoryId");
 
-                    b.HasOne("WebEnterprise_mssql.Models.Submissions", "Submissions")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Submissions", "Submissions")
                         .WithMany("Posts")
                         .HasForeignKey("SubmissionsId");
 
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Topics", "Topics")
+                        .WithMany("posts")
+                        .HasForeignKey("TopicsTopicId");
+
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Posts")
                         .HasForeignKey("UserId");
 
                     b.Navigation("ApplicationUser");
 
-                    b.Navigation("Categories");
-
                     b.Navigation("Submissions");
+
+                    b.Navigation("Topics");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.RefreshToken", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.RefreshToken", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "User")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Views", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Views", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Views")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", "Posts")
                         .WithMany("Views")
                         .HasForeignKey("PostsPostId");
 
@@ -619,16 +701,16 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Votes", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Votes", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Models.Posts", "Posts")
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", "Posts")
                         .WithMany()
                         .HasForeignKey("PostsPostId");
 
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.ApplicationUser", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Comments");
 
@@ -637,17 +719,17 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.Navigation("Views");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Categories", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
                 {
-                    b.Navigation("Posts");
+                    b.Navigation("posts");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Departments", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Departments", b =>
                 {
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Posts", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
                     b.Navigation("Comments");
 
@@ -656,9 +738,19 @@ namespace WebEnterprise_mssql.Api.Migrations
                     b.Navigation("Views");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Models.Submissions", b =>
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Roles", b =>
+                {
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Submissions", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Topics", b =>
+                {
+                    b.Navigation("posts");
                 });
 #pragma warning restore 612, 618
         }
