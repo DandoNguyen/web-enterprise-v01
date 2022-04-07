@@ -20,7 +20,20 @@ namespace WebEnterprise_mssql.Api.Models
         public string feedback { get; set; }
         public bool IsAssigned { get; set; }
         public string QACUserId { get; set; }
-        
+
+        //Topic Section
+        [Required]
+        public Guid? TopicId { get; set; }
+        public virtual Topics Topics { get; set; }
+
+        //Cate Tag Section
+        public virtual ICollection<Categories> Categories { get; set; }
+        public Posts()
+        {
+            this.Categories = new HashSet<Categories>();
+        }
+
+
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         //public List<string> ViewsCount { get; set; } 
@@ -40,7 +53,6 @@ namespace WebEnterprise_mssql.Api.Models
 
         
         //Collection of foreign objects
-        public virtual ICollection<Categories> Categories { get; set; }
         public ICollection<Views> Views { get; set; }
         public ICollection<Comments> Comments { get; set; }
         public ICollection<FilesPath> filesPaths { get; set; }

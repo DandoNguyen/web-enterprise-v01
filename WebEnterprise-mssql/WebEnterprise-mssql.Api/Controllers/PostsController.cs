@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using WebEnterprise_mssql.Api.Configuration;
 using WebEnterprise_mssql.Api.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -88,13 +87,14 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> GetAllPostsAsync()
         {
             var listPosts = await repo.Posts.GetAllPostsAsync();
-            var allApprovedPosts = new List<PostDto>();
+            var allApprovedPosts = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
                 if (post.IsApproved.Equals(true))
                 {
-                    var newPostDto = mapper.Map<PostDto>(post);
-                    allApprovedPosts.Add(newPostDto);
+                    var postDetailDto = new PostDetailDto();
+                    var result = GetCategoriesName(post, postDetailDto);
+                    allApprovedPosts.Add(result);
                 }
             }
             //var postsDto = mapper.Map<List<PostDto>>(listPosts);
@@ -105,10 +105,18 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("MyPost")]
         public async Task<IActionResult> GetAllPostsFromUserIDAsync(getPostReqDto getPostReqDto)
         {
-            var posts = await repo.Posts.GetAllPostsFromUserIDAsync(getPostReqDto.userId);
-            var postsDto = mapper.Map<List<PostDto>>(posts);
+            var listPosts = await repo.Posts
+                .GetAllPostsFromUserIDAsync(getPostReqDto.userId);
+            
+            var listPostsDto = new List<PostDetailDto>();
+            foreach (var post in listPosts)
+            {
+                var postDetailDto = new PostDetailDto();
+                var result = GetCategoriesName(post, postDetailDto);
+                listPostsDto.Add(result);
+            }
 
-            return Ok(postsDto);
+            return Ok(listPostsDto);
         }
 
         [HttpGet]
@@ -134,17 +142,28 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound();
             }
-            var getPost = mapper.Map<PostDto>(post);
-            getPost.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
-            getPost.FilesPaths = await GetFilePaths(post.PostId);
+            var postDetailDto = new PostDetailDto();
+            var result = GetCategoriesName(post, postDetailDto);
+            
+            result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
+            result.FilesPaths = await GetFilePaths(post.PostId);
 
 
-            return Ok(getPost);
+            return Ok(result);
         }
 
+        
+
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto postDto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FirstOrDefaultAsync();
+            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            {
+                return Forbid($"no more Post can be created for Topic {topic.TopicName} after Date {topic.ClosureDate.UtcDateTime}");
+            }
 
             if (Authorization is null)
             {
@@ -157,7 +176,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var newPost = mapper.Map<Posts>(postDto);
+                var newPost = mapper.Map<Posts>(dto);
 
                 newPost.PostId = Guid.NewGuid();
                 newPost.createdDate = DateTimeOffset.UtcNow;
@@ -171,22 +190,31 @@ namespace WebEnterprise_mssql.Api.Controllers
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
                 return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.PostId }, newPostDto);
+                // return Ok($"Post {newPost.PostId} created!");
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePostsAsync(UpdatedPostDto updatedPostDto)
+        public async Task<IActionResult> UpdatePostsAsync(UpdatedPostDto dto)
         {
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FirstOrDefaultAsync();
+            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            {
+                return Forbid($"Post cannot be updated for Topic {topic.TopicName} after Date: {topic.ClosureDate.UtcDateTime}");
+            }
+
             // var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == updatedPostDto.postId);
-            var existingPost = await repo.Posts.GetPostAsync(updatedPostDto.postId.ToString());
+            var existingPost = await repo.Posts.GetPostAsync(dto.postId.ToString());
             if (existingPost is null)
             {
                 return NotFound();
             }
 
             //update new value to var existingPost
-            mapper.Map(updatedPostDto, existingPost);
+            mapper.Map(dto, existingPost);
             existingPost.LastModifiedDate = DateTimeOffset.UtcNow;
 
             // context.Posts.Update(existingPost);
@@ -195,28 +223,37 @@ namespace WebEnterprise_mssql.Api.Controllers
             repo.Save();
 
             var newPostDto = mapper.Map<PostDto>(existingPost);
-            newPostDto.FilesPaths = await UploadFiles(updatedPostDto.files, existingPost.username, existingPost.PostId);
+            newPostDto.FilesPaths = await UploadFiles(dto.files, existingPost.username, existingPost.PostId);
 
             return CreatedAtAction(nameof(GetPostByIDAsync), newPostDto);
         }
 
         [HttpDelete]
         [Route("Deletepost")]
-        public async Task<IActionResult> DeletePostAsync([FromHeader] Guid postId)
+        public async Task<IActionResult> DeletePostAsync(RemovePostDto dto)
         {
-            // var existingPost = await context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
-            var existingPost = await repo.Posts.GetPostByIDAsync(postId);
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FirstOrDefaultAsync();
+            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            {
+                return Forbid($"Post cannot be removed for Topic {topic.TopicName} after Date: {topic.ClosureDate.UtcDateTime}");
+            }
+            
+            var existingPost = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(dto.PostId))
+                .FirstOrDefaultAsync();
             if (existingPost is null)
             {
                 return NotFound();
             }
-            repo.Posts.DeletePostAsync(existingPost);
+            repo.Posts.Delete(existingPost);
             repo.Save();
 
             //Delete Files in directory
             DeleteFiles(existingPost.PostId, existingPost.username);
 
-            return new JsonResult($"Post {postId} had been deleted successfully!") { StatusCode = 200 };
+            return new JsonResult($"Post {dto.PostId} had been deleted successfully!") { StatusCode = 200 };
         }
 
         //=================================================================================================================================
@@ -224,6 +261,16 @@ namespace WebEnterprise_mssql.Api.Controllers
         //INTERAL STATIC METHODS
         //=================================================================================================================================
         //=================================================================================================================================
+
+        private PostDetailDto GetCategoriesName(Posts post, PostDetailDto postDetailDto) {
+            var listCate = post.Categories;
+            var resultDto = mapper.Map<PostDetailDto>(post);
+            foreach (var cateItem in listCate)
+            {
+                resultDto.CategoryName.Add(cateItem.CategoryName);
+            }
+            return resultDto;
+        }
 
         private async void DeleteFiles(Guid postId, string username)
         {

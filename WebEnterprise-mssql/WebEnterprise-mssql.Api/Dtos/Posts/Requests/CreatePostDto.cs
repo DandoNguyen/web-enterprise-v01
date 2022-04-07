@@ -23,5 +23,7 @@ namespace WebEnterprise_mssql.Api.Dtos
 
         [Required]
         public List<string> Categories { get; set; }
+        [Required]
+        public string TopicId { get; set; }
     }
 }

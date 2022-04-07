@@ -15,6 +15,7 @@ namespace WebEnterprise_mssql.Api.Profiles
             CreateMap<Posts, CreatePostDto>().ReverseMap();
             CreateMap<Posts, UpdatedPostDto>().ReverseMap();
             CreateMap<Posts, QACFeedbackDto>().ReverseMap();
+            CreateMap<Posts, PostDetailDto>().ReverseMap();
         }
     }
 }
