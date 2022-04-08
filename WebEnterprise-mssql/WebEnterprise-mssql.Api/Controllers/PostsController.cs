@@ -86,13 +86,16 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("PostFeed")]
         public async Task<IActionResult> GetAllPostsAsync()
         {
-            var listPosts = await repo.Posts.GetAllPostsAsync();
+            var listPosts = await repo.Posts
+                .FindAll()
+                .Include(x => x.categories)
+                .ToListAsync();
             var allApprovedPosts = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
                 if (post.IsApproved.Equals(true))
                 {
-                    var result = new PostDetailDto();
+                    var result = mapper.Map<PostDetailDto>(post);
                     List<string> listCateId = new();
                     foreach (var cate in post.categories)
                     {
@@ -104,6 +107,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
             }
             //var postsDto = mapper.Map<List<PostDto>>(listPosts);
+            if (allApprovedPosts.Count().Equals(0))
+            {
+                return new JsonResult("No Posts Avalaible") {StatusCode = 404};
+            }
             return Ok(allApprovedPosts);
         }
 
@@ -250,7 +257,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> DeletePostAsync(RemovePostDto dto)
         {
             var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
                 .FirstOrDefaultAsync();
             if (topic.ClosureDate <= DateTime.UtcNow)
             {
