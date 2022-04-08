@@ -9,8 +9,8 @@ using WebEnterprise_mssql.Api.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220408015146_ef6 many to many initialize")]
-    partial class ef6manytomanyinitialize
+    [Migration("20220408183359_1.0")]
+    partial class _10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

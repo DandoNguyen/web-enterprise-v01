@@ -86,21 +86,25 @@ namespace WebEnterprise_mssql.Api.Controllers
         //POST create Toptc
         [HttpPost]
         [Route("CreateTopic")]
-        public async Task<IActionResult> CreateTopicAsync(CreateTopicDto createTopicDto) {
+        public async Task<IActionResult> CreateTopicAsync(CreateTopicDto dto) {
+            if (dto.FinalClosureDate <= dto.ClosureDate)
+            {
+                return BadRequest($"Final Closure Date must be after Date: {dto.ClosureDate}");
+            }
             var existingTopic = await repo.Topics
-                .FindByCondition(x => x.TopicName.ToLower().Equals(createTopicDto.TopicName.ToLower()))
+                .FindByCondition(x => x.TopicName.ToLower().Equals(dto.TopicName.ToLower()))
                 .FirstOrDefaultAsync();
             if (existingTopic is null)
             {
-                var newTopic = mapper.Map<Topics>(createTopicDto);
+                var newTopic = mapper.Map<Topics>(dto);
                 if (ModelState.IsValid)
                 {
                     repo.Topics.Create(newTopic);
                     repo.Save();
                 }
-                return Ok($"Topic {createTopicDto.TopicName} has been created!");
+                return Ok($"Topic {dto.TopicName} has been created!");
             }
-            return BadRequest($"Topic name {createTopicDto.TopicName} has already exist");
+            return BadRequest($"Topic name {dto.TopicName} has already exist");
         }
 
         //DELETE remove Topic

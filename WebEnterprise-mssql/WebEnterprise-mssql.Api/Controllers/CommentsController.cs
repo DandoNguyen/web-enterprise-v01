@@ -62,6 +62,137 @@ namespace WebEnterprise_mssql.Api.Controllers
             return resultList;
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBtnClick(DeleteCommentDto dto)
+        {
+            if (await IsPassDeadline(dto.PostId))
+            {
+                return BadRequest("Cannot delete comments after final closure date");
+            }
+            var parent = await GetChildrenToParent(dto.commentId.ToString());
+
+            if (parent.childItems.Count().Equals(0))
+            {
+                try
+                {
+                    DeleteComment(parent.CommentId);
+                }
+                catch (System.Exception ex)
+                {
+                    return new JsonResult($"Error Message: {ex}") {StatusCode = 500};
+                }
+            }
+            else
+            {
+                try
+                {
+                    DeleteRangeComment(parent.CommentId);
+                    DeleteComment(parent.CommentId);
+                }
+                catch (System.Exception ex)
+                {
+                    return new JsonResult($"Error Message: {ex}") {StatusCode = 500};
+                }
+            }
+
+            return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateComment(CommentDto dto)
+        {
+            // var existingComment = await context.Comments
+            //      .Where(x => x.CommentId == Guid.Parse(CommentDto.PreviousCommentId))
+            //      .FirstOrDefaultAsync();
+            var existingComment = await repo.Comments.GetComments(Guid.Parse(dto.PreviousCommentId));
+
+            existingComment = mapper.Map<Comments>(dto);
+            existingComment.LastModifiedDate = DateTimeOffset.UtcNow;
+
+            if (await IsPassDeadline(dto.PostId))
+            {
+                return BadRequest("No more comment can be update to this post after final closure date");
+            }
+            else
+            {
+                try
+                {
+                    //context.Comments.Update(existingComment);
+                    repo.Comments.Update(existingComment);
+                    repo.Save();
+                    return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult($"Error Message: {ex}") {StatusCode = 500};
+                }
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCommentAsync(CommentDto dto)
+        {
+            var newComment = mapper.Map<Comments>(dto);
+            newComment.CreatedDate = DateTimeOffset.UtcNow;
+
+            if (await IsPassDeadline(dto.PostId))
+            {
+                return BadRequest("No more comment can be added to this post after final closure date");
+            }
+            else
+            {
+                try
+                {
+                    // await context.Comments.AddAsync(newComment);
+                    repo.Comments.Create(newComment);
+                    repo.Save();
+                    return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult($"Error message: {ex}") {StatusCode = 500};
+                }
+            }
+        }
+
+        private async Task<bool> IsPassDeadline(string postId)
+        {
+            var topicId = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(Guid.Parse(postId)))
+                .Select(x => x.TopicId)
+                .FirstOrDefaultAsync();
+            var finalClosureDate = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(topicId))
+                .Select(x => x.FinalClosureDate)
+                .FirstOrDefaultAsync();
+            if (DateTimeOffset.UtcNow >= finalClosureDate)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private async void DeleteRangeComment(Guid parentId)
+        {
+            // var childrenCommentArray = await context.Comments.Where(x => x.ParentId.Equals(parentId)).ToArrayAsync();
+            var childrenCommentArray = await repo.Comments.GetListChildrenByParentIdAsync(parentId);
+
+            // context.Comments.RemoveRange(childrenCommentArray);
+            repo.Comments.DeleteListChildren(childrenCommentArray);
+            repo.Save();
+        }
+        private async void DeleteComment(Guid commentId)
+        {
+            // var existingComment = await context.Comments
+            //     .Where(x => x.CommentId == commentId)
+            //     .FirstOrDefaultAsync();
+            var existingComment = await repo.Comments.GetComments(commentId);
+
+            //context.Comments.Remove(existingComment);
+            repo.Comments.Delete(existingComment);
+            repo.Save();
+        }
+
         private async Task<ParentItemDto> GetChildrenToParent(string ParentId)
         {
 
@@ -88,78 +219,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             parentDto.childItems = newListChildren;
             return parentDto;
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteBtnClick(DeleteCommentDto deleteCommentDto)
-        {
-            var parent = await GetChildrenToParent(deleteCommentDto.commentId.ToString());
-
-            if (parent.childItems.Count().Equals(0))
-            {
-                DeleteComment(parent.CommentId);
-            }
-            else
-            {
-                DeleteRangeComment(parent.CommentId);
-                DeleteComment(parent.CommentId);
-            }
-
-            return RedirectToAction(nameof(GetAllComment), new { deleteCommentDto.PostId });
-        }
-
-        private async void DeleteRangeComment(Guid parentId)
-        {
-            // var childrenCommentArray = await context.Comments.Where(x => x.ParentId.Equals(parentId)).ToArrayAsync();
-            var childrenCommentArray = await repo.Comments.GetListChildrenByParentIdAsync(parentId);
-
-            // context.Comments.RemoveRange(childrenCommentArray);
-            repo.Comments.DeleteListChildren(childrenCommentArray);
-            repo.Save();
-        }
-        private async void DeleteComment(Guid commentId)
-        {
-            // var existingComment = await context.Comments
-            //     .Where(x => x.CommentId == commentId)
-            //     .FirstOrDefaultAsync();
-            var existingComment = await repo.Comments.GetComments(commentId);
-
-            //context.Comments.Remove(existingComment);
-            repo.Comments.Delete(existingComment);
-
-            repo.Save();
-        }
-
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateComment(CommentDto CommentDto)
-        {
-            // var existingComment = await context.Comments
-            //      .Where(x => x.CommentId == Guid.Parse(CommentDto.PreviousCommentId))
-            //      .FirstOrDefaultAsync();
-            var existingComment = await repo.Comments.GetComments(Guid.Parse(CommentDto.PreviousCommentId));
-
-            existingComment = mapper.Map<Comments>(CommentDto);
-            existingComment.LastModifiedDate = DateTimeOffset.UtcNow;
-
-            //context.Comments.Update(existingComment);
-            repo.Comments.Update(existingComment);
-
-            repo.Save();
-            return RedirectToAction(nameof(GetAllComment), new { CommentDto.PostId });
-        }
-
-        [HttpPost]
-        public IActionResult AddComment(CommentDto CommentDto)
-        {
-            var newComment = mapper.Map<Comments>(CommentDto);
-            newComment.CreatedDate = DateTimeOffset.UtcNow;
-
-            // await context.Comments.AddAsync(newComment);
-            repo.Comments.Create(newComment);
-
-            repo.Save();
-            return RedirectToAction(nameof(GetAllComment), new { CommentDto.PostId });
         }
     }
 }

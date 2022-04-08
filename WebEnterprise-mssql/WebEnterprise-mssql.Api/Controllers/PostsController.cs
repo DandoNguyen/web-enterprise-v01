@@ -218,7 +218,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var topic = await repo.Topics
                 .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
                 .FirstOrDefaultAsync();
-            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            if (topic.ClosureDate <= DateTime.UtcNow)
             {
                 return Forbid($"Post cannot be updated for Topic {topic.TopicName} after Date: {topic.ClosureDate.UtcDateTime}");
             }
@@ -252,7 +252,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var topic = await repo.Topics
                 .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
                 .FirstOrDefaultAsync();
-            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            if (topic.ClosureDate <= DateTime.UtcNow)
             {
                 return Forbid($"Post cannot be removed for Topic {topic.TopicName} after Date: {topic.ClosureDate.UtcDateTime}");
             }
@@ -264,8 +264,15 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound();
             }
-            repo.Posts.Delete(existingPost);
-            repo.Save();
+            try
+            {
+                repo.Posts.Delete(existingPost);
+                repo.Save();
+            }
+            catch (System.Exception ex)
+            {
+                return new JsonResult($"Error Message: {ex}") {StatusCode = 500};
+            }
 
             //Delete Files in directory
             DeleteFiles(existingPost.PostId, existingPost.username);

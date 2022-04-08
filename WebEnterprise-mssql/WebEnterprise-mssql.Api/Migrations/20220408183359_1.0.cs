@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebEnterprise_mssql.Migrations
 {
-    public partial class ef6manytomanyinitialize : Migration
+    public partial class _10 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

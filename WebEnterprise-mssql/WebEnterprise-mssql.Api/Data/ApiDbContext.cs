@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Models;
@@ -19,7 +20,17 @@ namespace WebEnterprise_mssql.Api.Data
         //public virtual DbSet<CatePost> CatePost { get; set; }
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
-
         }
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     // modelBuilder.Entity<Posts>()
+        //     //     .HasMany<Categories>(s => s.categories)
+        //     //     .WithMany(c => c.posts)
+        //     //     .UsingEntity<Dictionary<string, object>>(
+        //     //         "CateGoryPost",
+        //     //         x => x.HasOne<Categories>().WithMany().OnDelete(DeleteBehavior.SetNull),
+        //     //         x => x.HasOne<Posts>().WithMany().OnDelete(DeleteBehavior.ClientSetNull)
+        //     //     );
+        // }
     }
 }
