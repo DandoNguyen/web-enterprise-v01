@@ -37,14 +37,16 @@ namespace WebEnterprise_mssql.Api.Models
         [InverseProperty("Posts")]
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        // public Guid? CatogoriesId { get; set; }
-        // public virtual Categories Categories { get; set; }
-
         public Guid? SubmissionsId { get; set; }
         public virtual Submissions Submissions { get; set; }
 
         
+        public Posts()
+        {
+            this.categories = new HashSet<Categories>();
+        }
         //Collection of foreign objects
+        public virtual ICollection<Categories> categories { get; set; }
         public ICollection<Views> Views { get; set; }
         public ICollection<Comments> Comments { get; set; }
         public ICollection<FilesPath> filesPaths { get; set; }

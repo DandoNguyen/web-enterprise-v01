@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace WebEnterprise_mssql.Api.Repository
 {
@@ -12,6 +13,8 @@ namespace WebEnterprise_mssql.Api.Repository
         void Create(T entity);
         void Update(T entity);
         void Delete(T entity);
+        EntityEntry<T> GetEntityEntry(T entity);
+        void AttachEntity(T entity);
         void DeleteRange(IEnumerable<T> entity);
     }
 }

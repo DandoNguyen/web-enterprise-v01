@@ -22,7 +22,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public bool IsAssigned { get; set; }
 
         [Required]
-        public List<string> CategoryName { get; set; }
+        public List<string> listCategoryId { get; set; }
         [Required]
         public string TopicId { get; set; }
     }

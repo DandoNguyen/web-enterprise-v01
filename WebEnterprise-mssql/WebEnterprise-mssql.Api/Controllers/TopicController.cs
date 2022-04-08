@@ -49,8 +49,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPostsDto = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
-                var postDto = await GetCategoriesNameAsync(post);
-                listPostsDto.Add(postDto);
+                var newPostDto = mapper.Map<PostDetailDto>(post);
+                newPostDto.ListCategoryName = GetListCategoriesName(post);
             }
             return Ok(listPostsDto);
         }
@@ -143,20 +143,13 @@ namespace WebEnterprise_mssql.Api.Controllers
             return BadRequest($"Error in updating Topic {dto.TopicName}");
         }
 
-        private async Task<PostDetailDto> GetCategoriesNameAsync(Posts post) {
-            var listCatePost = await repo.CatePost.FindByCondition(x => x.PostId.Equals(post.PostId.ToString())).ToListAsync();
-            var resultDto = mapper.Map<PostDetailDto>(post);
-            var listNameCate = new List<string>();
-            foreach (var catePostItem in listCatePost)
+        private List<string> GetListCategoriesName(Posts post) {
+            var listCateName = new List<string>();
+            foreach (var cate in post.categories)
             {
-                var cateName = await repo.Categories
-                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(catePostItem.CateId)))
-                    .Select(x => x.CategoryName)
-                    .FirstOrDefaultAsync();
-                listNameCate.Add(cateName);
+                listCateName.Add(cate.CategoryName);
             }
-            resultDto.CategoryName = listNameCate;
-            return resultDto;
+            return listCateName;
         }
         
     }

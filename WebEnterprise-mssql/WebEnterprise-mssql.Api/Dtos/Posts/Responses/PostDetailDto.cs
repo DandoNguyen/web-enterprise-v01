@@ -15,7 +15,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public int ViewsCount { get; set; } 
         public string UserId { get; set; }
         public string username { get; set; }
-        public List<string> CategoryName { get; set; }
+        public List<string> ListCategoryName { get; set; }
         public Guid SubmissionId { get; set; }
         public List<string> FilesPaths { get; set; }
         public List<string> Message { get; set; }

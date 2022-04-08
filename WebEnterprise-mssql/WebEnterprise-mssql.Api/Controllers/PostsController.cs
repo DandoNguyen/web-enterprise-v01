@@ -92,7 +92,14 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 if (post.IsApproved.Equals(true))
                 {
-                    var result = await GetCategoriesNameAsync(post);
+                    var result = new PostDetailDto();
+                    List<string> listCateId = new();
+                    foreach (var cate in post.categories)
+                    {
+                        listCateId.Add(cate.CategoryId.ToString());
+                    }
+                    
+                    result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                     allApprovedPosts.Add(result);
                 }
             }
@@ -110,7 +117,14 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPostsDto = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
-                var result = await GetCategoriesNameAsync(post);
+                var result = mapper.Map<PostDetailDto>(post);
+                List<string> listCateId = new();
+                foreach (var cate in post.categories)
+                {
+                    listCateId.Add(cate.CategoryId.ToString());
+                }
+
+                result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                 listPostsDto.Add(result);
             }
 
@@ -140,26 +154,28 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await GetCategoriesNameAsync(post);
-            
+            var result = new PostDetailDto();
+            mapper.Map(post, result);
+
+            var listCateIdOfThisPost = new List<string>();
+            foreach (var cate in post.categories)
+            {
+                listCateIdOfThisPost.Add(cate.CategoryId.ToString());
+            }
+            result.ListCategoryName = await GetListCategoriesNameAsync(listCateIdOfThisPost);
             result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
             result.FilesPaths = await GetFilePaths(post.PostId);
-
 
             return Ok(result);
         }
 
-        
-
         [HttpPost]
         public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
-            var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
-                .FirstOrDefaultAsync();
-            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            var check = await CheckValidTopic(dto.TopicId);
+            if (check is not null)
             {
-                return BadRequest($"no more Post can be created for Topic {topic.TopicName} after Date {topic.ClosureDate.UtcDateTime}");
+                return BadRequest($"{check}");
             }
 
             if (Authorization is null)
@@ -170,37 +186,24 @@ namespace WebEnterprise_mssql.Api.Controllers
                 });
             }
             var user = await DecodeToken(Authorization);
-            var requestCateName = dto.CategoryName;
             if (ModelState.IsValid)
             {
-                var newPost = mapper.Map<Posts>(dto);
-                newPost.PostId = Guid.NewGuid();
-                foreach (var cateItem in requestCateName)
-                {
-                    var cate = await repo.Categories
-                        .FindByCondition(x => x.CategoryName.ToLower().Equals(cateItem.ToLower()))
-                        .FirstOrDefaultAsync();
-                    var catePost = new CatePost();
-                    catePost.CateId = cate.CategoryId.ToString();
-                    catePost.PostId = newPost.PostId.ToString();
-                    if (ModelState.IsValid)
-                    {
-                        repo.CatePost.Create(catePost);
-                        repo.Save();
-                    }
-                }
-
-                
+                var newPost = mapper.Map<Posts>(dto);               
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
 
-                if (ModelState.IsValid)
-                {
-                    repo.Posts.CreatePostAsync(newPost);
-                    repo.Save();
-                }
-                var newPostDto = await GetCategoriesNameAsync(newPost);
+                //Add Cate Tag To Post
+                newPost.categories = await GetListObjCateAsync(dto.listCategoryId) ;
+
+                CheckEntityEntry(newPost);
+
+                repo.Posts.CreatePostAsync(newPost);
+                repo.Save();
+                
+                var newPostDto = mapper.Map<PostDetailDto>(newPost);
+
+                newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
                 return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.PostId }, newPostDto);
@@ -276,20 +279,62 @@ namespace WebEnterprise_mssql.Api.Controllers
         //=================================================================================================================================
         //=================================================================================================================================
 
-        private async Task<PostDetailDto> GetCategoriesNameAsync(Posts post) {
-            var listCatePost = await repo.CatePost.FindByCondition(x => x.PostId.Equals(post.PostId.ToString())).ToListAsync();
-            var resultDto = mapper.Map<PostDetailDto>(post);
-            var listNameCate = new List<string>();
-            foreach (var catePostItem in listCatePost)
+        private async Task<string> CheckValidTopic(string TopicId) {
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
+                .FirstOrDefaultAsync();
+            if (TopicId is null)
+            {
+                return "Post must create under a Topic";
+            }
+            if (topic is null)
+            {
+                return $"No Topic with ID {TopicId} is available";
+            }
+            if (topic.ClosureDate <= DateTimeOffset.UtcNow)
+            {
+                return $"no more Post can be created for Topic {topic.TopicName} after Date {topic.ClosureDate.UtcDateTime}";
+            }
+            return null;
+        }
+
+        private void CheckEntityEntry(Posts post)
+        {
+            foreach (var cate in post.categories)
+            {
+                var cateEntry = repo.Categories.GetEntityEntry(cate);
+                if (cateEntry.State == EntityState.Detached)
+                {
+                    //context.[Model].Attach(cate);
+                    repo.Categories.AttachEntity(cate);
+                }
+            }
+        }
+
+        private async Task<ICollection<Categories>> GetListObjCateAsync(List<string> listCateId)
+        {
+            var ListObjCate = new List<Categories>();
+            foreach (var cateId in listCateId)
+            {
+                var cate = await repo.Categories
+                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
+                    .FirstOrDefaultAsync();
+                ListObjCate.Add(cate);
+            }
+            return ListObjCate;
+        }
+
+        private async Task<List<string>> GetListCategoriesNameAsync(List<string> listCateId) {
+            var listCateName = new List<string>();
+            foreach (var cateId in listCateId)
             {
                 var cateName = await repo.Categories
-                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(catePostItem.CateId)))
+                    .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
                     .Select(x => x.CategoryName)
                     .FirstOrDefaultAsync();
-                listNameCate.Add(cateName);
+                listCateName.Add(cateName);
             }
-            resultDto.CategoryName = listNameCate;
-            return resultDto;
+            return listCateName;
         }
 
         private async void DeleteFiles(Guid postId, string username)

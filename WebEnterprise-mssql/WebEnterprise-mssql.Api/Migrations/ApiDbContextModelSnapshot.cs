@@ -16,6 +16,21 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.2");
 
+            modelBuilder.Entity("CategoriesPosts", b =>
+                {
+                    b.Property<Guid>("categoriesCategoryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("postsPostId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("categoriesCategoryId", "postsPostId");
+
+                    b.HasIndex("postsPostId");
+
+                    b.ToTable("CategoriesPosts");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -239,23 +254,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.CatePost", b =>
-                {
-                    b.Property<Guid>("CatePostId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CateId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PostId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("CatePostId");
-
-                    b.ToTable("CatePost");
-                });
-
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
                 {
                     b.Property<Guid>("CategoryId")
@@ -354,9 +352,6 @@ namespace WebEnterprise_mssql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("CategoriesCategoryId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Desc")
                         .HasColumnType("TEXT");
 
@@ -404,8 +399,6 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("PostId");
-
-                    b.HasIndex("CategoriesCategoryId");
 
                     b.HasIndex("SubmissionsId");
 
@@ -562,6 +555,21 @@ namespace WebEnterprise_mssql.Migrations
                     b.ToTable("Votes");
                 });
 
+            modelBuilder.Entity("CategoriesPosts", b =>
+                {
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Categories", null)
+                        .WithMany()
+                        .HasForeignKey("categoriesCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebEnterprise_mssql.Api.Models.Posts", null)
+                        .WithMany()
+                        .HasForeignKey("postsPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -654,10 +662,6 @@ namespace WebEnterprise_mssql.Migrations
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Posts", b =>
                 {
-                    b.HasOne("WebEnterprise_mssql.Api.Models.Categories", null)
-                        .WithMany("posts")
-                        .HasForeignKey("CategoriesCategoryId");
-
                     b.HasOne("WebEnterprise_mssql.Api.Models.Submissions", "Submissions")
                         .WithMany("Posts")
                         .HasForeignKey("SubmissionsId");
@@ -717,11 +721,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.Navigation("Posts");
 
                     b.Navigation("Views");
-                });
-
-            modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Categories", b =>
-                {
-                    b.Navigation("posts");
                 });
 
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.Departments", b =>

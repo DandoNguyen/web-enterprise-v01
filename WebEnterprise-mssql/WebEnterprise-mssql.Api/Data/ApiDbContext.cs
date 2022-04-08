@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Api.Data
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public virtual DbSet<Topics> Topics { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
-        public virtual DbSet<CatePost> CatePost { get; set; }
+        //public virtual DbSet<CatePost> CatePost { get; set; }
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
 

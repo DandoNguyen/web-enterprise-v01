@@ -14,7 +14,6 @@ namespace WebEnterprise_mssql.Api.Repository
         private IUserRepository _User;
         private ITopicRepository _Topic;
         private ICategoryRepository _Category;
-        private ICatePostRepository _CatePost;
 
         //===================================================
         public IPostsRepository Posts
@@ -116,17 +115,6 @@ namespace WebEnterprise_mssql.Api.Repository
                     _Category = new CategoryRepository(context);
                 }
                 return _Category;
-            }
-        }
-
-        public ICatePostRepository CatePost {
-            get
-            {
-                if (_CatePost is null)
-                {
-                    _CatePost = new CatePostRepository(context);
-                }
-                return _CatePost;
             }
         }
 

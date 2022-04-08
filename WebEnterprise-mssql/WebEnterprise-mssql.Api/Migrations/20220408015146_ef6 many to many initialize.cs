@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebEnterprise_mssql.Migrations
 {
-    public partial class FixingCateandPost : Migration
+    public partial class ef6manytomanyinitialize : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,16 +22,15 @@ namespace WebEnterprise_mssql.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CatePost",
+                name: "Categories",
                 columns: table => new
                 {
-                    CatePostId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    PostId = table.Column<string>(type: "TEXT", nullable: true),
-                    CateId = table.Column<string>(type: "TEXT", nullable: true)
+                    CategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CategoryName = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CatePost", x => x.CatePostId);
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -309,6 +308,30 @@ namespace WebEnterprise_mssql.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoriesPosts",
+                columns: table => new
+                {
+                    categoriesCategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    postsPostId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoriesPosts", x => new { x.categoriesCategoryId, x.postsPostId });
+                    table.ForeignKey(
+                        name: "FK_CategoriesPosts_Categories_categoriesCategoryId",
+                        column: x => x.categoriesCategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoriesPosts_Posts_postsPostId",
+                        column: x => x.postsPostId,
+                        principalTable: "Posts",
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
@@ -457,6 +480,11 @@ namespace WebEnterprise_mssql.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CategoriesPosts_postsPostId",
+                table: "CategoriesPosts",
+                column: "postsPostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ApplicationUserId",
                 table: "Comments",
                 column: "ApplicationUserId");
@@ -525,7 +553,7 @@ namespace WebEnterprise_mssql.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CatePost");
+                name: "CategoriesPosts");
 
             migrationBuilder.DropTable(
                 name: "Comments");
@@ -544,6 +572,9 @@ namespace WebEnterprise_mssql.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Posts");

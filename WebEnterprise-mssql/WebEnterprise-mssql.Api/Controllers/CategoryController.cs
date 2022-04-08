@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,38 +61,76 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("AddTagToPost")]
         public async Task<IActionResult> AddCateTagToPostAsync(PostCateGoryDto postCategoryDto) {
-            var cate = await repo.Categories.FindByCondition(x => x.CategoryId.Equals(postCategoryDto.CategoryId)).FirstOrDefaultAsync();
-            var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(postCategoryDto.PostId)).FirstOrDefaultAsync();
+                 
+            var cate = await repo.Categories
+                .FindByCondition(x => x.CategoryId
+                    .ToString()
+                    .Equals(postCategoryDto.CategoryId))
+                .FirstOrDefaultAsync();
+
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId
+                    .ToString()
+                    .Equals(postCategoryDto.PostId))
+                .FirstOrDefaultAsync();
             
-            var newCatePost = new CatePost();
-            newCatePost.CateId = cate.CategoryId.ToString();
-            newCatePost.PostId = post.PostId.ToString();
-            if (ModelState.IsValid)
+            try
             {
-                repo.CatePost.Create(newCatePost);
+                cate.posts.Add(post);
+                CheckEntityEntry(cate);
+                repo.Categories.Update(cate);
                 repo.Save();
-                return Ok($"Category Tag {cate.CategoryName} added to post successfully!");
             }
-            return BadRequest("Error in add Tag to Post");
+            catch (Exception ex)
+            {
+                
+                return BadRequest($"Function return an error:\n{ex}");
+            }
+            return Ok($"Seem Fine\nPost ID: {post.PostId}\nCategory ID: {cate.CategoryId}");
+            // var newCatePost = new CatePost();
+            // newCatePost.CateId = cate.CategoryId.ToString();
+            // newCatePost.PostId = post.PostId.ToString();
+            // if (ModelState.IsValid)
+            // {
+            //     repo.CatePost.Create(newCatePost);
+            //     repo.Save();
+            //     return Ok($"Category Tag {cate.CategoryName} added to post successfully!");
+            // }
+            // return BadRequest("Error in add Tag to Post");
         }
 
-        //DELETE delete Cata tag
+        //DELETE delete Cate tag
         [HttpDelete]
         [Route("DeleteCate")]
         public async Task<IActionResult> DeleteCateTagAsync(string cateId) {
-            var cate = await repo.Categories.FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId))).FirstOrDefaultAsync();
-            var listCatePost = await repo.CatePost.FindByCondition(x => x.CateId.Equals(cateId)).ToListAsync();
-            if (listCatePost.Count().Equals(0))
+            var cate = await repo.Categories
+                .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
+                .FirstOrDefaultAsync();
+            
+            try 
             {
                 repo.Categories.Delete(cate);
                 repo.Save();
+                return Ok($"Category {cate.CategoryName} has been deleted");
             }
-            else
+            catch(Exception ex)
             {
-                return BadRequest(
-                    $"All Posts tagged with this Category Tag {cate.CategoryName} must be removed before atempting to delete this Category Tag {cate.CategoryName}");
+                return BadRequest(ex);
             }
-            return Ok($"Category {cate.CategoryName} has been deleted");
+            
+        }
+
+        private void CheckEntityEntry(Categories cate)
+        {
+            foreach (var post in cate.posts)
+            {
+                var postEntry = repo.Posts.GetEntityEntry(post);
+                if (postEntry.State == EntityState.Detached)
+                {
+                    //context.[Model].Attach(cate);
+                    repo.Posts.AttachEntity(post);
+                }
+            }
         }
     }
 }
