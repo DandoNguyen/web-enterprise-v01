@@ -1,5 +1,7 @@
 import React from 'react';
 import '../css/Login.css';
+import Home from './Home';
+// import { useCookies } from 'react-cookie';
 
 
 
@@ -8,11 +10,12 @@ export default class Login extends React.Component{
         super(props)
         this.state={
             "email" : "",
-            "password" : ""
+            "password" : "",
+            isLogin: localStorage.getItem("accessToken") != null
         }
     }
     
-    
+
     setparam = (event) => {
         this.setState({[event.target.name] : event.target.value})
     }
@@ -39,24 +42,27 @@ export default class Login extends React.Component{
         .then(response => {
             console.log(response)
             if (response.ok) {
-                return response.text()
+                return response.json()
             }
             throw Error(response.status)
         })
         .then(result =>{ 
             console.log(result)
-            localStorage.setItem("accessToken", result.Token)
-            console.log(result.Token)
-            alert("Thanh cong")
-
+            localStorage.setItem("accessToken", result.token)
+            this.setState({ isLogin : true })
         })
         .catch(error => { 
             console.log('error', error)
             alert("Email,password are wrong")
-    });;
+        })
+    }
+    onLogoutSucces = () => {
+        this.setState({ isLogin : false })
     }
     render(){
-        return <form className='loginpage'>
+        return <div>
+            {this.state.isLogin ? <Home key={this.state.isLogin} onLogoutSucces={this.onLogoutSucces} /> :
+        <form className='loginpage'>
             <div className="login-form">
             <div className="title">Welcome</div>
             <div className="loginname"> 
@@ -69,9 +75,10 @@ export default class Login extends React.Component{
             </div>
             <div className="btlogin">
                 <button className="loginBT" type='button' onClick={this.login}>Login</button>
-                <a href="/Home" className="fgpassword" >for get Password ?</a>
             </div>
             </div>
         </form>
+            }
+        </div>
     }
 }
