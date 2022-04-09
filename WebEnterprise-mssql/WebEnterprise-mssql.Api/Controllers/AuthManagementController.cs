@@ -56,13 +56,24 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 userDto.username = user.UserName;
                 userDto.email = user.Email;
-                userDto.role = role.ToList();
+                if (!role.Count().Equals(0))
+                {
+                    userDto.role = role.ToList();
+                } else {
+                    try
+                    {
+                        string str = "No Role Assigned";
+                        userDto.role.Add(str);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Console.WriteLine($"Exceptions: {ex}");
+                    }
+                }
                 userDto.message = "Token Verified";
             } else
             {
                 return new UserProfileResponseDto() {
-                    username = null,
-                    email = null,
                     message = "Cannot get JWT Token!!!"
                 };
             }
