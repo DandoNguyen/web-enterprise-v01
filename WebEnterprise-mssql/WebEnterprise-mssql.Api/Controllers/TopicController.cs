@@ -131,7 +131,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("UpdateTopic")]
         public async Task<IActionResult> UpdateTopicAsync(UpdateTopicDto dto) {
             var existingTopic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
                 .FirstOrDefaultAsync();
             if (existingTopic is null)
             {

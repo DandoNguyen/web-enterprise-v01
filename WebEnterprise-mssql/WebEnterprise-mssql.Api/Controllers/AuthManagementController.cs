@@ -97,6 +97,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                     });
                 }
 
+                //email confirmation and email sender
+
                 var newUser = new ApplicationUser() {
                     Email = usersRegistrationDto.Email,
                     UserName = usersRegistrationDto.Username
@@ -106,13 +108,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if(isCreated.Succeeded) {
                     
                     //Add the user to a role
-                    //await userManager.AddToRoleAsync(newUser, "staff");
+                    await userManager.AddToRoleAsync(newUser, "Staff");
 
                     var jwttoken = await GenerateJwtToken(newUser);
 
                     return Ok(new {
-                        jwttoken
-                        //message = "the account was assigned with role Staff by default"
+                        jwttoken,
+                        message = "the account was assigned with role Staff by default"
                     });
 
                 } else {
