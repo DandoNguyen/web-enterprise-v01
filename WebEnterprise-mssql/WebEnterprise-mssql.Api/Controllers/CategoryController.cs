@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
+using AutoMapper;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -18,35 +19,38 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly IRepositoryWrapper repo;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IMapper mapper;
+
         public CategoryController(
             IRepositoryWrapper repo, 
             UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IMapper mapper)
         {
             this.repo = repo;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.mapper = mapper;
         }
 
         //Post Create Cate Tag
         [HttpPost]
         [Route("CreateTag")]
-        public async Task<IActionResult> CreateTaskAsync(string CategoryName) {
+        public async Task<IActionResult> CreateTagAsync(CreateCategoryDto dto) {
             var existingCate = await repo.Categories
-                .FindByCondition(x => x.CategoryName.ToLower().Equals(CategoryName.ToLower()))
+                .FindByCondition(x => x.CategoryName.ToLower().Equals(dto.CategoryName.ToLower()))
                 .FirstOrDefaultAsync();
             if (existingCate is null)
             {
-                var newCate = new Categories();
-                newCate.CategoryName = CategoryName;
+                var newCate = mapper.Map<Categories>(dto);
                 if (ModelState.IsValid)
                 {
                     repo.Categories.Create(newCate);
                     repo.Save();
                 }
-                return Ok($"Category {CategoryName} has been created");
+                return Ok($"Category {dto.CategoryName} has been created");
             }
-            return BadRequest($"There has been a Category Tag with the name {CategoryName}");
+            return BadRequest($"There has been a Category Tag with the name {dto.CategoryName}");
         }
 
         //GET get all cate tag

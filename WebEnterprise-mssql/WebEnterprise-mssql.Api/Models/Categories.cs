@@ -9,6 +9,7 @@ namespace WebEnterprise_mssql.Api.Models
         [KeyAttribute]
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public string Desc { get; set; }
         public Categories()
         {
             this.posts = new HashSet<Posts>();

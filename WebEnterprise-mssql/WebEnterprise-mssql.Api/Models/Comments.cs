@@ -13,6 +13,7 @@ namespace WebEnterprise_mssql.Api.Models
         public DateTimeOffset LastModifiedDate { get; set; }
         [Required]
         public bool IsChild { get; set; }
+        public bool IsAnonymous { get; set; }
         public Guid ParentId { get; set; }
 
         public string userId { get; set; }

@@ -6,6 +6,9 @@ using Xunit;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Repository;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Controllers;
 
 namespace WebEnterprise_mssql.Tests
 {
@@ -18,60 +21,85 @@ namespace WebEnterprise_mssql.Tests
         public void GetAllPostsAsync_WithNoParam_ReturnListOfPosts()
         {
             //Arrange
-            var listPostDtoMock = GetTestPostDto();
+            var listPostMock = GetTestPost();
 
             var repoMock = new Mock<IPostsRepository>();
-            repoMock.Setup(repo => repo.GetAllPostsAsync())
-                .ReturnsAsync(listPostDtoMock);
+            repoMock.Setup(repo => repo.FindAll().ToList())
+                .Returns(listPostMock);
+
+            var controller = new PostsController(repoMock.Object);    
             //Act
 
             //Assert
         }
 
-        private List<PostDto> GetTestPostDto()
+        private List<Posts> GetTestPost()
         {
-            var postDtos = new List<PostDto>();
+            var postDtos = new List<Posts>();
 
-            postDtos.Add(new PostDto()
+            postDtos.Add(new Posts()
             {
                 PostId = Guid.NewGuid(),
                 title = RandomString(It.IsAny<int>()),
+                Desc = RandomString(It.IsAny<int>()),
                 content = RandomString(It.IsAny<int>()),
+                username = RandomString(It.IsAny<int>()),
+                isAnonymous = It.IsAny<bool>(),
+                IsApproved = It.IsAny<bool>(),
+                feedback = RandomString(It.IsAny<int>()),
+                IsAssigned = It.IsAny<bool>(),
+                QACUserId = RandomString(It.IsAny<int>()),
+                TopicId = Guid.NewGuid(),
                 createdDate = DateTimeOffset.UtcNow,
                 LastModifiedDate = DateTimeOffset.UtcNow,
-                ViewsCount = It.IsAny<int>(),
                 UserId = (Guid.NewGuid()).ToString(),
-                username = RandomString(It.IsAny<int>()),
+                
             });
 
-            postDtos.Add(new PostDto()
+            postDtos.Add(new Posts()
             {
                 PostId = Guid.NewGuid(),
                 title = RandomString(It.IsAny<int>()),
+                Desc = RandomString(It.IsAny<int>()),
                 content = RandomString(It.IsAny<int>()),
+                username = RandomString(It.IsAny<int>()),
+                isAnonymous = It.IsAny<bool>(),
+                IsApproved = It.IsAny<bool>(),
+                feedback = RandomString(It.IsAny<int>()),
+                IsAssigned = It.IsAny<bool>(),
+                QACUserId = RandomString(It.IsAny<int>()),
+                TopicId = Guid.NewGuid(),
                 createdDate = DateTimeOffset.UtcNow,
                 LastModifiedDate = DateTimeOffset.UtcNow,
-                ViewsCount = It.IsAny<int>(),
                 UserId = (Guid.NewGuid()).ToString(),
-                username = RandomString(It.IsAny<int>()),
             });
 
-            postDtos.Add(new PostDto()
+            postDtos.Add(new Posts()
             {
                 PostId = Guid.NewGuid(),
                 title = RandomString(It.IsAny<int>()),
+                Desc = RandomString(It.IsAny<int>()),
                 content = RandomString(It.IsAny<int>()),
+                username = RandomString(It.IsAny<int>()),
+                isAnonymous = It.IsAny<bool>(),
+                IsApproved = It.IsAny<bool>(),
+                feedback = RandomString(It.IsAny<int>()),
+                IsAssigned = It.IsAny<bool>(),
+                QACUserId = RandomString(It.IsAny<int>()),
+                TopicId = Guid.NewGuid(),
                 createdDate = DateTimeOffset.UtcNow,
                 LastModifiedDate = DateTimeOffset.UtcNow,
-                ViewsCount = It.IsAny<int>(),
                 UserId = (Guid.NewGuid()).ToString(),
-                username = RandomString(It.IsAny<int>()),
             });
 
             return postDtos;
         }
 
-        public static string RandomString(int length)
+        private static Posts RandomPost(int quantity) {
+
+        }
+
+        private static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)

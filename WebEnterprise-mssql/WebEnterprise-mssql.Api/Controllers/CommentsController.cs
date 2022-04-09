@@ -6,7 +6,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
@@ -41,7 +40,6 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("AllComments")]
         public async Task<List<ParentItemDto>> GetAllComment(string PostId)
         {
-
             // var listParent = await context.Comments
             //     .Where(x => x.PostId.Equals(PostId))
             //     .Where(x => x.IsChild.Equals(false))
@@ -195,7 +193,6 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         private async Task<ParentItemDto> GetChildrenToParent(string ParentId)
         {
-
             // var parent = await context.Comments
             //     .Where(x => x.CommentId.Equals(Guid.Parse(ParentId)))
             //     .FirstOrDefaultAsync();
