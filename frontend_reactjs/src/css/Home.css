@@ -109,9 +109,9 @@
     font-size: 15px;
 }
 .bx-upvote:hover , .bx-downvote:hover , .bx-comment:hover  {
-    background-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
-.bx-upvote:hover , .bx-downvote:hover , .bx-comment:hover  {
+/* .bx-upvote:hover , .bx-downvote:hover , .bx-comment:hover  {
     color: var(--sidebar-color);
-}
+} */
