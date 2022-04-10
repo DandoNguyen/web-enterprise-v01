@@ -35,12 +35,12 @@ namespace WebEnterprise_mssql.Api.Controllers
         //GET get all post of this topic
         [HttpGet]
         [Route("GetAllPostFromTopic")]
-        public async Task<IActionResult> GetListPostsFromThisTopicAsync(string TopicId) {
+        public async Task<IActionResult> GetListPostsFromThisTopicAsync(TopicIdDto dto) {
             var listPosts = await repo.Posts
-                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
                 .ToListAsync();
             var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
+                .FindByCondition(x => x.TopicId.Equals(Guid.Parse(dto.TopicId)))
                 .FirstOrDefaultAsync();
             if (listPosts.Count().Equals(0))
             {
@@ -72,9 +72,9 @@ namespace WebEnterprise_mssql.Api.Controllers
         //GET get Topic Details
         [HttpGet]
         [Route("GetTopicById")]
-        public async Task<IActionResult> GetTopicDetailAsync(string TopicId) {
+        public async Task<IActionResult> GetTopicDetailAsync(TopicIdDto dto) {
             var topic = await repo.Topics
-                .FindByCondition(x => x.TopicId.Equals(TopicId))
+                .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
                 .FirstOrDefaultAsync();
             if (topic is null)
             {

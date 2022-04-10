@@ -21,6 +21,7 @@ using WebEnterprise_mssql.Api.Configuration;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
+using WebEnterprise_mssql.Api.Services;
 
 namespace WebEnterprise_mssql.Api
 {
@@ -38,7 +39,11 @@ namespace WebEnterprise_mssql.Api
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
-            services.AddDbContext<ApiDbContext>(options => 
+            services.AddOptions();                                         
+            var mailsettings = Configuration.GetSection("MailSettings");
+            services.Configure<MailSettings>(mailsettings);
+
+            services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("SQLiteConnection")
                 )
@@ -60,36 +65,50 @@ namespace WebEnterprise_mssql.Api
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 
+            //service DI config
+            services.AddTransient<ISendMailService, SendMailService>();
+
             // var secret = "GRdn5Am12XF9EPfU2d06xazg1LXQ3GdS";
             var secret = Configuration["JwtConfig:Secret"];
             var key = Encoding.ASCII.GetBytes(secret);
-            
-            var TokenValidationParams = new TokenValidationParameters {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    RequireExpirationTime = false,
 
-                    ClockSkew = TimeSpan.Zero
-                };
+            var TokenValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+
+                ClockSkew = TimeSpan.Zero
+            };
 
             services.AddSingleton(TokenValidationParams);
 
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
             })
-            .AddJwtBearer(jwt => {
+            .AddJwtBearer(jwt =>
+            {
                 jwt.SaveToken = true;
                 jwt.TokenValidationParameters = TokenValidationParams;
             });
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ApiDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddEntityFrameworkStores<ApiDbContext>()
+            .AddDefaultTokenProviders();
+
+            services.Configure<EmailConfirmationTokenProviderOptions>(opt =>
+                opt.TokenLifespan = TimeSpan.FromDays(3));
 
             //Enable CORS
             services.AddCors();
@@ -106,7 +125,8 @@ namespace WebEnterprise_mssql.Api
             //Add Automapper to mapping the domains models to Dtos 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers(options => {
+            services.AddControllers(options =>
+            {
                 options.SuppressAsyncSuffixInActionNames = false;
             }).AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>
@@ -128,7 +148,8 @@ namespace WebEnterprise_mssql.Api
             app.UseHttpsRedirection();
 
             //Enable CORS
-            app.UseCors(options => {
+            app.UseCors(options =>
+            {
                 options.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();

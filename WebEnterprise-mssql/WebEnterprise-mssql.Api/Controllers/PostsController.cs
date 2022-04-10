@@ -452,6 +452,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             return listOfPaths;
         }
 
+        // private async Task DownloadFileAsync(List<string> filesPath) {
+        //     var responseStream = new MemoryStream();
+
+        // }
         private async Task<List<string>> GetFilePaths(Guid postId)
         {
 

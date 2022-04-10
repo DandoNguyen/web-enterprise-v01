@@ -202,3 +202,6 @@ F:\web\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\
 F:\web\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\net5.0\WebEnterprise-mssql.Api.RazorTargetAssemblyInfo.cache
 F:\web\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\net5.0\WebEnterprise-mssql.Api.csproj.CopyComplete
 F:\web\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\net5.0\WebEnterprise-mssql.Api.genruntimeconfig.cache
+C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\bin\Debug\net5.0\MailKit.dll
+C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\bin\Debug\net5.0\MimeKit.dll
+C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\bin\Debug\net5.0\BouncyCastle.Crypto.dll

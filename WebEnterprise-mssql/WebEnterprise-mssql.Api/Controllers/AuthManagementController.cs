@@ -16,6 +16,7 @@ using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WebEnterprise_mssql.Api.Services;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -27,20 +28,23 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly JwtConfig jwtConfig;
         private readonly TokenValidationParameters tokenValidationParams;
         private readonly ApiDbContext context;
+        private readonly ISendMailService mailService;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<AuthManagementController> logger;
 
         public AuthManagementController(
             ILogger<AuthManagementController> logger,
-            UserManager<ApplicationUser> userManager, 
+            UserManager<ApplicationUser> userManager,
             IOptionsMonitor<JwtConfig> optionsManager,
             TokenValidationParameters tokenValidationParams,
             RoleManager<IdentityRole> roleManager,
-            ApiDbContext context)
+            ApiDbContext context,
+            ISendMailService mailService)
         {
             this.logger = logger;
             this.roleManager = roleManager;
             this.context = context;
+            this.mailService = mailService;
             this.userManager = userManager;
             this.jwtConfig = optionsManager.CurrentValue;
             this.tokenValidationParams = tokenValidationParams;
@@ -48,7 +52,8 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetUser")]
-        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization) {
+        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization)
+        {
             var user = await DecodeToken(Authorization);
             var userDto = new UserProfileResponseDto();
             var role = await userManager.GetRolesAsync(user);
@@ -59,7 +64,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (!role.Count().Equals(0))
                 {
                     userDto.role = role.ToList();
-                } else {
+                }
+                else
+                {
                     try
                     {
                         string str = "No Role Assigned";
@@ -71,60 +78,82 @@ namespace WebEnterprise_mssql.Api.Controllers
                     }
                 }
                 userDto.message = "Token Verified";
-            } else
+            }
+            else
             {
-                return new UserProfileResponseDto() {
+                return new UserProfileResponseDto()
+                {
                     message = "Cannot get JWT Token!!!"
                 };
             }
             return userDto;
         }
-        
-        [HttpPost] 
+
+        [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UsersRegistrationDto usersRegistrationDto) {
-            
-            if(ModelState.IsValid) {
-                
+        public async Task<IActionResult> RegisterAsync([FromBody] UsersRegistrationDto usersRegistrationDto)
+        {
+
+            if (ModelState.IsValid)
+            {
+
                 var existingEmail = await userManager.FindByEmailAsync(usersRegistrationDto.Email);
-                
-                if(existingEmail is not null) {
-                    return BadRequest(new RegistrationResponseDto() {
-                       Errors = new List<string>()  {
+
+                if (existingEmail is not null)
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
+                        Errors = new List<string>()  {
                            "User Email already exist!!!"
                        },
-                       Success = false
+                        Success = false
                     });
                 }
 
-                //email confirmation and email sender
-
-                var newUser = new ApplicationUser() {
+                var newUser = new ApplicationUser()
+                {
                     Email = usersRegistrationDto.Email,
                     UserName = usersRegistrationDto.Username
                 };
 
                 var isCreated = await userManager.CreateAsync(newUser, usersRegistrationDto.Password);
-                if(isCreated.Succeeded) {
-                    
+
+                //email confirmation and email sender
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = newUser.Email }, Request.Scheme);
+                var message = new MailContent();
+                message.To = newUser.Email;
+                message.Subject = "Email Confirmation Link";
+                message.Body = $"Hello, user {newUser.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
+                await mailService.SendMail(message);
+
+                if (isCreated.Succeeded)
+                {
+
                     //Add the user to a role
-                    await userManager.AddToRoleAsync(newUser, "Staff");
+                    //await userManager.AddToRoleAsync(newUser, "Staff");
 
                     var jwttoken = await GenerateJwtToken(newUser);
 
-                    return Ok(new {
+                    return Ok(new
+                    {
                         jwttoken,
-                        message = "the account was assigned with role Staff by default"
+                        //message = "the account was assigned with role Staff by default",
+                        confirmationMessage = "A new confirmation email has been sent to your registered email, please chenk you inbex!"
                     });
 
-                } else {
-                    return BadRequest(new RegistrationResponseDto() {
+                }
+                else
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
                         Errors = isCreated.Errors.Select(x => x.Description).ToList(),
                         Success = false
                     });
                 }
             }
-            return BadRequest(new RegistrationResponseDto() {
+            return BadRequest(new RegistrationResponseDto()
+            {
                 Errors = new List<string>() {
                     "Invalid Payload!!!"
                 },
@@ -132,15 +161,36 @@ namespace WebEnterprise_mssql.Api.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Error");
+            var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
+            return Ok(result.Succeeded ? $"<h1>Your email: {email} has been confirmed!!!<h1>" : "Error");
+        }
+        // [HttpGet]
+        // [Route("SuccessRegistration")]
+        // public IActionResult SuccessRegistration()
+        // {
+        //     return View();
+        // }
+
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto userLogin) {
-            
-            if(ModelState.IsValid) {
+        public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto userLogin)
+        {
+
+            if (ModelState.IsValid)
+            {
                 var existingUser = await userManager.FindByEmailAsync(userLogin.Email);
 
-                if(existingUser is null) {
-                    return BadRequest(new RegistrationResponseDto() {
+                if (existingUser is null)
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
                         Errors = new List<string>() {
                             "Email is not exist!!"
                         }
@@ -149,10 +199,24 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 var isCorrect = await userManager.CheckPasswordAsync(existingUser, userLogin.Password);
 
-                if(!isCorrect) {
-                    return BadRequest(new RegistrationResponseDto() {
+                if (!isCorrect)
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
                         Errors = new List<string>() {
                             "Password is not correct!!"
+                        }
+                    });
+                }
+
+                var isEmailConfirmed = await userManager.IsEmailConfirmedAsync(existingUser);
+
+                if (!isEmailConfirmed)
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
+                        Errors = new List<string>() {
+                            "Email is not confirmed!!!"
                         }
                     });
                 }
@@ -161,7 +225,8 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 return Ok(jwtToken);
             }
-            return BadRequest(new RegistrationResponseDto() {
+            return BadRequest(new RegistrationResponseDto()
+            {
                 Errors = new List<string>() {
                     "Ivalid Paylaod"
                 }
@@ -170,12 +235,16 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("RefreshToken")]
-        public async Task<IActionResult> Refreshtoken([FromBody] TokenRequestDto tokenRequestDto) {
-            if(ModelState.IsValid) {
+        public async Task<IActionResult> Refreshtoken([FromBody] TokenRequestDto tokenRequestDto)
+        {
+            if (ModelState.IsValid)
+            {
                 var result = await VerifyAndGenerateToken(tokenRequestDto);
 
-                if(result is null) {
-                    return BadRequest(new RegistrationResponseDto() {
+                if (result is null)
+                {
+                    return BadRequest(new RegistrationResponseDto()
+                    {
                         Errors = new List<string>() {
                             "Invalid Token!!!",
                         },
@@ -185,7 +254,8 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 return Ok(result);
             }
-            return BadRequest(new RegistrationResponseDto() {
+            return BadRequest(new RegistrationResponseDto()
+            {
                 Errors = new List<string>() {
                     "Invalid Payload!!!",
                 },
@@ -216,14 +286,16 @@ namespace WebEnterprise_mssql.Api.Controllers
             return user;
         }
 
-        private async Task<AuthResult> GenerateJwtToken(ApplicationUser user) {
+        private async Task<AuthResult> GenerateJwtToken(ApplicationUser user)
+        {
             var JwtTokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(jwtConfig.Secret);
 
             var claims = await GetAllValidclaims(user);
 
-            var tokenDescriptor = new SecurityTokenDescriptor {
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(jwtConfig.ExpiryTimeFrame),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -232,7 +304,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             var token = JwtTokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = JwtTokenHandler.WriteToken(token);
 
-            var refreshToken = new RefreshToken() {
+            var refreshToken = new RefreshToken()
+            {
                 JwtId = token.Id,
                 IsUsed = false,
                 IsRevoked = false,
@@ -245,7 +318,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             await context.RefreshTokens.AddAsync(refreshToken);
             await context.SaveChangesAsync();
 
-            return new AuthResult() {
+            return new AuthResult()
+            {
                 Token = jwtToken,
                 Success = true,
                 //RefreshToken = refreshToken.Token
@@ -254,7 +328,8 @@ namespace WebEnterprise_mssql.Api.Controllers
 
 
         //Get all vailda Claims for the user
-        private async Task<List<Claim>> GetAllValidclaims(ApplicationUser user) {
+        private async Task<List<Claim>> GetAllValidclaims(ApplicationUser user)
+        {
             var options = new IdentityOptions();
 
             var claims = new List<Claim> {
@@ -276,7 +351,8 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 var role = await roleManager.FindByNameAsync(userRole);
 
-                if(role is not null) {
+                if (role is not null)
+                {
                     var roleClaims = await roleManager.GetClaimsAsync(role);
                     foreach (var roleClaim in roleClaims)
                     {
@@ -289,7 +365,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
 
-        private async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto) {
+        private async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto)
+        {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             try
@@ -298,11 +375,12 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequestDto.Token, tokenValidationParams, out var validatedToken);
 
                 // Validation 2 - Validate encryption alg
-                if(validatedToken is JwtSecurityToken jwtSecurityToken)
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
                 {
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
 
-                    if(result == false) {
+                    if (result == false)
+                    {
                         return null;
                     }
                 }
@@ -312,8 +390,10 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
 
-                if(expiryDate > DateTime.UtcNow) {
-                    return new AuthResult() {
+                if (expiryDate > DateTime.UtcNow)
+                {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token has not yet expired"
@@ -324,9 +404,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 // validation 4 - validate existence of the token
                 var storedToken = await context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequestDto.RefreshToken);
 
-                if(storedToken == null)
+                if (storedToken == null)
                 {
-                    return new AuthResult() {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token does not exist"
@@ -335,9 +416,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
 
                 // Validation 5 - validate if used
-                if(storedToken.IsUsed)
+                if (storedToken.IsUsed)
                 {
-                    return new AuthResult() {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token has been used"
@@ -346,9 +428,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
 
                 // Validation 6 - validate if revoked
-                if(storedToken.IsRevoked)
+                if (storedToken.IsRevoked)
                 {
-                    return new AuthResult() {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token has been revoked"
@@ -359,9 +442,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 // Validation 7 - validate the id
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-                if(storedToken.JwtId != jti)
+                if (storedToken.JwtId != jti)
                 {
-                    return new AuthResult() {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token doesn't match"
@@ -393,17 +477,22 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             catch (Exception ex)
             {
-                if(ex.Message.Contains("Lifetime validation failed. The token is expired.")) {
+                if (ex.Message.Contains("Lifetime validation failed. The token is expired."))
+                {
 
-                      return new AuthResult() {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Token has expired please re-login"
                         }
                     };
-                
-                } else {
-                      return new AuthResult() {
+
+                }
+                else
+                {
+                    return new AuthResult()
+                    {
                         Success = false,
                         Errors = new List<string>() {
                             "Something went wrong."
@@ -420,10 +509,11 @@ namespace WebEnterprise_mssql.Api.Controllers
             return datetimeVal;
         }
 
-        private string RandomString(int length) {
+        private string RandomString(int length)
+        {
             var random = new Random();
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYIZ0123456789";
-            
+
             return new string(Enumerable.Repeat(chars, length)
                                 .Select(x => x[random.Next(x.Length)]).ToArray());
         }

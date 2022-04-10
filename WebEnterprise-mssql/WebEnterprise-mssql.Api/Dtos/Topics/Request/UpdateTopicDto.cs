@@ -9,7 +9,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string TopicId { get; set; }
         public string TopicName { get; set; }
         
-        public DateTimeOffset ClosreDate { get; set; }
+        public DateTimeOffset ClosureDate { get; set; }
         
         public DateTimeOffset FinalClosureDate { get; set; }
     }

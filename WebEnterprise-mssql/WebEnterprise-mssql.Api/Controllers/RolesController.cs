@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Dtos;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -30,23 +31,24 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRoleAsync(string name) {
+        [Route("CreateRole")]
+        public async Task<IActionResult> CreateRoleAsync(CreateRoleNameDto dto) {
             //Check if the Role is exist
-            var existingRole = await roleManager.RoleExistsAsync(name);
+            var existingRole = await roleManager.RoleExistsAsync(dto.RoleName);
 
             if(!existingRole) //Check role exist status
             {
                 //Check the Role is created success
-                var roleResult = await roleManager.CreateAsync(new IdentityRole(name));
+                var roleResult = await roleManager.CreateAsync(new IdentityRole(dto.RoleName));
                 if(roleResult.Succeeded) {
-                    logger.LogInformation($"the Role {name} has been created successfully!!!");
+                    logger.LogInformation($"the Role {dto.RoleName} has been created successfully!!!");
                     return Ok(new {
-                        result = $"the Role {name} has been added successfully"
+                        result = $"the Role {dto.RoleName} has been added successfully"
                     });
                 } else {
-                    logger.LogInformation($"the Role {name} has NOT been created!!!");                    
+                    logger.LogInformation($"the Role {dto.RoleName} has NOT been created!!!");                    
                     return BadRequest(new {
-                        error = $"the Role {name} has NOT been added!!!"
+                        error = $"the Role {dto.RoleName} has NOT been added!!!"
                     });
                 }
             }
