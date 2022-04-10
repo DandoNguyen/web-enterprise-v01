@@ -1,11 +1,53 @@
-import React,{ useState } from 'react';
+import React,{ useEffect, useMemo, useState } from 'react';
 import '../css/Management.css';
 import Modal from './Modal';
 import Navbar from './Navbar';
+import ModalEditUser from './ModalEditUser'
 
 
 function Management () {
   const [modalOpen, setModalOpen] = useState(false);
+  const [ModalEditUserOpen, setModalEditUserOpen] = useState(false);
+  const [userAccounts,setuserAccounts] = useState([])
+  
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+    
+
+    fetch("https://localhost:5001/api/Roles/GetAllUsers", requestOptions)
+      .then(response => response.json())
+      .then(data =>{
+        setuserAccounts(data)
+      })
+      .catch(error => console.log('error', error));
+  }, [])
+  
+  console.log(userAccounts)
+
+    
+    const listAccounts = userAccounts.map( data => (
+      <tr key={data.id}>
+      <td >{data.email}</td>
+      <td >{data.userName}</td>
+      <td >{data.id}</td>
+      <td>
+        <button className='submit-user' onClick={() => {setModalEditUserOpen(true);}}>Edit</button>
+        {ModalEditUserOpen && <ModalEditUser setOpenModalEditUser={setModalEditUserOpen} />}
+      </td>
+      <td>
+        <button className='submit-user'>Delete</button>
+      </td>
+    </tr>
+    ))
+  
+
 	return <div>
     <Navbar/>
     <section className='Managementpage'>
@@ -15,35 +57,18 @@ function Management () {
       {modalOpen && <Modal setOpenModal={setModalOpen} />}
       </div>
       <table className='tableuser'>
-        <tr>
-          <th>Email</th>
-          <th>Username</th>
-          <th>Password</th>
-          <th>Role</th>
-          <th>Edit</th>
-          <th></th>
-        </tr>
-        <tr>
-        <td>NamHPGCS18027@FPT.EDU.VN</td>
-        <td>Namho</td>
-        <td>98999999999</td>
-        <td>
-          <select name="role" id="userrole">
-          <option value="Admin">Admin</option>
-          <option value="Role1">Role1</option>
-          <option value="Role2">Role2</option>
-          <option value="Role3">Role3</option>
-        </select>
-        </td>
-        <td>
-          <select name="action" id="action">
-          <option value="Edit">Null</option>
-          <option value="Delete">Delete</option>
-          <option value="Update">Update</option>
-        </select>
-        </td>
-        <td><button className='submit-user'>submit</button></td>
-      </tr>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Id User</th>
+            <th>Edit User</th>
+            <th>Delete User</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listAccounts}
+        </tbody>
     </table>
   </section>
   </div>
