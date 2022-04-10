@@ -133,11 +133,11 @@ namespace WebEnterprise_mssql.Api.Controllers
                     //Add the user to a role
                     //await userManager.AddToRoleAsync(newUser, "Staff");
 
-                    var jwttoken = await GenerateJwtToken(newUser);
+                    //var jwttoken = await GenerateJwtToken(newUser);
 
                     return Ok(new
                     {
-                        jwttoken,
+                        //jwttoken,
                         //message = "the account was assigned with role Staff by default",
                         confirmationMessage = "A new confirmation email has been sent to your registered email, please chenk you inbex!"
                     });
@@ -169,14 +169,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             if (user == null)
                 return BadRequest("Error");
             var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
-            return Ok(result.Succeeded ? $"<h1>Your email: {email} has been confirmed!!!<h1>" : "Error");
+            return Ok(result.Succeeded ? $"Your email: {email} has been confirmed!!!" : "Error");
         }
-        // [HttpGet]
-        // [Route("SuccessRegistration")]
-        // public IActionResult SuccessRegistration()
-        // {
-        //     return View();
-        // }
 
         [HttpPost]
         [Route("Login")]

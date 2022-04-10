@@ -27,10 +27,10 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly IRepositoryWrapper repo;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
-        public PostsController( 
-            IMapper mapper, 
-            UserManager<ApplicationUser> userManager, 
-            IConfiguration configuration, 
+        public PostsController(
+            IMapper mapper,
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration,
             IRepositoryWrapper repo)
         {
             this.configuration = configuration;
@@ -43,7 +43,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet]
         [Route("QACListPost")]
         [Authorize(Roles = "QAC")]
-        public async Task<IActionResult> GetAllUnAssignedPosts() {
+        public async Task<IActionResult> GetAllUnAssignedPosts()
+        {
             var listPosts = await repo.Posts.FindAll().ToListAsync();
             var listPostsDto = new List<PostDto>();
             foreach (var post in listPosts)
@@ -60,7 +61,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("AssignToQAC")]
         [Authorize(Roles = "QAC")]
-        public async Task<IActionResult> AssignedPostToQAC(PostQACDto postQACDto) {
+        public async Task<IActionResult> AssignedPostToQAC(PostQACDto postQACDto)
+        {
             var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(postQACDto.postId)).FirstOrDefaultAsync();
             var QAC = await userManager.FindByIdAsync(postQACDto.QACId.ToString());
             post.QACUserId = QAC.Id;
@@ -73,12 +75,13 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("QACfeedback")]
         [Authorize(Roles = "QAC")]
-        public async Task<IActionResult> GetFeedbackFromQAC(QACFeedbackDto QACFeedbackDto) {
+        public async Task<IActionResult> GetFeedbackFromQAC(QACFeedbackDto QACFeedbackDto)
+        {
             var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(QACFeedbackDto.postId)).FirstOrDefaultAsync();
             mapper.Map(QACFeedbackDto, post);
             repo.Posts.Update(post);
             repo.Save();
-            return new JsonResult("Feedback Received!!!") {StatusCode = 200};
+            return new JsonResult("Feedback Received!!!") { StatusCode = 200 };
         }
 
         //Staff Section
@@ -101,7 +104,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         listCateId.Add(cate.CategoryId.ToString());
                     }
-                    
+
                     result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                     allApprovedPosts.Add(result);
                 }
@@ -109,7 +112,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             //var postsDto = mapper.Map<List<PostDto>>(listPosts);
             if (allApprovedPosts.Count().Equals(0))
             {
-                return new JsonResult("No Posts Avalaible") {StatusCode = 404};
+                return new JsonResult("No Posts Avalaible") { StatusCode = 404 };
             }
             return Ok(allApprovedPosts);
         }
@@ -120,7 +123,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         {
             var listPosts = await repo.Posts
                 .GetAllPostsFromUserIDAsync(getPostReqDto.userId);
-            
+
             var listPostsDto = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
@@ -195,19 +198,19 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await DecodeToken(Authorization);
             if (ModelState.IsValid)
             {
-                var newPost = mapper.Map<Posts>(dto);               
+                var newPost = mapper.Map<Posts>(dto);
                 newPost.createdDate = DateTimeOffset.UtcNow;
                 newPost.UserId = user.Id;
                 newPost.username = user.UserName;
 
                 //Add Cate Tag To Post
-                newPost.categories = await GetListObjCateAsync(dto.listCategoryId) ;
+                newPost.categories = await GetListObjCateAsync(dto.listCategoryId);
 
                 CheckEntityEntry(newPost);
 
                 repo.Posts.CreatePostAsync(newPost);
                 repo.Save();
-                
+
                 var newPostDto = mapper.Map<PostDetailDto>(newPost);
 
                 newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
@@ -263,7 +266,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return Forbid($"Post cannot be removed for Topic {topic.TopicName} after Date: {topic.ClosureDate.UtcDateTime}");
             }
-            
+
             var existingPost = await repo.Posts
                 .FindByCondition(x => x.PostId.Equals(dto.PostId))
                 .FirstOrDefaultAsync();
@@ -278,7 +281,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             catch (System.Exception ex)
             {
-                return new JsonResult($"Error Message: {ex}") {StatusCode = 500};
+                return new JsonResult($"Error Message: {ex}") { StatusCode = 500 };
             }
 
             //Delete Files in directory
@@ -293,7 +296,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         //=================================================================================================================================
         //=================================================================================================================================
 
-        private async Task<string> CheckValidTopic(string TopicId) {
+        private async Task<string> CheckValidTopic(string TopicId)
+        {
             var topic = await repo.Topics
                 .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
                 .FirstOrDefaultAsync();
@@ -338,7 +342,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             return ListObjCate;
         }
 
-        private async Task<List<string>> GetListCategoriesNameAsync(List<string> listCateId) {
+        private async Task<List<string>> GetListCategoriesNameAsync(List<string> listCateId)
+        {
             var listCateName = new List<string>();
             foreach (var cateId in listCateId)
             {
@@ -395,7 +400,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         }
                     }
                 }
-                
+
             }
             else
             {
@@ -452,15 +457,16 @@ namespace WebEnterprise_mssql.Api.Controllers
             return listOfPaths;
         }
 
-        // private async Task DownloadFileAsync(List<string> filesPath) {
-        //     var responseStream = new MemoryStream();
-
-        // }
+        private IActionResult GetImageAsync(string filePath)
+        {
+            byte[] b = System.IO.File.ReadAllBytes(filePath);
+            return File(b, "image/jpeg");
+        }
         private async Task<List<string>> GetFilePaths(Guid postId)
         {
 
             var listFilePaths = await repo.FilesPaths.GetListStringFilesPath(postId.ToString());
-            
+
             if (!listFilePaths.Count().Equals(0))
             {
                 return listFilePaths;
@@ -507,7 +513,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         userId = userID,
                         postId = postId
                     };
-                    
+
                     repo.Views.Create(newView);
                     repo.Save();
                 }
