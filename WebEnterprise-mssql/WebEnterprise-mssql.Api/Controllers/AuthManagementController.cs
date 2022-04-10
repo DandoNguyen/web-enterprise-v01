@@ -118,14 +118,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 var isCreated = await userManager.CreateAsync(newUser, usersRegistrationDto.Password);
 
-                //email confirmation and email sender
-                var token = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
-                var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = newUser.Email }, Request.Scheme);
-                var message = new MailContent();
-                message.To = newUser.Email;
-                message.Subject = "Email Confirmation Link";
-                message.Body = $"Hello, user {newUser.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
-                await mailService.SendMail(message);
+                await SendConfirmEmail(newUser);
 
                 if (isCreated.Succeeded)
                 {
@@ -139,7 +132,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         //jwttoken,
                         //message = "the account was assigned with role Staff by default",
-                        confirmationMessage = "A new confirmation email has been sent to your registered email, please chenk you inbex!"
+                        confirmationMessage = "A new confirmation email has been sent to your registered email, please chenk you inbox!"
                     });
 
                 }
@@ -161,6 +154,33 @@ namespace WebEnterprise_mssql.Api.Controllers
             });
         }
 
+        [HttpPost]
+        [Route("GetConfirmLink")]
+        public async Task<IActionResult> GetConfirmEmailLink(EmailDto dto)
+        {
+            var user = await userManager.FindByEmailAsync(dto.email);
+            if (user is null)
+            {
+                return NotFound($"Cannot find user provided by email: {dto.email}");
+            }
+            
+            await SendConfirmEmail(user);
+
+            return Ok(new {
+                message = $"A Confirmation Email has been sent to {dto.email}"
+            });
+        }
+
+        private async Task SendConfirmEmail(ApplicationUser user) {
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = user.Email }, Request.Scheme);
+            var message = new MailContent();
+            message.To = user.Email;
+            message.Subject = "Email Confirmation Link";
+            message.Body = $"Hello, user {user.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
+            await mailService.SendMail(message);
+        }
+
         [HttpGet]
         [Route("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string token, string email)
@@ -169,7 +189,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             if (user == null)
                 return BadRequest("Error");
             var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
-            return Ok(result.Succeeded ? $"Your email: {email} has been confirmed!!!" : "Error");
+            return Ok(result.Succeeded ? $"Your email: {email} has been confirmed!!!" : "The confirmation link has been corrupt or expired!!!");
         }
 
         [HttpPost]
