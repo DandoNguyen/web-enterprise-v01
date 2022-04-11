@@ -180,7 +180,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
+        [Route("CreatePost")]
+        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
             var check = await CheckValidTopic(dto.TopicId);
             if (check is not null)

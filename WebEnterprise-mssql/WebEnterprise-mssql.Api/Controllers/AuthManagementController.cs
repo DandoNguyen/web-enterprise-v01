@@ -188,8 +188,20 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await userManager.FindByEmailAsync(email);
             if (user == null)
                 return BadRequest("Error");
+
             var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
+
             return Ok(result.Succeeded ? $"Your email: {email} has been confirmed!!!" : "The confirmation link has been corrupt or expired!!!");
+        }
+
+        //Development Purposes Must Delete Later
+        [HttpPost]
+        [Route("ConfirmEmailDev")]
+        public async Task<IActionResult> ConfirmEmailDev(string email) {
+            var user = await userManager.FindByEmailAsync(email);
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            return Ok("Email Dev Confirm!");
         }
 
         [HttpPost]
