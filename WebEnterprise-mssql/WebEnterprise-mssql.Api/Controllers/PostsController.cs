@@ -260,7 +260,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var listQac = new List<ApplicationUser>();
                 try
                 {
-                    listQac = listUser.Where(x => x.RoleName.Equals("QAC")).ToList();
+                    listQac = listUser.Where(x => x.RoleName.RoleName.Equals("QAC")).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -337,7 +337,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             //Get all QAC role users
             var listUser = await userManager.Users.ToListAsync();
-            var listQac = listUser.Where(x => x.RoleName.Equals("QAC")).ToList();
+            var listQac = listUser.Where(x => x.RoleName.RoleName.Equals("QAC")).ToList();
 
             foreach (var qac in listQac)
             {
