@@ -130,3 +130,15 @@ table {
     margin-top: 2px;
     margin-bottom: 30px;
 }
+
+.Downloadbtn{
+    height: 50px;
+    width: 100px;
+    margin: 12px;
+    transition: var(--tran-03);
+    border-radius: 23px;
+    float: right;
+    bottom: 0;
+    background-color: #FFDD47;
+    
+}
