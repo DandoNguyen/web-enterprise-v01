@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using WebEnterprise_mssql.Api.Repository;
 using Microsoft.EntityFrameworkCore;
+using WebEnterprise_mssql.Api.Services;
+using Microsoft.Extensions.Logging;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -25,16 +27,25 @@ namespace WebEnterprise_mssql.Api.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly IRepositoryWrapper repo;
+        private readonly ISendMailService mailService;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ILogger<PostsController> logger;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
         public PostsController(
             IMapper mapper,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
-            IRepositoryWrapper repo)
+            IRepositoryWrapper repo,
+            ISendMailService mailService,
+            RoleManager<IdentityRole> roleManager,
+            ILogger<PostsController> logger)
         {
             this.configuration = configuration;
             this.repo = repo;
+            this.mailService = mailService;
+            this.roleManager = roleManager;
+            this.logger = logger;
             this.userManager = userManager;
             this.mapper = mapper;
         }
@@ -45,11 +56,13 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Authorize(Roles = "QAC")]
         public async Task<IActionResult> GetAllUnAssignedPosts()
         {
-            var listPosts = await repo.Posts.FindAll().ToListAsync();
+            var listPosts = await repo.Posts
+                .FindAll()
+                .ToListAsync();
             var listPostsDto = new List<PostDto>();
             foreach (var post in listPosts)
             {
-                if (post.IsApproved.Equals(false) && post.IsAssigned.Equals(false))
+                if (post.IsApproved.Equals(null) && post.IsAssigned.Equals(false))
                 {
                     var newPostDto = mapper.Map<PostDto>(post);
                     listPostsDto.Add(newPostDto);
@@ -61,13 +74,19 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("AssignToQAC")]
         [Authorize(Roles = "QAC")]
-        public async Task<IActionResult> AssignedPostToQAC(PostQACDto postQACDto)
+        public async Task<IActionResult> AssignedPostToQAC(PostQACDto dto)
         {
-            var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(postQACDto.postId)).FirstOrDefaultAsync();
-            var QAC = await userManager.FindByIdAsync(postQACDto.QACId.ToString());
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(dto.postId))
+                .FirstOrDefaultAsync();
+            var QAC = await userManager.FindByIdAsync(dto.QACId.ToString());
+
             post.QACUserId = QAC.Id;
             post.IsAssigned = true;
+
+            repo.Posts.Update(post);
             repo.Save();
+
             var postDto = mapper.Map<PostDto>(post);
             return RedirectToAction(nameof(GetPostByIDAsync), postDto);
         }
@@ -75,12 +94,35 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("QACfeedback")]
         [Authorize(Roles = "QAC")]
-        public async Task<IActionResult> GetFeedbackFromQAC(QACFeedbackDto QACFeedbackDto)
+        public async Task<IActionResult> GetFeedbackFromQAC(QACFeedbackDto dto)
         {
-            var post = await repo.Posts.FindByCondition(x => x.PostId.Equals(QACFeedbackDto.postId)).FirstOrDefaultAsync();
-            mapper.Map(QACFeedbackDto, post);
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(dto.postId))
+                .FirstOrDefaultAsync();
+            mapper.Map(dto, post);
             repo.Posts.Update(post);
             repo.Save();
+
+            //Send Notification to Author
+            var today = DateTime.UtcNow;
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(post.TopicId))
+                .FirstOrDefaultAsync();
+            MailContent mailContent = new();
+            var author = await userManager.FindByIdAsync(post.UserId);
+            mailContent.To = author.Email;
+            mailContent.Subject = $"Your Post {post.title} has been reviewed";
+            switch(dto.IsApproved) {
+                case true: 
+                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been approved by a QAC on {today}"; 
+                    break;
+                
+                case false:  
+                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been rejected on {today}";
+                    break;
+            }
+
+            //await mailService.SendMail(mailContent);
             return new JsonResult("Feedback Received!!!") { StatusCode = 200 };
         }
 
@@ -158,7 +200,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             //     });
             // }
 
-
             var post = await repo.Posts.GetPostByIDAsync(getPostReqDto.postId);
             if (post is null)
             {
@@ -181,7 +222,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("CreatePost")]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> CreatePostAsync([FromForm] CreatePostDto dto, [FromHeader] string Authorization, [FromForm] List<IFormFile> files)
         {
             var check = await CheckValidTopic(dto.TopicId);
             if (check is not null)
@@ -212,6 +253,48 @@ namespace WebEnterprise_mssql.Api.Controllers
                 repo.Posts.CreatePostAsync(newPost);
                 repo.Save();
 
+                //Get all QAC role users
+                var listUser = await userManager.Users.ToListAsync();
+                var listQac = new List<ApplicationUser>();
+                try
+                {
+                    listQac = listUser.Where(x => x.RoleName.Equals("QAC")).ToList();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogInformation($"Try get list of QAC users exception: {ex.Message}");
+                }
+                //Send Notification through mails
+                if (listQac is not null)
+                {
+                    if (!listQac.Count().Equals(0))
+                    {
+                        foreach (var qac in listQac)
+                        {
+                            try
+                            {
+                                MailContent mailContent = new();
+                                mailContent.To = qac.Email;
+    
+                                var topicName = await repo.Topics
+                                    .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
+                                    .Select(x => x.TopicName)
+                                    .FirstOrDefaultAsync();
+                                var subject = $"New Post created by {user.UserName} on {newPost.createdDate}";
+                                mailContent.Subject = subject;
+    
+                                var body = $"User {user.UserName} has created a new post for Topic {topicName}:\nTitle: {newPost.title} \nDescription: {newPost.Desc} \n";
+                                mailContent.Body = body;
+                                //await mailService.SendMail(mailContent);
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogInformation($"Send Message Exception: {ex}");
+                            }
+                        }
+                    }
+    
+                }
                 var newPostDto = mapper.Map<PostDetailDto>(newPost);
 
                 newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
@@ -249,6 +332,23 @@ namespace WebEnterprise_mssql.Api.Controllers
             // await context.SaveChangesAsync();
             repo.Posts.Update(existingPost);
             repo.Save();
+
+            //Get all QAC role users
+            var listUser = await userManager.Users.ToListAsync();
+            var listQac = listUser.Where(x => x.RoleName.Equals("QAC")).ToList();
+
+            foreach (var qac in listQac)
+            {
+                MailContent mailContent = new();
+                mailContent.To = qac.Email;
+
+                mailContent.Subject = $"User {existingPost.username} has update an Idea";
+
+                var today = DateTime.UtcNow;
+                mailContent.Body = $"Idea {existingPost.title} under Topic {topic.TopicName} has been updated on {today} and waiting for review";
+
+                //await mailService.SendMail(mailContent);
+            }
 
             var newPostDto = mapper.Map<PostDto>(existingPost);
             newPostDto.FilesPaths = await UploadFiles(dto.files, existingPost.username, existingPost.PostId);
@@ -411,8 +511,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task<List<string>> UploadFiles( //upload files to table FilePaths and return list of string of file paths
             List<IFormFile> files,
             string username,
-            Guid postId
-        )
+            Guid postId)
         {
 
             string rootPath = configuration["FileConfig:filePath"];

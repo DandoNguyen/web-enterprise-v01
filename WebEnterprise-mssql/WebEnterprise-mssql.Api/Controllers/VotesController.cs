@@ -49,53 +49,53 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("voteBtnClick")]
-        public async Task<IActionResult> VoteBtnClick(VoteBtnRequestDto voteBtnRequestDto)
+        public async Task<IActionResult> VoteBtnClick(VoteBtnRequestDto dto)
         {
             //var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
-            var vote = await repo.Votes.GetlistVoteAsync(Guid.Parse(voteBtnRequestDto.postId));
+            var vote = await repo.Votes.GetlistVoteAsync(Guid.Parse(dto.postId));
 
             var upVoteList = vote.Select(x => x.userUpvote).ToList();
             var downVoteList = vote.Select(x => x.userDownVote).ToList();
-            switch (voteBtnRequestDto.VoteInput)
+            switch (dto.VoteInput)
             {
                 case true:
                     {
-                        if (upVoteList.Contains(voteBtnRequestDto.UserId))
+                        if (upVoteList.Contains(dto.UserId))
                         {
-                            var voteId = vote.Where(x => x.userUpvote.Equals(voteBtnRequestDto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, voteBtnRequestDto.UserId, true);
+                            var voteId = vote.Where(x => x.userUpvote.Equals(dto.UserId)).FirstOrDefault();
+                            removeVotes(voteId.voteId, dto.UserId, true);
                         }
-                        else if (downVoteList.Contains(voteBtnRequestDto.UserId))
+                        else if (downVoteList.Contains(dto.UserId))
                         {
-                            SwitchVoteTo(true, voteBtnRequestDto.postId, voteBtnRequestDto.UserId);
+                            SwitchVoteTo(true, dto.postId, dto.UserId);
                         }
                         else
                         {
-                            AddUpVote(Guid.Parse(voteBtnRequestDto.postId), voteBtnRequestDto.UserId);
+                            AddUpVote(Guid.Parse(dto.postId), dto.UserId);
                         }
                         break;
                     }
 
                 case false:
                     {
-                        if (downVoteList.Contains(voteBtnRequestDto.UserId))
+                        if (downVoteList.Contains(dto.UserId))
                         {
-                            var voteId = vote.Where(x => x.userDownVote.Equals(voteBtnRequestDto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, voteBtnRequestDto.UserId, false);
+                            var voteId = vote.Where(x => x.userDownVote.Equals(dto.UserId)).FirstOrDefault();
+                            removeVotes(voteId.voteId, dto.UserId, false);
                         }
-                        else if (upVoteList.Contains(voteBtnRequestDto.UserId))
+                        else if (upVoteList.Contains(dto.UserId))
                         {
-                            SwitchVoteTo(false, voteBtnRequestDto.postId, voteBtnRequestDto.UserId);
+                            SwitchVoteTo(false, dto.postId, dto.UserId);
                         }
                         else
                         {
-                            AddDownVote(Guid.Parse(voteBtnRequestDto.postId), voteBtnRequestDto.UserId);
+                            AddDownVote(Guid.Parse(dto.postId), dto.UserId);
                         }
                         break;
                     }
             }
 
-            return CreatedAtAction(nameof(GetVoteStatus), new { voteBtnRequestDto.postId });
+            return CreatedAtAction(nameof(GetVoteStatus), new { dto.postId });
         }
 
         private async Task<VoteDto> GetVote(Guid postId)

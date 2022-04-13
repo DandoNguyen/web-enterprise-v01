@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
+using WebEnterprise_mssql.Api.Services;
 
 //    DATE           NAME      TODO
 //   4/1/2022        Ngoc      use Repo(update,delete,create,getlist) instead of linQ
@@ -24,15 +25,18 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IRepositoryWrapper repo;
+        private readonly ISendMailService mailService;
 
         public CommentsController(
             IMapper mapper,
             UserManager<ApplicationUser> userManager,
-            IRepositoryWrapper repo
+            IRepositoryWrapper repo, 
+            ISendMailService mailService
         )
         {
             this.userManager = userManager;
             this.repo = repo;
+            this.mailService = mailService;
             this.mapper = mapper;
         }
 
@@ -144,6 +148,24 @@ namespace WebEnterprise_mssql.Api.Controllers
                     // await context.Comments.AddAsync(newComment);
                     repo.Comments.Create(newComment);
                     repo.Save();
+
+                    var post = await repo.Posts
+                        .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
+                        .FirstOrDefaultAsync();
+                    var author = await userManager.FindByIdAsync(post.UserId);
+                    if (!dto.userId.Equals(author.Id))
+                    {
+                        MailContent mailContent = new();
+                        mailContent.To = author.Email;
+
+                        var user = await userManager.FindByIdAsync(dto.userId);
+                        mailContent.Subject = $"New Comment on one of your Idea";
+                        mailContent.Body = $"User {user.UserName} has commented on your Idea";
+
+                        //await mailService.SendMail(mailContent);
+                    }
+
+
                     return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
                 }
                 catch (Exception ex)

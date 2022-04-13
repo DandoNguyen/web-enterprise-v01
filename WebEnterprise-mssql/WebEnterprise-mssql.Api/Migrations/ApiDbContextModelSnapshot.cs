@@ -228,8 +228,8 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("StaffId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("StaffId")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");

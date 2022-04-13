@@ -8,22 +8,22 @@ namespace WebEnterprise_mssql.Api.Models
     {
         //public int? Age { get; set; }
 
-        public int StaffId { get; set; }
+        public string StaffId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? DOB { get; set; }
         public string Address { get; set; }
-
-        //Foreign Key
-        public virtual ICollection<Posts> Posts { get; set; }
-        public virtual ICollection<Views> Views { get; set; }
-        public virtual ICollection<Comments> Comments { get; set; }
 
         //
         public string DepartmentId { get; set; }
         public virtual Departments Departments { get; set; }
         public string RoleId { get; set; }
         public virtual Roles RoleName { get; set; }
+
+        //Foreign Key
+        public virtual ICollection<Posts> Posts { get; set; }
+        public virtual ICollection<Views> Views { get; set; }
+        public virtual ICollection<Comments> Comments { get; set; }
     }
 }
 

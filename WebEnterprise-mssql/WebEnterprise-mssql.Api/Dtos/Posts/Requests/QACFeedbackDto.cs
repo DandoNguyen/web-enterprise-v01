@@ -8,6 +8,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         [Required]
         public Guid postId { get; set; }
         public string feedback { get; set; }
+        [Required]
         public bool IsApproved { get; set; }
     }
 }

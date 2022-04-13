@@ -174,10 +174,12 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task SendConfirmEmail(ApplicationUser user) {
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = user.Email }, Request.Scheme);
+            
             var message = new MailContent();
             message.To = user.Email;
             message.Subject = "Email Confirmation Link";
             message.Body = $"Hello, user {user.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
+            
             await mailService.SendMail(message);
         }
 

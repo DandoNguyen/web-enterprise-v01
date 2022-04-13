@@ -26,7 +26,8 @@ namespace WebEnterprise_mssql.Migrations
                 columns: table => new
                 {
                     CategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CategoryName = table.Column<string>(type: "TEXT", nullable: true)
+                    CategoryName = table.Column<string>(type: "TEXT", nullable: true),
+                    Desc = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,7 +113,7 @@ namespace WebEnterprise_mssql.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StaffId = table.Column<string>(type: "TEXT", nullable: true),
                     FirstName = table.Column<string>(type: "TEXT", nullable: true),
                     LastName = table.Column<string>(type: "TEXT", nullable: true),
                     DOB = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -340,6 +341,7 @@ namespace WebEnterprise_mssql.Migrations
                     CreatedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     IsChild = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsAnonymous = table.Column<bool>(type: "INTEGER", nullable: false),
                     ParentId = table.Column<Guid>(type: "TEXT", nullable: false),
                     userId = table.Column<string>(type: "TEXT", nullable: true),
                     ApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),

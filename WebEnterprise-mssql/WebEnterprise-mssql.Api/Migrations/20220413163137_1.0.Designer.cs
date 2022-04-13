@@ -9,7 +9,7 @@ using WebEnterprise_mssql.Api.Data;
 namespace WebEnterprise_mssql.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20220408183359_1.0")]
+    [Migration("20220413163137_1.0")]
     partial class _10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -230,8 +230,8 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("StaffId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("StaffId")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("INTEGER");
@@ -265,6 +265,9 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("CategoryName")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Desc")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
@@ -284,6 +287,9 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsChild")
                         .HasColumnType("INTEGER");
