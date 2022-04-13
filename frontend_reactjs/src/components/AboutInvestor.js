@@ -1,22 +1,17 @@
 import React from 'react';
-import '../css/AboutUs.css';
-import { Link } from 'react-router-dom';
+import '../css/AboutInvestor.css';
 import Navbar from './Navbar';
-
-function AboutUs () {
+function AboutInvestor () {
 return <div>
 <Navbar/>
 	<section className="About">
 
-		<div className="text">About Us</div>
+		<div className="text">About Us INVESTOR</div>
 
 		<div className='button'>
 
-            <Link to = '/INTRODUCTION'> 
-			<button type="button" class="INTRODUCTION">INTRODUCTION</button>
-            </Link>
-
-			 <a href='HISTORY'><button type="button" class="HISTORY">HISTORY</button></a>
+            <a href='INTRODUCTION'><button type="button" class="INTRODUCTION">INTRODUCTION</button></a>
+			<a href='HISTORY'><button type="button" class="HISTORY">HISTORY</button></a>
 			<a href='INVESTORRELATIONS'><button type="button" class="INVESTORRELATIONS">INVESTOR RELATIONS</button></a>
 		</div>
 	
@@ -38,4 +33,4 @@ return <div>
 	
 </div>
 }
-export default AboutUs;
+export default AboutInvestor;
