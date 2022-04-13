@@ -161,10 +161,12 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("MyPost")]
-        public async Task<IActionResult> GetAllPostsFromUserIDAsync(getPostReqDto getPostReqDto)
+        public async Task<IActionResult> GetAllPostsFromUserIDAsync([FromHeader] string Authorization)
         {
+            var user = await DecodeToken(Authorization);
+            
             var listPosts = await repo.Posts
-                .GetAllPostsFromUserIDAsync(getPostReqDto.userId);
+                .GetAllPostsFromUserIDAsync(user.Id);
 
             var listPostsDto = new List<PostDetailDto>();
             foreach (var post in listPosts)
