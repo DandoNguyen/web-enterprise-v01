@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -19,24 +20,26 @@ namespace WebEnterprise_mssql.Api.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager; 
         private readonly IMapper mapper;
+        private readonly IRepositoryWrapper repo;
         private readonly IPasswordHasher<ApplicationUser> passwordHasher;
-        private readonly ApiDbContext context;
         public AccountsController(
             UserManager<ApplicationUser> userManager, 
             IMapper mapper,
-            ApiDbContext context, 
+            IRepositoryWrapper repo,
             IPasswordHasher<ApplicationUser> passwordHasher)
         {
             this.mapper = mapper;
-            this.context = context;
+            this.repo = repo;
             this.userManager = userManager;
             this.passwordHasher = passwordHasher;
         }
 
         [HttpGet] 
-        public async Task<IEnumerable<ApplicationUserDto>> GetAllUsersAsync() {
-            var userList = await context.Users.ToListAsync();
-            return mapper.Map<List<ApplicationUserDto>>(userList);
+        [Route("GetAllUser")]
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
+            var userList = await repo.Users.FindAll().ToListAsync();
+            return userList;
+            //return mapper.Map<List<ApplicationUserDto>>(userList);
         }
 
         [HttpGet] //Convert list string id to list string username
@@ -89,7 +92,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUserAsync( UpdateApplicationUserDto user) {
+        [Route("updateUser")]
+        public async Task<IActionResult> UpdateUserAsync(UpdateApplicationUserDto user) {
             
             //Check if the user account is exist 
             var existingUser = await userManager.FindByEmailAsync(user.Email);

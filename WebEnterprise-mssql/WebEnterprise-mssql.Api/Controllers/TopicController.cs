@@ -1,5 +1,7 @@
+using System.Net.Mime;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
+using WebEnterprise_mssql.Api.Services;
+using Microsoft.Extensions.Logging;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -23,16 +27,23 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly IRepositoryWrapper repo;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ISendMailService mailService;
+        private readonly ILogger<TopicsController> logger;
+
         public TopicsController(
             IMapper mapper,
             IRepositoryWrapper repo, 
             UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ISendMailService mailService,
+            ILogger<TopicsController> logger)
         {
             this.mapper = mapper;
             this.repo = repo;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.mailService = mailService;
+            this.logger = logger;
         }
 
         //GET get all post of this topic
@@ -89,7 +100,17 @@ namespace WebEnterprise_mssql.Api.Controllers
         //POST create Toptc
         [HttpPost]
         [Route("CreateTopic")]
-        public async Task<IActionResult> CreateTopicAsync(CreateTopicDto dto) {
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> CreateTopicAsync(CreateTopicDto dto, [FromHeader] string Authorization) {
+            ApplicationUser user = new();
+            try
+            {
+                user = await DecodeToken(Authorization);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogInformation($"Decode Token Error: {ex}");
+            }
             if (dto.FinalClosureDate <= dto.ClosureDate)
             {
                 return BadRequest($"Final Closure Date must be after Date: {dto.ClosureDate}");
@@ -105,6 +126,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                     repo.Topics.Create(newTopic);
                     repo.Save();
                 }
+
+                //Send Mail to All Employee
+                await SendNotiThroughMail(dto.TopicName, user.UserName);
+
                 return Ok($"Topic {dto.TopicName} has been created!");
             }
             return BadRequest($"Topic name {dto.TopicName} has already exist");
@@ -157,6 +182,40 @@ namespace WebEnterprise_mssql.Api.Controllers
                 listCateName.Add(cate.CategoryName);
             }
             return listCateName;
+        }
+
+        private async Task SendNotiThroughMail(string title, string author) {
+            var allUser = await repo.Users.FindAll().ToListAsync();
+            MailContent mailContent = new();
+
+            var today = DateTimeOffset.UtcNow;    
+            mailContent.Subject = $"New Topic created on {today}";
+            mailContent.Body = $"A new Topic created with title: {title} by Admin {author}";
+
+            foreach (var user in allUser)
+            {
+                mailContent.To = user.Email;
+                await mailService.SendMail(mailContent);
+            }
+        }
+
+        private async Task<ApplicationUser> DecodeToken(string Authorization)
+        {
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var user = await userManager.FindByEmailAsync(email);
+
+            //return the user
+            return user;
         }
         
     }

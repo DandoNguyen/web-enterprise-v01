@@ -213,7 +213,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
 
-            return Ok(result.Succeeded ? $"Your email: {email} has been confirmed!!!" : "The confirmation link has been corrupt or expired!!!");
+            return Ok(result.Succeeded ? $"Your email: {email} has been confirmed\nPlease go back to website to login!!!" : "The confirmation link has been corrupt or expired!!!");
         }
 
         //Development Purposes Must Delete Later
