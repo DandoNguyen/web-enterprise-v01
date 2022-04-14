@@ -79,6 +79,7 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     TopicId = table.Column<Guid>(type: "TEXT", nullable: false),
                     TopicName = table.Column<string>(type: "TEXT", nullable: true),
+                    TopicDesc = table.Column<string>(type: "TEXT", nullable: true),
                     ClosureDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     FinalClosureDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
                 },
@@ -113,9 +114,8 @@ namespace WebEnterprise_mssql.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    StaffId = table.Column<string>(type: "TEXT", nullable: true),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    EmployeeId = table.Column<string>(type: "TEXT", nullable: true),
+                    Fullname = table.Column<string>(type: "TEXT", nullable: true),
                     DOB = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Address = table.Column<string>(type: "TEXT", nullable: true),
                     DepartmentId = table.Column<string>(type: "TEXT", nullable: true),
@@ -249,7 +249,7 @@ namespace WebEnterprise_mssql.Migrations
                     content = table.Column<string>(type: "TEXT", nullable: true),
                     username = table.Column<string>(type: "TEXT", nullable: true),
                     isAnonymous = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsApproved = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
                     feedback = table.Column<string>(type: "TEXT", nullable: true),
                     IsAssigned = table.Column<bool>(type: "INTEGER", nullable: false),
                     QACUserId = table.Column<string>(type: "TEXT", nullable: true),

@@ -190,10 +190,10 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("EmployeeId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("Fullname")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
@@ -226,9 +226,6 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StaffId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -361,9 +358,6 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<string>("Desc")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsAssigned")
                         .HasColumnType("INTEGER");
 
@@ -372,6 +366,9 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.Property<string>("QACUserId")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid?>("SubmissionsId")
                         .HasColumnType("TEXT");
@@ -496,6 +493,9 @@ namespace WebEnterprise_mssql.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("FinalClosureDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TopicDesc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TopicName")
