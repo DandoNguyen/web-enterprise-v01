@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // api/accounts
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager; 
@@ -118,6 +119,18 @@ namespace WebEnterprise_mssql.Api.Controllers
                     Result = $"The user {user.Email} has been updated"
                 });
             }
+        }
+
+        [HttpDelete]
+        [Route("removeUser")]
+        public async Task<IActionResult> RemoveUserAsync(string email) {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                return NotFound($"No user found by email {email}");
+            }
+            await userManager.DeleteAsync(user);
+            return Ok($"User {user.UserName} removed!");
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")] // /api/comments
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
     public class CommentsController : ControllerBase
     {
         private readonly IMapper mapper;
@@ -162,7 +165,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         mailContent.Subject = $"New Comment on one of your Idea";
                         mailContent.Body = $"User {user.UserName} has commented on your Idea";
 
-                        //await mailService.SendMail(mailContent);
+                        await mailService.SendMail(mailContent);
                     }
 
 

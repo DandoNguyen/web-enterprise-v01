@@ -6,11 +6,14 @@ using WebEnterprise_mssql.Api.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using WebEnterprise_mssql.Api.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")] // /api/department
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "qam")]
     public class DepartmentController : ControllerBase
     {
         private readonly IRepositoryWrapper repo;

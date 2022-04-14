@@ -22,7 +22,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Staff")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
     public class PostsController : ControllerBase
     {
         private readonly IConfiguration configuration;
@@ -122,7 +122,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     break;
             }
 
-            //await mailService.SendMail(mailContent);
+            await mailService.SendMail(mailContent);
             return new JsonResult("Feedback Received!!!") { StatusCode = 200 };
         }
 
@@ -287,7 +287,7 @@ namespace WebEnterprise_mssql.Api.Controllers
     
                                 var body = $"User {user.UserName} has created a new post for Topic {topicName}:\nTitle: {newPost.title} \nDescription: {newPost.Desc} \n";
                                 mailContent.Body = body;
-                                //await mailService.SendMail(mailContent);
+                                await mailService.SendMail(mailContent);
                             }
                             catch (Exception ex)
                             {
@@ -349,7 +349,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var today = DateTime.UtcNow;
                 mailContent.Body = $"Idea {existingPost.title} under Topic {topic.TopicName} has been updated on {today} and waiting for review";
 
-                //await mailService.SendMail(mailContent);
+                await mailService.SendMail(mailContent);
             }
 
             var newPostDto = mapper.Map<PostDto>(existingPost);

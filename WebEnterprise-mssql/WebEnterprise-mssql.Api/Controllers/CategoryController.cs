@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +7,14 @@ using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // api/Category
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "staff")]
     public class CategoryController : ControllerBase 
     {
         private readonly IRepositoryWrapper repo;

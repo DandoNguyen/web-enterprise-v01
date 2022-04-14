@@ -3,15 +3,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebEnterprise_mssql.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // api/Roles
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RolesController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -33,22 +35,24 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRoleAsync(CreateRoleNameDto dto) {
+            var roleNameLower = dto.RoleName.ToLower();
+
             //Check if the Role is exist
-            var existingRole = await roleManager.RoleExistsAsync(dto.RoleName);
+            var existingRole = await roleManager.RoleExistsAsync(roleNameLower);
 
             if(!existingRole) //Check role exist status
             {
                 //Check the Role is created success
-                var roleResult = await roleManager.CreateAsync(new IdentityRole(dto.RoleName));
+                var roleResult = await roleManager.CreateAsync(new IdentityRole(roleNameLower));
                 if(roleResult.Succeeded) {
-                    logger.LogInformation($"the Role {dto.RoleName} has been created successfully!!!");
+                    logger.LogInformation($"the Role {roleNameLower} has been created successfully!!!");
                     return Ok(new {
-                        result = $"the Role {dto.RoleName} has been added successfully"
+                        result = $"the Role {roleNameLower} has been added successfully"
                     });
                 } else {
-                    logger.LogInformation($"the Role {dto.RoleName} has NOT been created!!!");                    
+                    logger.LogInformation($"the Role {roleNameLower} has NOT been created!!!");                    
                     return BadRequest(new {
-                        error = $"the Role {dto.RoleName} has NOT been added!!!"
+                        error = $"the Role {roleNameLower} has NOT been added!!!"
                     });
                 }
             }
