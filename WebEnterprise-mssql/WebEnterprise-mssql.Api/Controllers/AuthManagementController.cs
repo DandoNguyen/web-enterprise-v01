@@ -57,7 +57,16 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("GetUser")]
         public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization)
         {
-            var user = await DecodeToken(Authorization);
+            ApplicationUser user = new();
+            try
+            {
+                user = await DecodeToken(Authorization);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogInformation($"User Profile Retrieve Error: {ex}");
+            }
+            
             var userDto = new UserProfileResponseDto();
             var role = await userManager.GetRolesAsync(user);
             if (user is not null)
