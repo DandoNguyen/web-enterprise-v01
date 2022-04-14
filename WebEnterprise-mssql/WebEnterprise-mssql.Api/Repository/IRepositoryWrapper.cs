@@ -11,6 +11,7 @@ namespace WebEnterprise_mssql.Api.Repository
         IUserRepository Users { get; }
         ITopicRepository Topics { get; }
         ICategoryRepository Categories { get; }
+        IApplicationUserRepository applicationUsers { get; }
         void Save();
     }
 }

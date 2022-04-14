@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Api.Models
         public bool isAnonymous { get; set; }
         
         //QAC Section
-        public bool IsApproved { get; set; }
+        public int Status { get; set; }
         public string feedback { get; set; }
         public bool IsAssigned { get; set; }
         public string QACUserId { get; set; }

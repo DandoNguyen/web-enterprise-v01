@@ -16,6 +16,7 @@ using WebEnterprise_mssql.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Services;
+using WebEnterprise_mssql.Api.Repository;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -28,6 +29,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly TokenValidationParameters tokenValidationParams;
         private readonly ApiDbContext context;
         private readonly ISendMailService mailService;
+        private readonly IRepositoryWrapper repo;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<AuthManagementController> logger;
 
@@ -38,12 +40,14 @@ namespace WebEnterprise_mssql.Api.Controllers
             TokenValidationParameters tokenValidationParams,
             RoleManager<IdentityRole> roleManager,
             ApiDbContext context,
-            ISendMailService mailService)
+            ISendMailService mailService,
+            IRepositoryWrapper repo)
         {
             this.logger = logger;
             this.roleManager = roleManager;
             this.context = context;
             this.mailService = mailService;
+            this.repo = repo;
             this.userManager = userManager;
             this.jwtConfig = optionsManager.CurrentValue;
             this.tokenValidationParams = tokenValidationParams;
@@ -90,13 +94,21 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] UsersRegistrationDto usersRegistrationDto)
+        public async Task<IActionResult> RegisterAsync([FromBody] UsersRegistrationDto dto)
         {
 
             if (ModelState.IsValid)
             {
+                var existingEmployeeId = await repo.applicationUsers
+                    .FindByCondition(x => x.EmployeeId.Equals(dto.EmployeeId))
+                    .FirstOrDefaultAsync();
+                
+                if (existingEmployeeId is not null)
+                {
+                    return BadRequest("Employee ID already exist!!!");
+                }
 
-                var existingEmail = await userManager.FindByEmailAsync(usersRegistrationDto.Email);
+                var existingEmail = await userManager.FindByEmailAsync(dto.Email);
 
                 if (existingEmail is not null)
                 {
@@ -111,11 +123,11 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                 var newUser = new ApplicationUser()
                 {
-                    Email = usersRegistrationDto.Email,
-                    UserName = usersRegistrationDto.Username
+                    Email = dto.Email,
+                    UserName = dto.Username
                 };
 
-                var isCreated = await userManager.CreateAsync(newUser, usersRegistrationDto.Password);
+                var isCreated = await userManager.CreateAsync(newUser, dto.Password);
 
                 await SendConfirmEmail(newUser);
 

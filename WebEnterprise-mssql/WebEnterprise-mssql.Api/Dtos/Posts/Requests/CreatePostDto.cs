@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public bool IsAnonymous { get; set; }
 
         //QAC section
-        public bool IsApproved { get; set; }
+        public int Status { get; set; }
         public bool IsAssigned { get; set; }
 
         [Required]
