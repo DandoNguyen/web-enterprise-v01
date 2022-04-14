@@ -43,11 +43,11 @@ namespace WebEnterprise_mssql.Api
             var mailsettings = Configuration.GetSection("MailSettings");
             services.Configure<MailSettings>(mailsettings);
 
-            services.AddDbContext<ApiDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("SQLiteConnection")
-                )
-            );
+            // services.AddDbContext<ApiDbContext>(options =>
+            //     options.UseSqlite(
+            //         Configuration.GetConnectionString("SQLiteConnection")
+            //     )
+            // );
 
             // services.AddDbContext<ApiDbContext>(options => 
             //     options.UseSqlServer(
@@ -60,6 +60,12 @@ namespace WebEnterprise_mssql.Api
             //         Configuration.GetConnectionString("LocalConnection")
             //     )
             // );
+
+            services.AddDbContext<ApiDbContext>(options => 
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("SmarterASPNETConnection")
+                )
+            );
 
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();

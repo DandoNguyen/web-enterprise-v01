@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebEnterprise_mssql.Api.Data;
 
@@ -14,15 +15,17 @@ namespace WebEnterprise_mssql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("CategoriesPosts", b =>
                 {
                     b.Property<Guid>("categoriesCategoryId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("postsPostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("categoriesCategoryId", "postsPostId");
 
@@ -34,25 +37,26 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -61,17 +65,18 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -84,17 +89,18 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -106,17 +112,17 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -128,10 +134,10 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -143,16 +149,16 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -162,81 +168,78 @@ namespace WebEnterprise_mssql.Migrations
             modelBuilder.Entity("WebEnterprise_mssql.Api.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DOB")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DepartmentId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("DepartmentsDepartmentId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("RoleNameRoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StaffId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -247,7 +250,8 @@ namespace WebEnterprise_mssql.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("RoleNameRoleId");
 
@@ -258,13 +262,13 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CategoryName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CategoryId");
 
@@ -275,37 +279,37 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("CommentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsAnonymous")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsChild")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("ParentId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("userId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CommentId");
 
@@ -320,10 +324,10 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("DepartmentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DepartmentName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DepartmentId");
 
@@ -334,16 +338,16 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("FilesPathID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("filePath")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FilesPathID");
 
@@ -356,53 +360,53 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("PostId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAssigned")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("QACUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("SubmissionsId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TopicId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TopicsTopicId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("content")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("createdDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("feedback")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isAnonymous")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("title")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("username")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PostId");
 
@@ -419,28 +423,29 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("AddedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsRevoked")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUsed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("JwtId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Token")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("id");
 
@@ -453,10 +458,10 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("RoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RoleName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoleId");
 
@@ -467,19 +472,19 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("SubmissionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ClosureDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DescriptionSubmission")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FinalClosureDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubmissionName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubmissionId");
 
@@ -490,16 +495,19 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("TopicId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("ClosureDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("FinalClosureDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TopicDesc")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TopicName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TopicId");
 
@@ -510,22 +518,22 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("ViewId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("LastVistedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("postId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("userId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ViewId");
 
@@ -540,19 +548,19 @@ namespace WebEnterprise_mssql.Migrations
                 {
                     b.Property<Guid>("voteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("PostsPostId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("postId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("userDownVote")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("userUpvote")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("voteId");
 
