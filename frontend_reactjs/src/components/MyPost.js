@@ -1,6 +1,6 @@
 import React,{ useState } from 'react';
 import '../css/MyPost.css';
-import ModalPost from './ModalPost';
+// import ModalPost from './ModalPost';
 import ModalReason from './ModalReason';
 import Navbar from './Navbar';
 

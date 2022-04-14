@@ -2,7 +2,6 @@ import React,{useState, useEffect} from 'react'
 import '../css/Topic.css'
 import Navbar from './Navbar'
 import ModalEditTopic from './ModalEditTopic';
-import {  useNavigate } from 'react-router-dom';
 
 
 function Topic() {
@@ -87,14 +86,18 @@ function Topic() {
               });
         }
         
-        
+        const handleUpdate = () => {
+          // console.log(topicId);
+          // Navigate('/ModalEditTopic/'+ topicId.topicId)
+          setModaltopicOpen(true);
+        }
         const listTopics = Topics.map(data => (
         <tr key={data.topicId}>
         <td >{data.topicName}</td>
         <td >{data.closureDate}</td>
         <td >{data.finalClosureDate}</td>
         <td>
-        <button className='submit-user' onClick={() => {setModalEditUserOpen(true);}}>Edit</button>
+        <button className='submit-user' onClick={()=> handleUpdate(data)}>Edit</button>
         {modaltopicOpen && <ModalEditTopic setOpenModaltopic={setModaltopicOpen} data={data}/>}
         </td>
         <td>
