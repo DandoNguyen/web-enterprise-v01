@@ -14,6 +14,7 @@ namespace WebEnterprise_mssql.Api.Repository
         private IUserRepository _User;
         private ITopicRepository _Topic;
         private ICategoryRepository _Category;
+        private IApplicationUserRepository _ApplicationUser;
 
         //===================================================
         public IPostsRepository Posts
@@ -115,6 +116,16 @@ namespace WebEnterprise_mssql.Api.Repository
                     _Category = new CategoryRepository(context);
                 }
                 return _Category;
+            }
+        }
+
+        public IApplicationUserRepository applicationUsers {
+            get {
+                if (_ApplicationUser is null)
+                {
+                    _ApplicationUser = new ApplicationUserRepository(context);
+                }
+                return _ApplicationUser;
             }
         }
 

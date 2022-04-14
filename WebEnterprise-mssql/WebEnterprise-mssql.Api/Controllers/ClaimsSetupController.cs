@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebEnterprise_mssql.Api.Configuration;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
 
