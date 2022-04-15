@@ -36,8 +36,13 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet] 
         [Route("GetAllUser")]
+        [Authorize(Roles = "qac")]
+        [Authorize(Roles = "qam")]
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
-            var userList = await repo.Users.FindAll().ToListAsync();
+            var userList = await repo.Users.FindAll()
+                .Include(x => x.RoleName)
+                .Include(x => x.Departments)
+                .ToListAsync();
             return userList;
             //return mapper.Map<List<ApplicationUserDto>>(userList);
         }
