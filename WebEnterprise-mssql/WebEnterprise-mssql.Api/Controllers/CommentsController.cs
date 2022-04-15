@@ -52,7 +52,9 @@ namespace WebEnterprise_mssql.Api.Controllers
             //     .Where(x => x.PostId.Equals(PostId))
             //     .Where(x => x.IsChild.Equals(false))
             //     .ToListAsync();
-            var listParent = await repo.Comments.GetListParentAsync(PostId);
+            var listParent = await repo.Comments
+                .FindByCondition(x => x.PostId.Equals(PostId)).Include(x => x.ApplicationUser)
+                .ToListAsync();
 
             var resultList = new List<ParentItemDto>();
             foreach (var parent in listParent)
@@ -60,8 +62,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (parent.IsChild.Equals(false))
                 {
                     var newParent = await GetChildrenToParent(parent.CommentId.ToString());
-                    var user = await userManager.FindByIdAsync(parent.userId);
-                    newParent.Username = user.UserName;
+                    //var user = await userManager.FindByIdAsync(parent.userId);
+                    newParent.Username = parent.ApplicationUser.UserName;
                     resultList.Add(newParent);
                 }
             }
@@ -154,7 +156,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await DecodeToken(Authorization);
             var newComment = mapper.Map<Comments>(dto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
-            newComment.userId = user.Id;
+            newComment.ApplicationUser = user;
 
             if (await IsPassDeadline(dto.PostId))
             {
