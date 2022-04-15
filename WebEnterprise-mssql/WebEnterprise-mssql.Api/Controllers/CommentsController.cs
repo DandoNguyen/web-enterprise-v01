@@ -272,14 +272,16 @@ namespace WebEnterprise_mssql.Api.Controllers
             // var ListChildren = await context.Comments
             //     .Where(x => x.ParentId.Equals(Guid.Parse(ParentId)))
             //     .ToListAsync();
-            var ListChildren = await repo.Comments.GetListChildrenByParentIdAsync(Guid.Parse(ParentId));
-
+            var ListChildren = await repo.Comments
+                .FindByCondition(x => x.ParentId.Equals(ParentId))
+                .Include(x => x.ApplicationUser)
+                .ToListAsync();
 
             var newListChildren = new List<ChildItemDto>();
             foreach (var child in ListChildren)
             {
                 var newChild = mapper.Map<ChildItemDto>(child);
-                var user = await userManager.FindByIdAsync(child.userId);
+                var user = await userManager.FindByIdAsync(child.ApplicationUser.Id);
                 newChild.Username = user.UserName;
                 newListChildren.Add(newChild);
             }

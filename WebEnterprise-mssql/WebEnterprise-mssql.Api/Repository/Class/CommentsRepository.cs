@@ -32,7 +32,7 @@ namespace WebEnterprise_mssql.Api.Repository
 
         public async Task<List<Comments>> GetListChildrenByParentIdAsync(Guid parentId)
         {
-            var GetListChildrent = await FindByCondition(x => x.ParentId.Equals(parentId)).ToListAsync();
+            var GetListChildrent = await FindByCondition(x => x.ParentId.Equals(parentId.ToString())).ToListAsync();
             return GetListChildrent;
         }
 
