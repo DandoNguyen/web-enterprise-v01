@@ -13,7 +13,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")] // /api/department
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "qam")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "qam")]
     public class DepartmentController : ControllerBase
     {
         private readonly IRepositoryWrapper repo;
@@ -28,10 +28,10 @@ namespace WebEnterprise_mssql.Api.Controllers
         //POST Assign to user 
         [HttpPost]
         [Route("AssignUserToDepartment")]
-        public async Task<IActionResult> AssignDepartmentToUserAsync(NewDepartmentUserDto newDepartmentUserDto) {
-            var user = await userManager.FindByIdAsync(newDepartmentUserDto.UserId.ToString());
-            var department = await repo.Departments.FindByCondition(x => x.DepartmentId.Equals(newDepartmentUserDto.DepartmentId)).FirstOrDefaultAsync();
-            user.DepartmentId = newDepartmentUserDto.DepartmentId.ToString();
+        public async Task<IActionResult> AssignDepartmentToUserAsync(NewDepartmentUserDto dto) {
+            var user = await userManager.FindByIdAsync(dto.UserId.ToString());
+            var department = await repo.Departments.FindByCondition(x => x.DepartmentId.Equals(dto.DepartmentId)).FirstOrDefaultAsync();
+            user.DepartmentId = dto.DepartmentId.ToString();
             repo.Users.Update(user);
             repo.Save();
 

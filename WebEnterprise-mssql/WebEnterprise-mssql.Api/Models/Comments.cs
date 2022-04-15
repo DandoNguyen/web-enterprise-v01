@@ -14,7 +14,7 @@ namespace WebEnterprise_mssql.Api.Models
         [Required]
         public bool IsChild { get; set; }
         public bool IsAnonymous { get; set; }
-        public Guid ParentId { get; set; }
+        public string ParentId { get; set; }
 
         public string userId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
