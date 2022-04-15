@@ -55,20 +55,19 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetUser")]
-        public async Task<UserProfileResponseDto> GetUserProfileAsync([FromHeader] string Authorization)
+        public async Task<IActionResult> GetUserProfileAsync([FromHeader] string Authorization)
         {
-            ApplicationUser user = new();
-            try
+            if (Authorization is null)
             {
-                user = await DecodeToken(Authorization);
-            }
-            catch (System.Exception ex)
-            {
-                logger.LogInformation($"User Profile Retrieve Error: {ex}");
+                return BadRequest("Param Authorization is null!!!");
             }
             
+            var user = await DecodeToken(Authorization);
+            
             var userDto = new UserProfileResponseDto();
+
             var role = await userManager.GetRolesAsync(user);
+
             if (user is not null)
             {
                 userDto.username = user.UserName;
@@ -93,12 +92,9 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             else
             {
-                return new UserProfileResponseDto()
-                {
-                    message = "Cannot get JWT Token!!!"
-                };
+                return BadRequest("Cannot get JWT token");
             }
-            return userDto;
+            return Ok(userDto);
         }
 
         [HttpPost]
