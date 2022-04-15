@@ -101,7 +101,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FirstOrDefaultAsync();
             mapper.Map(dto, post);
 
-            switch(dto.IsApproved) {
+            switch (dto.IsApproved)
+            {
                 case true: post.Status = 1; break; //Status = 1 (approved)
                 case false: post.Status = 2; break; //Status = 2 (rejected)
             }
@@ -114,21 +115,27 @@ namespace WebEnterprise_mssql.Api.Controllers
             var topic = await repo.Topics
                 .FindByCondition(x => x.TopicId.Equals(post.TopicId))
                 .FirstOrDefaultAsync();
+            var adminEmail = await repo.Users
+                .FindByCondition(x => x.RoleName.RoleName.Equals("admin"))
+                .Select(x => x.Email)
+                .FirstOrDefaultAsync();
             MailContent mailContent = new();
             var author = await userManager.FindByIdAsync(post.UserId);
             mailContent.To = author.Email;
             mailContent.Subject = $"Your Post {post.title} has been reviewed";
-            switch(dto.IsApproved) {
-                case true: 
-                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been approved by a QAC on {today}"; 
+            switch (dto.IsApproved)
+            {
+                case true:
+                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been approved by a QAC on {today}";
                     break;
-                
-                case false:  
+
+                case false:
                     mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been rejected on {today}";
                     break;
             }
 
             await mailService.SendMail(mailContent);
+            await SendNotiToEmail(adminEmail, mailContent);
             return new JsonResult("Feedback Received!!!") { StatusCode = 200 };
         }
 
@@ -170,7 +177,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> GetAllPostsFromUserIDAsync([FromHeader] string Authorization)
         {
             var user = await DecodeToken(Authorization);
-            
+
             var listPosts = await repo.Posts
                 .GetAllPostsFromUserIDAsync(user.Id);
 
@@ -246,7 +253,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                     error = "the Authorization params is NOT exist!!!"
                 });
             }
+
             var user = await DecodeToken(Authorization);
+            if (user.DepartmentId is null)
+            {
+                return BadRequest($"User {user.UserName} is not assigned to any Department!!!");
+            }
+
             if (ModelState.IsValid)
             {
                 var newPost = mapper.Map<Posts>(dto);
@@ -262,57 +275,42 @@ namespace WebEnterprise_mssql.Api.Controllers
                 repo.Posts.CreatePostAsync(newPost);
                 repo.Save();
 
-                //Get all QAC role users
-                var listUser = await userManager.Users.ToListAsync();
-                var listQac = new List<ApplicationUser>();
-                try
-                {
-                    listQac = listUser.Where(x => x.RoleName.RoleName.Equals("qac")).ToList();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogInformation($"Try get list of QAC users exception: {ex.Message}");
-                }
-                //Send Notification through mails
-                if (listQac is not null)
-                {
-                    if (!listQac.Count().Equals(0))
-                    {
-                        foreach (var qac in listQac)
-                        {
-                            try
-                            {
-                                MailContent mailContent = new();
-                                mailContent.To = qac.Email;
-    
-                                var topicName = await repo.Topics
-                                    .FindByCondition(x => x.TopicId.Equals(dto.TopicId))
-                                    .Select(x => x.TopicName)
-                                    .FirstOrDefaultAsync();
-                                var subject = $"New Post created by {user.UserName} on {newPost.createdDate}";
-                                mailContent.Subject = subject;
-    
-                                var body = $"User {user.UserName} has created a new post for Topic {topicName}:\nTitle: {newPost.title} \nDescription: {newPost.Desc} \n";
-                                mailContent.Body = body;
-                                await mailService.SendMail(mailContent);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.LogInformation($"Send Message Exception: {ex}");
-                            }
-                        }
-                    }
-    
-                }
-                var newPostDto = mapper.Map<PostDetailDto>(newPost);
+                var qacEmail = await repo.Users
+                    .FindByCondition(x => x.RoleName.RoleName.Equals("qac"))
+                    .Select(x => x.Email)
+                    .FirstOrDefaultAsync();
+                var qamEmail = await repo.Users
+                    .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                    .Select(x => x.Email)
+                    .FirstOrDefaultAsync();
+                MailContent mailContent = new();
+                mailContent.Subject = $"New Idea Submission!";
+                mailContent.Body = $"User {user.UserName} has submitted an Idea on {DateTimeOffset.UtcNow}";
+                await SendNotiToEmail(qacEmail, mailContent);
+                await SendNotiToEmail(qamEmail, mailContent);
 
-                newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
-                newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
+                // var newPostDto = mapper.Map<PostDetailDto>(newPost);
 
-                return CreatedAtAction(nameof(GetPostByIDAsync), new { newPost.PostId }, newPostDto);
+                // newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
+                // newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
+
+                return Ok("Idea Submitted Success");
                 // return Ok($"Post {newPost.PostId} created!");
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
+        }
+
+        private async Task SendNotiToEmail(string email, MailContent mailContent)
+        {
+            try
+            {
+                mailContent.To = email;
+                await mailService.SendMail(mailContent);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogInformation($"Send Mail to {email} Error: {ex}");
+            }
         }
 
         [HttpPut]

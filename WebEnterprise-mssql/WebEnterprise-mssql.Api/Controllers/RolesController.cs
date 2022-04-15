@@ -103,6 +103,12 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet] 
         [Route("GetUserRole")]
         public async Task<IActionResult> GetUserRoleAsync(string email) {
+            //Check if email is null
+            if (email is null)
+            {
+                return BadRequest("email param cannot be null!!!");
+            }
+
             //Check if the email is exist
             var user = await userManager.FindByEmailAsync(email);
 

@@ -8,16 +8,14 @@ namespace WebEnterprise_mssql.Api.Dtos
         [Required]
         public string PostId { get; set; }
         [Required]
-        public string userId { get; set; }
-        [Required]
         public string Content { get; set; }
         [Required]
         public bool IsAnonymous { get; set; }
-        public DateTimeOffset CreatedDate { get; set; }
-        public DateTimeOffset LastModifiedDate { get; set; }
-        public string PreviousCommentId { get; set; }
+
+        //if comment replying any other comment
         [Required]
         public bool IsChild { get; set; }
-        public Guid ParentId { get; set; }
+        // public string PreviousCommentId { get; set; }
+        public string ParentId { get; set; }
     }
 }
