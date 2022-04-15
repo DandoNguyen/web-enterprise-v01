@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "53d1d4ca-4f12-4404-a611-5673a4901059": {
+      "ProjectGuid": "53d1d4ca-4f12-4404-a611-5673a4901059",
+      "DisplayName": "WebEnterprise-mssql.Api",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}

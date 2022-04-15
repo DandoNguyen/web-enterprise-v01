@@ -300,19 +300,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
         }
 
-        private async Task SendNotiToEmail(string email, MailContent mailContent)
-        {
-            try
-            {
-                mailContent.To = email;
-                await mailService.SendMail(mailContent);
-            }
-            catch (System.Exception ex)
-            {
-                logger.LogInformation($"Send Mail to {email} Error: {ex}");
-            }
-        }
-
         [HttpPut]
         public async Task<IActionResult> UpdatePostsAsync(UpdatedPostDto dto)
         {
@@ -404,6 +391,19 @@ namespace WebEnterprise_mssql.Api.Controllers
         //INTERAL STATIC METHODS
         //=================================================================================================================================
         //=================================================================================================================================
+
+        private async Task SendNotiToEmail(string email, MailContent mailContent)
+        {
+            try
+            {
+                mailContent.To = email;
+                await mailService.SendMail(mailContent);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogInformation($"Send Mail to {email} Error: {ex}");
+            }
+        }
 
         private async Task<string> CheckValidTopic(string TopicId)
         {

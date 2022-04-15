@@ -1,4 +1,5 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
@@ -47,8 +49,14 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("voteBtnClick")]
-        public async Task<IActionResult> VoteBtnClick(VoteBtnRequestDto dto)
+        public async Task<IActionResult> VoteBtnClick(VoteBtnRequestDto dto, [FromHeader] string Authorization)
         {
+            if(Authorization is null)
+            {
+                return BadRequest("Authorization Param is null");
+            }
+            var user = await DecodeToken(Authorization);
+
             //var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
             var vote = await repo.Votes.GetlistVoteAsync(Guid.Parse(dto.postId));
 
@@ -58,36 +66,36 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 case true:
                     {
-                        if (upVoteList.Contains(dto.UserId))
+                        if (upVoteList.Contains(user.Id))
                         {
-                            var voteId = vote.Where(x => x.userUpvote.Equals(dto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, dto.UserId, true);
+                            var voteId = vote.Where(x => x.userUpvote.Equals(user.Id)).FirstOrDefault();
+                            removeVotes(voteId.voteId, user.Id, true);
                         }
-                        else if (downVoteList.Contains(dto.UserId))
+                        else if (downVoteList.Contains(user.Id))
                         {
-                            SwitchVoteTo(true, dto.postId, dto.UserId);
+                            SwitchVoteTo(true, dto.postId, user.Id);
                         }
                         else
                         {
-                            AddUpVote(Guid.Parse(dto.postId), dto.UserId);
+                            AddUpVote(Guid.Parse(dto.postId), user.Id);
                         }
                         break;
                     }
 
                 case false:
                     {
-                        if (downVoteList.Contains(dto.UserId))
+                        if (downVoteList.Contains(user.Id))
                         {
-                            var voteId = vote.Where(x => x.userDownVote.Equals(dto.UserId)).FirstOrDefault();
-                            removeVotes(voteId.voteId, dto.UserId, false);
+                            var voteId = vote.Where(x => x.userDownVote.Equals(user.Id)).FirstOrDefault();
+                            removeVotes(voteId.voteId, user.Id, false);
                         }
-                        else if (upVoteList.Contains(dto.UserId))
+                        else if (upVoteList.Contains(user.Id))
                         {
-                            SwitchVoteTo(false, dto.postId, dto.UserId);
+                            SwitchVoteTo(false, dto.postId, user.Id);
                         }
                         else
                         {
-                            AddDownVote(Guid.Parse(dto.postId), dto.UserId);
+                            AddDownVote(Guid.Parse(dto.postId), user.Id);
                         }
                         break;
                     }
@@ -96,6 +104,24 @@ namespace WebEnterprise_mssql.Api.Controllers
             return CreatedAtAction(nameof(GetVoteStatus), new { dto.postId });
         }
 
+        private async Task<ApplicationUser> DecodeToken(string Authorization)
+        {
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var user = await userManager.FindByEmailAsync(email);
+
+            //return the user
+            return user;
+        }
         private async Task<VoteDto> GetVote(Guid postId)
         {
             //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
@@ -188,13 +214,15 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async void AddUpVote(Guid postId, string userId)
         {
             //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
-            var vote = await repo.Votes.GetlistVoteAsync(postId);
+            var vote = await repo.Votes
+                .FindByCondition(x => x.postId.Equals(postId))
+                .ToListAsync();
 
             var upVote = vote.Select(x => x.userUpvote).ToList();
             var newUpVote = new Votes() {
                     postId = postId,
                     userDownVote = userId
-                };
+            };
 
             //context.Votes.Add(newUpVote);
             repo.Votes.Create(newUpVote);
