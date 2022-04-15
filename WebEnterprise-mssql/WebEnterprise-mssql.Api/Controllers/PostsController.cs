@@ -169,7 +169,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return new JsonResult("No Posts Avalaible") { StatusCode = 404 };
             }
-            return Ok(allApprovedPosts);
+            var sortedResultList = allApprovedPosts.OrderByDescending(x => x.createdDate).ToList();
+            return Ok(sortedResultList);
         }
 
         [HttpGet]
