@@ -1,6 +1,6 @@
 import React,{ useEffect,  useState } from 'react';
 import '../css/Management.css';
-import Modal from './Modal';
+import Modal from './Admin/create/Modal';
 import Navbar from './Navbar';
 import ModalEditUser from './ModalEditUser'
 
