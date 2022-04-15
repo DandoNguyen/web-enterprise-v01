@@ -147,8 +147,14 @@ namespace WebEnterprise_mssql.Api.Controllers
                     return BadRequest("ParentId cannot be null when IsChild is set to true");
                 }
             }
+            if (Authorization is null)
+            {
+                return BadRequest($"Param Authorization is null");
+            }
+            var user = await DecodeToken(Authorization);
             var newComment = mapper.Map<Comments>(dto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
+            newComment.userId = user.Id;
 
             if (await IsPassDeadline(dto.PostId))
             {
@@ -159,14 +165,17 @@ namespace WebEnterprise_mssql.Api.Controllers
                 try
                 {
                     // await context.Comments.AddAsync(newComment);
-                    repo.Comments.Create(newComment);
-                    repo.Save();
+                    if (ModelState.IsValid)
+                    {
+                        repo.Comments.Create(newComment);
+                        repo.Save();
+                    }
 
                     var post = await repo.Posts
                         .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
                         .FirstOrDefaultAsync();
                     var author = await userManager.FindByIdAsync(post.UserId);
-                    var user = await DecodeToken(Authorization);
+                    
                     if (!user.Id.Equals(author.Id))
                     {
                         MailContent mailContent = new();
