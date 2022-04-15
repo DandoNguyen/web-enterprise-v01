@@ -185,6 +185,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             foreach (var post in listPosts)
             {
                 var result = mapper.Map<PostDetailDto>(post);
+                result.StatusMessage = GetStatusMessageAsync(post.Status);
                 List<string> listCateId = new();
                 foreach (var cate in post.categories)
                 {
@@ -196,6 +197,17 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
             return Ok(listPostsDto);
+        }
+
+        private string GetStatusMessageAsync(int StatusCode)
+        {
+            switch(StatusCode)
+            {
+                case 0: return "Pending Review"; break;
+                case 1: return "Approved"; break;
+                case 2: return "Rejected"; break;
+                default: return "..."; break;
+            }
         }
 
         [HttpGet]
