@@ -40,7 +40,47 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpGet]
-        [Route("Vote")]
+        [Route("GetUserVoteStatus")]
+        public async Task<IActionResult> GetUserVoteStatus([FromHeader] string Authorization, string postId)
+        {
+            if(Authorization is null)
+            {
+                return BadRequest("Param Authoorization is null");
+            }
+            var user = await DecodeToken(Authorization);
+
+            if(postId is null)
+            {
+                return BadRequest("Cannot get chosen Idea ID");
+            }
+            var listVote = await repo.Votes
+                .FindByCondition(x => x.postId.Equals(Guid.Parse(postId)))
+                .ToListAsync();
+            if(listVote.Count.Equals(0))
+            {
+                return Ok();
+            }
+            var userVoteStatus = new userVoteStatusDto()
+            {
+                UpVote = false,
+                DownVote = false,
+            };
+            foreach(var vote in listVote)
+            {
+                if(vote.userUpvoteId.Equals(user.Id))
+                {
+                    userVoteStatus.UpVote = true;
+                }
+                else if (vote.userDownVoteId.Equals(user.Id))
+                {
+                    userVoteStatus.DownVote = true;
+                }
+            }
+            return Ok(userVoteStatus);
+        }
+
+        [HttpGet]
+        [Route("GetVoteStatusOfPost")]
         public async Task<IActionResult> GetVoteStatus(Guid postId)
         {
             var voteStatus = await GetVote(postId);
@@ -60,15 +100,15 @@ namespace WebEnterprise_mssql.Api.Controllers
             //var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
             var vote = await repo.Votes.GetlistVoteAsync(Guid.Parse(dto.postId));
 
-            var upVoteList = vote.Select(x => x.userUpvote).ToList();
-            var downVoteList = vote.Select(x => x.userDownVote).ToList();
+            var upVoteList = vote.Select(x => x.userUpvoteId).ToList();
+            var downVoteList = vote.Select(x => x.userDownVoteId).ToList();
             switch (dto.VoteInput)
             {
                 case true:
                     {
                         if (upVoteList.Contains(user.Id))
                         {
-                            var voteId = vote.Where(x => x.userUpvote.Equals(user.Id)).FirstOrDefault();
+                            var voteId = vote.Where(x => x.userUpvoteId.Equals(user.Id)).FirstOrDefault();
                             removeVotes(voteId.voteId, user.Id, true);
                         }
                         else if (downVoteList.Contains(user.Id))
@@ -86,7 +126,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         if (downVoteList.Contains(user.Id))
                         {
-                            var voteId = vote.Where(x => x.userDownVote.Equals(user.Id)).FirstOrDefault();
+                            var voteId = vote.Where(x => x.userDownVoteId.Equals(user.Id)).FirstOrDefault();
                             removeVotes(voteId.voteId, user.Id, false);
                         }
                         else if (upVoteList.Contains(user.Id))
@@ -128,10 +168,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             var vote = await repo.Votes.GetlistVoteAsync(postId);
 
             var voteDto = new VoteDto() {
-                UpvoteCount = vote.Select(x => x.userUpvote).Count(),
-                DownVoteCount = vote.Select(x => x.userDownVote).Count(),
-                UpVoteUserList = vote.Select(x => x.userUpvote).ToList(),
-                DownVoteUserList = vote.Select(x => x.userDownVote).ToList()
+                UpvoteCount = vote.Select(x => x.userUpvoteId).Count(),
+                DownVoteCount = vote.Select(x => x.userDownVoteId).Count(),
+                UpVoteUserList = vote.Select(x => x.userUpvoteId).ToList(),
+                DownVoteUserList = vote.Select(x => x.userDownVoteId).ToList()
             };
             return voteDto;
         }
@@ -173,13 +213,13 @@ namespace WebEnterprise_mssql.Api.Controllers
             switch (UpDown) //Up = true, Down = false
             {
                 case true:
-                    var existingDownVote = vote.Where(x => x.userDownVote.Equals(userId)).FirstOrDefault();
+                    var existingDownVote = vote.Where(x => x.userDownVoteId.Equals(userId)).FirstOrDefault();
                     removeVotes(existingDownVote.voteId, userId, false);
                     AddUpVote(Guid.Parse(postId), userId);
                     break;
 
                 case false:
-                    var existingUpVote = vote.Where(x => x.userUpvote.Equals(userId)).FirstOrDefault();
+                    var existingUpVote = vote.Where(x => x.userUpvoteId.Equals(userId)).FirstOrDefault();
                     removeVotes(existingUpVote.voteId, userId, false);
                     AddDownVote(Guid.Parse(postId), userId);
                     break;
@@ -193,7 +233,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             switch (UpDown)
             {
                 case true: {
-                    var upVote = vote.Where(x => x.userUpvote == userId).FirstOrDefault();
+                    var upVote = vote.Where(x => x.userUpvoteId == userId).FirstOrDefault();
 
                     //context.Votes.Remove(upVote);
                     repo.Votes.Delete(upVote);
@@ -201,7 +241,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     break;
                 }
                 case false: {
-                    var downVote = vote.Where(x => x.userDownVote == userId).FirstOrDefault();
+                    var downVote = vote.Where(x => x.userDownVoteId == userId).FirstOrDefault();
 
                     //context.Votes.Remove(downVote);
                     repo.Votes.Delete(downVote);
@@ -218,10 +258,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.postId.Equals(postId))
                 .ToListAsync();
 
-            var upVote = vote.Select(x => x.userUpvote).ToList();
+            var upVote = vote.Select(x => x.userUpvoteId).ToList();
             var newUpVote = new Votes() {
                     postId = postId,
-                    userDownVote = userId
+                    userDownVoteId = userId
             };
 
             //context.Votes.Add(newUpVote);
@@ -235,10 +275,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
             var vote = await repo.Votes.GetlistVoteAsync(postId);
 
-            var downVote = vote.Select(x => x.userDownVote).ToList();
+            var downVote = vote.Select(x => x.userDownVoteId).ToList();
             var newDownVote = new Votes() {
                     postId = postId,
-                    userDownVote = userId
+                    userDownVoteId = userId
                 };
 
             //context.Votes.Add(newDownVote);

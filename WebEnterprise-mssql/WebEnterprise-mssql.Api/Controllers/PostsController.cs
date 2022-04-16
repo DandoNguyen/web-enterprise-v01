@@ -169,7 +169,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return new JsonResult("No Posts Avalaible") { StatusCode = 404 };
             }
-            return Ok(allApprovedPosts);
+            var sortedResultList = allApprovedPosts.OrderByDescending(x => x.createdDate).ToList();
+            return Ok(sortedResultList);
         }
 
         [HttpGet]
@@ -179,12 +180,16 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await DecodeToken(Authorization);
 
             var listPosts = await repo.Posts
-                .GetAllPostsFromUserIDAsync(user.Id);
+                .FindByCondition(x => x.UserId.Equals(user.Id))
+                .ToListAsync();
+            var sortedListPosts = listPosts.OrderBy(x => x.Status).ToList();
 
             var listPostsDto = new List<PostDetailDto>();
-            foreach (var post in listPosts)
+            foreach (var post in sortedListPosts)
             {
                 var result = mapper.Map<PostDetailDto>(post);
+                result.StatusMessage = GetStatusMessageAsync(post.Status);
+
                 List<string> listCateId = new();
                 foreach (var cate in post.categories)
                 {
@@ -391,7 +396,16 @@ namespace WebEnterprise_mssql.Api.Controllers
         //INTERAL STATIC METHODS
         //=================================================================================================================================
         //=================================================================================================================================
-
+        private string GetStatusMessageAsync(int StatusCode)
+        {
+            switch (StatusCode)
+            {
+                case 0: return "Pending";
+                case 1: return "Approved";
+                case 2: return "Rejected";
+                default: return "N/A";
+            }
+        }
         private async Task SendNotiToEmail(string email, MailContent mailContent)
         {
             try

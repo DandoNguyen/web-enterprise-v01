@@ -187,18 +187,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             });
         }
 
-        private async Task SendConfirmEmail(ApplicationUser user) {
-            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = user.Email }, Request.Scheme);
-            
-            var message = new MailContent();
-            message.To = user.Email;
-            message.Subject = "Email Confirmation Link";
-            message.Body = $"Hello, user {user.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
-            
-            await mailService.SendMail(message);
-        }
-
         [HttpGet]
         [Route("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail(string token, string email)
@@ -210,16 +198,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             var result = await userManager.ConfirmEmailAsync(user, token); //Confirm Email of user
 
             return Ok(result.Succeeded ? $"Your email: {email} has been confirmed\nPlease go back to website to login!!!" : "The confirmation link has been corrupt or expired!!!");
-        }
-
-        //Development Purposes Must Delete Later
-        [HttpPost]
-        [Route("ConfirmEmailDev")]
-        public async Task<IActionResult> ConfirmEmailDev(string email) {
-            var user = await userManager.FindByEmailAsync(email);
-            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var result = await userManager.ConfirmEmailAsync(user, token);
-            return Ok("Email Dev Confirm!");
         }
 
         [HttpPost]
@@ -277,6 +255,17 @@ namespace WebEnterprise_mssql.Api.Controllers
             });
         }
 
+        //Development Purposes Must Delete Later
+        [HttpPost]
+        [Route("ConfirmEmailDev")]
+        public async Task<IActionResult> ConfirmEmailDev(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            return Ok("Email Dev Confirm!");
+        }
+
         [HttpPost]
         [Route("RefreshToken")]
         public async Task<IActionResult> Refreshtoken([FromBody] TokenRequestDto tokenRequestDto)
@@ -305,6 +294,21 @@ namespace WebEnterprise_mssql.Api.Controllers
                 },
                 Success = false
             });
+        }
+        //===============================================
+        //===============================================
+
+        private async Task SendConfirmEmail(ApplicationUser user)
+        {
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action(nameof(ConfirmEmail), "AuthManagement", new { token, email = user.Email }, Request.Scheme);
+
+            var message = new MailContent();
+            message.To = user.Email;
+            message.Subject = "Email Confirmation Link";
+            message.Body = $"Hello, user {user.UserName}\nThis is a mail contain confirmation link for your Registration\nPlease click the link below to confirm your email:\n\n{confirmationLink}";
+
+            await mailService.SendMail(message);
         }
 
         private async Task<ApplicationUser> DecodeToken(string Authorization)

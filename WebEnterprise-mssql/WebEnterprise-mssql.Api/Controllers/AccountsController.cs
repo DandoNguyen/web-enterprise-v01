@@ -36,8 +36,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet] 
         [Route("GetAllUser")]
-        [Authorize(Roles = "qac")]
-        [Authorize(Roles = "qam")]
+        [Authorize(Roles = "admin, qac, qam")]
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
             var userList = await repo.Users.FindAll()
                 .Include(x => x.RoleName)

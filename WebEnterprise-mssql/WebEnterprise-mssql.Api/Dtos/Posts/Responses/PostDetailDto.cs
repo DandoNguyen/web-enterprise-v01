@@ -16,7 +16,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string UserId { get; set; }
         public string username { get; set; }
         public List<string> ListCategoryName { get; set; }
-        public Guid SubmissionId { get; set; }
+        public string StatusMessage { get; set; }
         public List<string> FilesPaths { get; set; }
         public List<string> Message { get; set; }
     }

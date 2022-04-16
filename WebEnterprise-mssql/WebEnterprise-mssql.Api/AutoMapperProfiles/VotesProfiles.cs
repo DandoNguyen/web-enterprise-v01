@@ -10,7 +10,7 @@ namespace WebEnterprise_mssql.Api.Profiles
         public VotesProfiles()
         {
             CreateMap<Votes, VoteDto>()
-                .ForMember(dest => dest.UpvoteCount, opt => opt.MapFrom(src => src.userUpvote));
+                .ForMember(dest => dest.UpvoteCount, opt => opt.MapFrom(src => src.userUpvoteId));
 
             CreateMap<Votes, VoteDto>().ReverseMap();
         }
