@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using WebEnterprise_mssql.Api.Data;
 
 namespace WebEnterprise_mssql.Api.Repository
@@ -134,7 +135,7 @@ namespace WebEnterprise_mssql.Api.Repository
             this.context = context;
         }
 
-        public async void Save()
+        public async Task Save()
         {
             await context.SaveChangesAsync();
         }
