@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
@@ -28,17 +29,20 @@ namespace WebEnterprise_mssql.Api.Controllers
     {
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ILogger<CommentsController> logger;
         private readonly IRepositoryWrapper repo;
         private readonly ISendMailService mailService;
 
         public CommentsController(
             IMapper mapper,
             UserManager<ApplicationUser> userManager,
+            ILogger<CommentsController> logger,
             IRepositoryWrapper repo, 
             ISendMailService mailService
         )
         {
             this.userManager = userManager;
+            this.logger = logger;
             this.repo = repo;
             this.mailService = mailService;
             this.mapper = mapper;
@@ -144,18 +148,25 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCommentAsync(CommentDto dto, [FromHeader] string Authorization)
         {
-            if (dto.IsChild)
-            {
-                if (dto.ParentId is null)
-                {
-                    return BadRequest("ParentId cannot be null when IsChild is set to true");
-                }
-            }
             if (Authorization is null)
             {
                 return BadRequest($"Param Authorization is null");
             }
             var user = await DecodeToken(Authorization);
+
+            if (dto.IsChild)
+            {
+                if (dto.ParentId is null)
+                {
+                    return BadRequest("ParentId cannot be null when IsChild is set to true");
+                } 
+                else
+                {
+                    await AddReplyCommentAsync(dto, user);
+                    return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
+                }
+            }
+            
             var newComment = mapper.Map<Comments>(dto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
             newComment.ApplicationUser = user;
@@ -289,6 +300,34 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             parentDto.childItems = newListChildren;
             return parentDto;
+        }
+
+        private async Task AddReplyCommentAsync(CommentDto dto, ApplicationUser user)
+        {
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
+                .FirstOrDefaultAsync();
+            var newComment = mapper.Map<Comments>(dto);
+            newComment.CreatedDate = DateTimeOffset.UtcNow;
+            newComment.ApplicationUser = user;
+            var parentCommentAuthor = await repo.Comments
+                .FindByCondition(x => x.CommentId.Equals(Guid.Parse(dto.ParentId)))
+                .Include(x => x.ApplicationUser)
+                .Select(x => x.ApplicationUser)
+                .FirstOrDefaultAsync();
+            if (!parentCommentAuthor.Id.Equals(user.Id))
+            {
+                MailContent mailContent = new MailContent();
+                mailContent.To = parentCommentAuthor.Email;
+                mailContent.Subject = $"User {user.UserName} has reply to your comment";
+                mailContent.Body = $"Your Comment on Idea {post.title} has been reply by User {user.UserName}";
+                await mailService.SendMail(mailContent);
+            }
+            if (ModelState.IsValid)
+            {
+                repo.Comments.Create(newComment);
+                repo.Save();
+            }
         }
     }
 }
