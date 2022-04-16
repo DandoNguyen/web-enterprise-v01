@@ -80,7 +80,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         [HttpGet]
-        [Route("Vote")]
+        [Route("GetVoteStatusOfPost")]
         public async Task<IActionResult> GetVoteStatus(Guid postId)
         {
             var voteStatus = await GetVote(postId);
