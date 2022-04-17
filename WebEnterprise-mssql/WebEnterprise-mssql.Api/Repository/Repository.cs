@@ -28,10 +28,9 @@ namespace WebEnterprise_mssql.Api.Repository
         public EntityEntry<T> GetEntityEntry(T entity) => context.Entry<T>(entity);
         public void AttachEntity(T entity) => context.Attach<T>(entity);
 
-        public async void DeleteRange(IEnumerable<T> entities)
+        public void DeleteRange(IEnumerable<T> entities)
         {
             context.Set<T>().RemoveRange(entities);
-            await context.SaveChangesAsync();
         }
     }
 }
