@@ -43,7 +43,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 List<Posts> ListValue = new();
                 foreach (var post in listPosts)
                 {
-                    
+
                     if (topic.TopicId.Equals(post.TopicId))
                     {
                         ListValue.Add(post);
@@ -52,7 +52,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(topic.TopicName, ListValue.Count());
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, nameof(GetAllPostByTopic), "default");
+            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
             return Ok(new {listResult, filePath});
         }
 
@@ -79,7 +79,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(department.DepartmentName, ListValue.Count());
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, nameof(GetPostApproveRatioByDepartment), "default");
+            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
             return Ok(new {listResult, filePath});
         }
 
@@ -106,7 +106,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(department.DepartmentName, ListValue.Count());
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, nameof(GetAllPostByDepartment), "default");
+            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
             return Ok(new {listResult, filePath});
         }
 
