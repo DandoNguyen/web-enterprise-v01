@@ -85,7 +85,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             post.IsAssigned = true;
 
             repo.Posts.Update(post);
-            repo.Save();
+            await repo.Save();
 
             var postDto = mapper.Map<PostDto>(post);
             return RedirectToAction(nameof(GetPostByIDAsync), postDto);
@@ -108,7 +108,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
             repo.Posts.Update(post);
-            repo.Save();
+            await repo.Save();
 
             //Send Notification to Author
             var today = DateTime.UtcNow;
@@ -278,7 +278,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 CheckEntityEntry(newPost);
 
                 repo.Posts.CreatePostAsync(newPost);
-                repo.Save();
+                await repo.Save();
 
                 var qacEmail = await repo.Users
                     .FindByCondition(x => x.RoleName.RoleName.Equals("qac"))
@@ -331,7 +331,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             // context.Posts.Update(existingPost);
             // await context.SaveChangesAsync();
             repo.Posts.Update(existingPost);
-            repo.Save();
+            await repo.Save();
 
             //Get all QAC role users
             var listUser = await userManager.Users.ToListAsync();
@@ -378,7 +378,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             try
             {
                 repo.Posts.Delete(existingPost);
-                repo.Save();
+                await repo.Save();
             }
             catch (System.Exception ex)
             {
@@ -494,7 +494,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
                         var filePathsArray = await repo.FilesPaths.GetListObj(postId.ToString());
                         repo.FilesPaths.RemoveListOfFilesPaths(filePathsArray);
-                        repo.Save();
+                        await repo.Save();
 
                         Console.WriteLine($"file {fileItem} deleted!");
                     }
@@ -565,7 +565,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         newFilePathObj.filePath = finalFilePath;
 
                         repo.FilesPaths.Create(newFilePathObj);
-                        repo.Save();
+                        await repo.Save();
 
                         listOfPaths.Add(finalFilePath);
 
@@ -637,7 +637,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     };
 
                     repo.Views.Create(newView);
-                    repo.Save();
+                    await repo.Save();
                 }
                 else
                 {
@@ -656,13 +656,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                             postId = postId
                         };
                         repo.Views.Create(newView);
-                        repo.Save();
+                        await repo.Save();
                     }
                 }
             }
 
 
-            repo.Save();
+            await repo.Save();
             return listViewCount.Count();
         }
 

@@ -36,7 +36,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var department = await repo.Departments.FindByCondition(x => x.DepartmentId.Equals(dto.DepartmentId)).FirstOrDefaultAsync();
             user.DepartmentId = dto.DepartmentId.ToString();
             repo.Users.Update(user);
-            repo.Save();
+            await repo.Save();
 
             return new JsonResult($"User {user.UserName} has been assigned to Department {department.DepartmentName}") {StatusCode = 200};
         }
@@ -74,7 +74,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 try
                 {
                     repo.Departments.Create(newDepartment);
-                    repo.Save();
+                    await repo.Save();
                 }
                 catch (Exception ex)
                 {

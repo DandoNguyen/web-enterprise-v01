@@ -249,7 +249,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     break;
                 }
             }
-            repo.Save();
+            await repo.Save();
         }
         private async void AddUpVote(Guid postId, string userId)
         {
@@ -267,7 +267,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             //context.Votes.Add(newUpVote);
             repo.Votes.Create(newUpVote);
 
-            repo.Save();
+            await repo.Save();
         }
 
         private async void AddDownVote(Guid postId, string userId)
@@ -284,7 +284,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             //context.Votes.Add(newDownVote);
             repo.Votes.Create(newDownVote);
 
-            repo.Save();
+            await repo.Save();
         }
     }
 }
