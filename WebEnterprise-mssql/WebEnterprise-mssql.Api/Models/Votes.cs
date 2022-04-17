@@ -12,8 +12,8 @@ namespace WebEnterprise_mssql.Api.Models
 
         public Guid postId { get; set; }
         public virtual Posts Posts { get; set; }
-        public string userUpvoteId { get; set; }
-        public string userDownVoteId { get; set; }
+        public List<string> userUpvoteId { get; set; }
+        public List<string> userDownVoteId { get; set; }
 
         // public ICollection<UpVote> UpVote { get; set; }
         // public ICollection<DownVote> DownVote { get; set; }
