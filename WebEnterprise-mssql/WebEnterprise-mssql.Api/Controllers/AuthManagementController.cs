@@ -148,7 +148,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         //jwttoken,
                         //message = "the account was assigned with role Staff by default",
-                        confirmationMessage = "A new confirmation email has been sent to your registered email, please chenk you inbox!"
+                        Message = "A new confirmation email has been sent to your registered email, please chenk you inbox!"
                     });
 
                 }

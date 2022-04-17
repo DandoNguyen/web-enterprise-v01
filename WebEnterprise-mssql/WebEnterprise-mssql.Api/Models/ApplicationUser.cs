@@ -23,6 +23,7 @@ namespace WebEnterprise_mssql.Api.Models
         public virtual ICollection<Posts> Posts { get; set; }
         public virtual ICollection<Views> Views { get; set; }
         public virtual ICollection<Comments> Comments { get; set; }
+        public virtual ICollection<Votes> Votes { get; set; }
     }
 }
 

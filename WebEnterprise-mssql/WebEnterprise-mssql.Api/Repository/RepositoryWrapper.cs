@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using WebEnterprise_mssql.Api.Data;
+using WebEnterprise_mssql.Repository.Class;
+using WebEnterprise_mssql.Repository.Interface;
 
 namespace WebEnterprise_mssql.Api.Repository
 {
@@ -10,12 +12,13 @@ namespace WebEnterprise_mssql.Api.Repository
         private IFilesPathRepository _filesPath;
         private IViewsRepository _view;
         private ICommentsRepository _comment;
-        private IVoteRepository _Vote;
         private IDepartmentRepository _Department;
         private IUserRepository _User;
         private ITopicRepository _Topic;
         private ICategoryRepository _Category;
         private IApplicationUserRepository _ApplicationUser;
+        private IUpVoteRepository _UpVote;
+        private IDownVoteRepository _DownVote;
 
         //===================================================
         public IPostsRepository Posts
@@ -62,17 +65,6 @@ namespace WebEnterprise_mssql.Api.Repository
                     _comment = new CommentsRepository(context);
                 }
                 return _comment;
-            }
-        }
-
-        public IVoteRepository Votes {
-            get
-            {
-                if (_Vote is null)
-                {
-                    _Vote = new VoteRepository(context);
-                }
-                return _Vote;
             }
         }
 
@@ -127,6 +119,30 @@ namespace WebEnterprise_mssql.Api.Repository
                     _ApplicationUser = new ApplicationUserRepository(context);
                 }
                 return _ApplicationUser;
+            }
+        }
+
+        public IUpVoteRepository UpVotes 
+        {
+            get
+            {
+                if (_UpVote is null)
+                {
+                    _UpVote = new UpVoteRepository(context);
+                }
+                return _UpVote;
+            }
+        }
+
+        public IDownVoteRepository DownVote
+        {
+            get
+            {
+                if (_DownVote is null)
+                {
+                    _DownVote = new DownVoteRepository(context);
+                }
+                return _DownVote;
             }
         }
 

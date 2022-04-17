@@ -10,10 +10,12 @@ namespace WebEnterprise_mssql.Api.Models
         [KeyAttribute]
         public Guid voteId { get; set; }
 
-        public Guid postId { get; set; }
-        public virtual Posts Posts { get; set; }
-        public string userUpvoteId { get; set; }
-        public string userDownVoteId { get; set; }
+        //public Guid postId { get; set; }
+        //public virtual Posts Posts { get; set; }
+        //public Guid? userUpvoteId { get; set; }
+        //public virtual ApplicationUser UserUpvote { get; set; }
+        //public Guid? userDownVoteId { get; set; }
+        //public virtual ApplicationUser UserDownVote { get; set; }
 
         // public ICollection<UpVote> UpVote { get; set; }
         // public ICollection<DownVote> DownVote { get; set; }
