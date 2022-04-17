@@ -556,10 +556,10 @@ namespace WebEnterprise_mssql.Migrations
                     b.Property<Guid>("postId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("userDownVote")
+                    b.Property<string>("userDownVoteId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("userUpvote")
+                    b.Property<string>("userUpvoteId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("voteId");
