@@ -53,35 +53,36 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return BadRequest("Cannot get chosen Idea ID");
             }
-            var listVote = await repo.Votes
-                .FindByCondition(x => x.postId.Equals(Guid.Parse(postId)))
-                .ToListAsync();
-            if (listVote.Count.Equals(0))
-            {
-                return Ok();
-            }
             var userVoteStatus = new userVoteStatusDto()
             {
                 UpVote = false,
-                DownVote = false,
+                DownVote = false
             };
-            foreach (var vote in listVote)
+            var upVote = await repo.UpVotes
+                .FindByCondition(x => x.postId.Equals(postId))
+                .Where(x => x.userId.Equals(user.Id))
+                .FirstOrDefaultAsync();
+            if(upVote is not null)
             {
-                if (vote.userUpvoteId.Equals(user.Id))
-                {
-                    userVoteStatus.UpVote = true;
-                }
-                else if (vote.userDownVoteId.Equals(user.Id))
-                {
-                    userVoteStatus.DownVote = true;
-                }
+                userVoteStatus.UpVote = true;
+            }
+
+            var downVote = await repo.DownVote
+                .FindByCondition(x => x.postId.Equals(postId))
+                .Where(x => x.userId.Equals(user.Id))
+                .FirstOrDefaultAsync();
+
+            if(downVote is not null)
+            {
+                userVoteStatus.DownVote = true;
             }
             return Ok(userVoteStatus);
+            
         }
 
         [HttpGet]
         [Route("GetVoteStatusOfPost")]
-        public async Task<IActionResult> GetVoteStatus(Guid postId)
+        public async Task<IActionResult> GetVoteStatus(string postId)
         {
             var voteStatus = await GetVote(postId);
             return Ok(voteStatus);
@@ -98,11 +99,9 @@ namespace WebEnterprise_mssql.Api.Controllers
             var user = await DecodeToken(Authorization);
 
             //var vote = await context.Votes.Where(x => x.postId.Equals(voteBtnRequestDto.postId)).ToListAsync();
-            var vote = await repo.Votes
-                .FindByCondition(x => x.postId.Equals(Guid.Parse(dto.postId)))
-                .FirstOrDefaultAsync();
-
-            if (vote is null)
+            var existingUpVote = await repo.UpVotes.FindByCondition(x => x.postId.Equals(dto.postId)).Where(x => x.userId.Equals(user.Id)).FirstOrDefaultAsync();
+            var existingDownVote = await repo.DownVote.FindByCondition(x => x.postId.Equals(dto.postId)).Where(x => x.userId.Equals(user.Id)).FirstOrDefaultAsync();
+            if ((existingUpVote is null) && (existingDownVote is null))
             {
                 await AddVoteAsync(dto.postId, user.Id, dto.VoteInput);
                 switch(dto.VoteInput)
@@ -111,44 +110,27 @@ namespace WebEnterprise_mssql.Api.Controllers
                     case false: return Ok($"User {user.UserName} vote down");
                 }
             }
-            else
+            else if((existingDownVote is null) && (existingUpVote is not null))
             {
-                switch(dto.VoteInput)
+                if(dto.VoteInput)
                 {
-                    case true:
-                        {
-                            if(vote.userUpvoteId.Contains(user.Id))
-                            {
-                                await removeVotes(vote.voteId, user.Id, true);
-                            }
-                            else if(vote.userDownVoteId.Contains(user.Id))
-                            {
-                                await SwitchVoteTo(true, dto.postId, user.Id);
-                            }
-                            else
-                            {
-                                await AddVoteAsync(dto.postId, user.Id, true);
-                            }
-                            break;
-                        }
-                    case false:
-                        {
-                            if (vote.userDownVoteId.Contains(user.Id))
-                            {
-                                await removeVotes(vote.voteId, user.Id, false);
-                            }
-                            else if (vote.userUpvoteId.Contains(user.Id))
-                            {
-                                await SwitchVoteTo(false, dto.postId, user.Id);
-                            }
-                            else
-                            {
-                                await AddVoteAsync(dto.postId, user.Id, false);
-                            }
-                            break;
-                        }
+                    await removeVotes(dto.postId, user.Id, true);
                 }
-                repo.Votes.Update(vote);
+                else
+                {
+                    await SwitchVoteTo(false, dto.postId, user.Id);
+                }
+            }
+            else if((existingDownVote is not null) && (existingUpVote is null))
+            {
+                if(dto.VoteInput)
+                {
+                    await SwitchVoteTo(true, dto.postId, user.Id);
+                }
+                else
+                {
+                    await removeVotes(dto.postId, user.Id, false);
+                }
             }
             await repo.Save();
             return CreatedAtAction(nameof(GetVoteStatus), new { dto.postId });
@@ -172,15 +154,20 @@ namespace WebEnterprise_mssql.Api.Controllers
             //return the user
             return user;
         }
-        private async Task<VoteDto> GetVote(Guid postId)
+        private async Task<VoteDto> GetVote(string postId)
         {
             //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
-            var vote = await repo.Votes.GetlistVoteAsync(postId);
+            var listUpvote = await repo.UpVotes
+                .FindByCondition(x => x.postId.Equals(postId))
+                .ToListAsync();
+            var listDownVote = await repo.DownVote
+                .FindByCondition(x => x.postId.Equals(postId))
+                .ToListAsync();
 
             var voteDto = new VoteDto()
             {
-                UpvoteCount = vote.Select(x => x.userUpvoteId).Count(),
-                DownVoteCount = vote.Select(x => x.userDownVoteId).Count()
+                UpvoteCount = listUpvote.Select(x => x.userId).ToList().Count(),
+                DownVoteCount = listDownVote.Select(x => x.userId).ToList().Count()
             };
             return voteDto;
         }
@@ -188,67 +175,62 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task SwitchVoteTo(bool UpDown, string postId, string userId)
         {
             //var vote = await context.Votes.Where(x => x.postId.Equals(postId)).ToListAsync();
-            var vote = await repo.Votes
-                .FindByCondition(x => x.postId.Equals(Guid.Parse(postId)))
-                .FirstOrDefaultAsync();
-
+            
             switch (UpDown) //Up = true, Down = false
             {
                 case true:
-                    if (vote.userDownVoteId.Contains(userId))
                     {
-                        vote.userDownVoteId.Remove(userId);
-                        vote.userUpvoteId.Add(userId);
+                        await removeVotes(postId, userId, false);
+                        await AddVoteAsync(postId, userId, true);
+                        break;
                     }
-                    break;
-
                 case false:
-                    if (vote.userUpvoteId.Contains(userId))
                     {
-                        vote.userUpvoteId.Remove(userId);
-                        vote.userDownVoteId.Add(userId);
+                        await removeVotes(postId, userId, true);
+                        await AddVoteAsync(postId, userId, false);
+                        break;
                     }
-                    break;
             }
-            repo.Votes.Update(vote);
             await repo.Save();
         }
-        private async Task removeVotes(Guid voteId, string userId, bool UpDown)
+        private async Task removeVotes(string postId, string userId, bool UpDown)
         {
             //var vote = await context.Votes.Where(x => x.voteId.Equals(voteId)).ToListAsync();
-            var vote = await repo.Votes
-                .FindByCondition(x => x.voteId.Equals(voteId))
-                .FirstOrDefaultAsync();
-
-            switch (UpDown)
+            switch(UpDown)
             {
                 case true:
                     {
-                        vote.userUpvoteId.Remove(userId);
-                        //context.Votes.Remove(upVote);
+                        var upvote = await repo.UpVotes.FindByCondition(x => x.postId.Equals(postId)).Where(x => x.userId.Equals(userId)).FirstOrDefaultAsync();
+                        repo.UpVotes.Delete(upvote);
                         break;
                     }
                 case false:
                     {
-                        vote.userDownVoteId.Remove(userId);
-                        //context.Votes.Remove(upVote);
+                        var downVote = await repo.DownVote.FindByCondition(x => x.postId.Equals(postId)).Where(x => x.userId.Equals(userId)).FirstOrDefaultAsync();
+                        repo.DownVote.Delete(downVote);
                         break;
                     }
             }
-            repo.Votes.Update(vote);
             await repo.Save();
         }
 
         private async Task AddVoteAsync(string postId, string userId, bool UpDown)
         {
-            var newVote = new Votes();
-            newVote.postId = Guid.Parse(postId);
             switch (UpDown)
             {
-                case true: newVote.userUpvoteId.Add(userId); break;
-                case false: newVote.userDownVoteId.Add(userId); break;
+                case true: 
+                    var newUpVote = new UpVote();
+                    newUpVote.userId = userId;
+                    newUpVote.postId = postId; 
+                    repo.UpVotes.Create(newUpVote);
+                    break;
+                case false: 
+                    var newDownVote = new DownVote();
+                    newDownVote.userId = userId;
+                    newDownVote.postId = postId;
+                    repo.DownVote.Create(newDownVote);
+                    break;
             }
-            repo.Votes.Create(newVote);
             await repo.Save();
         }
     }
