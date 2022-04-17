@@ -124,7 +124,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (ModelState.IsValid)
                 {
                     repo.Topics.Create(newTopic);
-                    repo.Save();
+                    await repo.Save();
                 }
 
                 //Send Mail to All Employee
@@ -148,7 +148,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             if (listPosts.Count().Equals(0))
             {
                 repo.Topics.Delete(Topic);
-                repo.Save();
+                await repo.Save();
                 return Ok($"Topic {Topic.TopicName} has been deleted");
             }
             return BadRequest($"All post inside Topic {Topic.TopicName} must be removed before Atempting to remove this Topic");
@@ -169,7 +169,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             if (ModelState.IsValid)
             {
                 repo.Topics.Update(newTopic);
-                repo.Save();
+                await repo.Save();
                 return Ok($"Topic {newTopic.TopicName} has been updated");
             }
             return BadRequest($"Error in updating Topic {dto.TopicName}");

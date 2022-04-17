@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace WebEnterprise_mssql.Api.Repository
 {
     public interface IRepositoryWrapper
@@ -12,6 +14,6 @@ namespace WebEnterprise_mssql.Api.Repository
         ITopicRepository Topics { get; }
         ICategoryRepository Categories { get; }
         IApplicationUserRepository applicationUsers { get; }
-        void Save();
+        Task Save();
     }
 }

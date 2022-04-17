@@ -47,7 +47,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (ModelState.IsValid)
                 {
                     repo.Categories.Create(newCate);
-                    repo.Save();
+                    await repo.Save();
                 }
                 return Ok($"Category {dto.CategoryName} has been created");
             }
@@ -84,7 +84,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 cate.posts.Add(post);
                 CheckEntityEntry(cate);
                 repo.Categories.Update(cate);
-                repo.Save();
+                await repo.Save();
             }
             catch (Exception ex)
             {
@@ -98,7 +98,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             // if (ModelState.IsValid)
             // {
             //     repo.CatePost.Create(newCatePost);
-            //     repo.Save();
+            //     await repo.Save();
             //     return Ok($"Category Tag {cate.CategoryName} added to post successfully!");
             // }
             // return BadRequest("Error in add Tag to Post");
@@ -115,7 +115,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             try 
             {
                 repo.Categories.Delete(cate);
-                repo.Save();
+                await repo.Save();
                 return Ok($"Category {cate.CategoryName} has been deleted");
             }
             catch(Exception ex)

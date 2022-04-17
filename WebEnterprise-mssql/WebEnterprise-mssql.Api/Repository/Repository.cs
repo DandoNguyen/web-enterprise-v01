@@ -21,11 +21,8 @@ namespace WebEnterprise_mssql.Api.Repository
         public IQueryable<T> FindAll() => context.Set<T>().AsNoTracking();
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression) => 
             context.Set<T>().Where(expression).AsNoTracking();
-        public async void Create(T entity) 
-        {
-            context.Set<T>().Add(entity);
-            await context.SaveChangesAsync();
-        }
+        public async void Create(T entity) => context.Set<T>().Add(entity);
+        
         public void Update(T entity) => context.Set<T>().Update(entity);
         public void Delete(T entity) => context.Set<T>().Remove(entity);
         public EntityEntry<T> GetEntityEntry(T entity) => context.Entry<T>(entity);

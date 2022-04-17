@@ -135,7 +135,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 {
                     //context.Comments.Update(existingComment);
                     repo.Comments.Update(existingComment);
-                    repo.Save();
+                    await repo.Save();
                     return RedirectToAction(nameof(GetAllComment), new { dto.postId });
                 }
                 catch (Exception ex)
@@ -183,7 +183,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     if (ModelState.IsValid)
                     {
                         repo.Comments.Create(newComment);
-                        repo.Save();
+                        await repo.Save();
                     }
 
                     var post = await repo.Posts
@@ -259,7 +259,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             // context.Comments.RemoveRange(childrenCommentArray);
             repo.Comments.DeleteListChildren(childrenCommentArray);
-            repo.Save();
+            await repo.Save();
         }
         private async void DeleteComment(Guid commentId)
         {
@@ -270,7 +270,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             //context.Comments.Remove(existingComment);
             repo.Comments.Delete(existingComment);
-            repo.Save();
+            await repo.Save();
         }
 
         private async Task<ParentItemDto> GetChildrenToParent(string ParentId)
@@ -326,7 +326,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             if (ModelState.IsValid)
             {
                 repo.Comments.Create(newComment);
-                repo.Save();
+                await repo.Save();
             }
         }
     }
