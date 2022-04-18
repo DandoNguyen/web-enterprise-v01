@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Modal.css";
+import { Url } from "../../URL";
 
 function Modal({ setOpenModal }) {
   const [Email, setEmail] = useState('');
@@ -27,13 +28,13 @@ function Modal({ setOpenModal }) {
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/AuthManagement/Register", requestOptions)
+    fetch(Url+"/api/AuthManagement/Register", requestOptions)
       .then(response => response.json())
       .then(result => {
         console.log(result);
         alert('thanh cong')
       })
-      .catch(error => console.log('error', error));
+      .catch(error => alert( error.title));
 
   }
 

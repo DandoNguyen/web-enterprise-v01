@@ -1,5 +1,6 @@
 import React,{useState, useEffect} from "react";
 import "./ModalDeadlineEdit.css";
+import {Url} from '../../URL'
 
 function ModalDeadlineEdit({ setopenModalDeadlineEdit , data}) {
   const[topicName,settopicName]= useState('');
@@ -36,7 +37,7 @@ function ModalDeadlineEdit({ setopenModalDeadlineEdit , data}) {
       redirect: 'follow'
     };
     
-    fetch("https://localhost:5001/api/Topics/UpdateTopic", requestOptions)
+    fetch(Url+"/api/Topics/UpdateTopic", requestOptions)
       .then(response => response.json())
       .then(result => {
         console.log(result)
@@ -47,13 +48,14 @@ function ModalDeadlineEdit({ setopenModalDeadlineEdit , data}) {
         console.log('error', error)
         setopenModalDeadlineEdit(false)
         setreloadpage(!reloadpage)
+        alert('Full information needed')
       });
   }
   return (
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setopenModalDeadlineEdit(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setopenModalDeadlineEdit(false);}} > X </button>
         </div>
         <div className="modaltitle">Edit Deadline</div>
         

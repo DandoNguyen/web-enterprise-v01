@@ -1,5 +1,6 @@
 import React,{useState} from "react";
 import "./ModalDeadlineDelete.css";
+import {Url} from '../../URL'
 
 function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data}) {
 
@@ -18,7 +19,7 @@ function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data}) {
         redirect: 'follow'
       };
 
-      fetch("https://localhost:5001/api/Topics/RemoveTopic", requestOptions)
+      fetch(Url+"/api/Topics/RemoveTopic", requestOptions)
         .then(response => response.json())
         .then(result => {
           console.log(result)
@@ -35,7 +36,7 @@ function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data}) {
       <div className="modalContainer">
         
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalDeadlineDelete(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalDeadlineDelete(false);}} > X </button>
         </div>
         <div className="modaltitle">DO YOU WANT TO DELETE THIS DEADLINE</div>
         

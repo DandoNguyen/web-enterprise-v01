@@ -1,5 +1,6 @@
 import React,{useState} from "react";
 import "./ModalDeadlineCreate.css";
+import {Url} from '../../URL'
 
 function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
   const [reloadpage,setreloadpage]= useState(false);
@@ -26,7 +27,7 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
           redirect: 'follow'
         };
 
-        fetch("https://localhost:5001/api/Topics/CreateTopic", requestOptions)
+        fetch(Url+"/api/Topics/CreateTopic", requestOptions)
           .then(response => response.json())
           .then(result =>{
             console.log(result);
@@ -36,13 +37,14 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
           .catch(error => {console.log('error', error)
           setOpenModalDeadlineCreate(false)
           setreloadpage(!reloadpage)
+          alert('Full information needed')
         });
         }
   return (
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalDeadlineCreate(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalDeadlineCreate(false);}} > X </button>
         </div>
         <div className="modaltitle">Add Deadline</div>
         <div className="modalinput">

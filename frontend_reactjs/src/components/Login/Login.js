@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
+import { Url } from '../URL';
 
 function Login() {
     const [email, setemail] = useState('')
@@ -31,7 +32,7 @@ function Login() {
             redirect: 'follow'
         };
 
-        fetch("https://localhost:5001/api/AuthManagement/Login", requestOptions)
+        fetch(Url+"/api/AuthManagement/Login", requestOptions)
         .then(response => {
             if (response.ok) {
                 return response.json()

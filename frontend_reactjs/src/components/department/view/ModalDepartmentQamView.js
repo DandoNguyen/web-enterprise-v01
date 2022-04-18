@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./ModalDepartmentQamView.css";
+import { Url } from "../../URL";
 
 function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
   const [user, setuser] = useState([])
-
+  
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
@@ -14,7 +15,7 @@ function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
       redirect: 'follow'
     };
 
-    fetch(`https://localhost:5001/api/Department/GetAllUserFromDepartment?departmentId=${data.departmentId}`, requestOptions)
+    fetch(Url+`/api/Department/GetAllUserFromDepartment?departmentId=${data.departmentId}`, requestOptions)
       .then(response => response.json())
       .then(data => {
         console.log(data)
@@ -30,11 +31,12 @@ function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
       <td>{data.email}</td>
     </tr>
   ))
+  
   return (
-    <div className="modalBackground1">
-      <div className="modalContainer1">
+    <div className="modalBackground">
+      <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => { setOpenDepartmentQamView(false); }} > X </a>
+          <button className="xbtn" onClick={() => { setOpenDepartmentQamView(false); }} > X </button>
         </div>
         <div className="modaltitle">Department Detail</div>
 

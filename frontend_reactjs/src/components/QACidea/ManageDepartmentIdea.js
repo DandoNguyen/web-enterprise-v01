@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './ManageDepartmentIdea.css';
 import ModalDepartmentIdea from './modalidea/ModalDeaparmentIdea';
 import Navbar from '../Navbar';
+import {Link} from 'react-router-dom'
+import { Url } from '../URL';
 
 
 function ManageDepartmentIdea() {
   const [ModalDepartmentIdeaOpen, setModalDepartmentIdea] = useState(false);
   const [QACIdea, setQACIdea] = useState([])
-
+  const [ viewIdeas , setviewIdea]=useState('')
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-    myHeaders.append("Content-Type", "application/json");
+    // myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
       method: 'GET',
@@ -19,7 +21,7 @@ function ManageDepartmentIdea() {
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/Posts/QACListPost", requestOptions)
+    fetch(Url+"/api/Posts/QACListPost", requestOptions)
       .then(response => response.json())
       .then(data => {
         console.log(data)
@@ -28,6 +30,10 @@ function ManageDepartmentIdea() {
       .catch(error => console.log('error', error));
   }, [])
 
+  const viewIdea = (data)=>{
+    setModalDepartmentIdea(true)
+    setviewIdea(data)
+  }
   const listQACidea = QACIdea.map(data => (
     <tr key={data.postId}>
       <td>{data.title}</td>
@@ -35,8 +41,8 @@ function ManageDepartmentIdea() {
       <td>{data.categoryId}</td>
       <td>{data.message}</td>
       <td>
-        <button className='View' onClick={() => { setModalDepartmentIdea(true); }}>View</button>
-        {ModalDepartmentIdeaOpen && <ModalDepartmentIdea setOpenModalDepartmentIdea={setModalDepartmentIdea} data={data} />}
+        <button className='View' onClick={() => viewIdea(data)}>View</button>
+        
       </td>
     </tr>
   ))
@@ -46,8 +52,8 @@ function ManageDepartmentIdea() {
     <Navbar />
     <section className='Managementpage'>
       <div className='buttonMana'>
-        <a href='ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></a>
-        <a href='ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></a>
+        <Link to='/ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
       </div>
 
       <div className='manage-header'>
@@ -69,6 +75,7 @@ function ManageDepartmentIdea() {
         </thead>
         <tbody>
           {listQACidea}
+          {ModalDepartmentIdeaOpen && <ModalDepartmentIdea setOpenModalDepartmentIdea={setModalDepartmentIdea} data={viewIdeas} />}
         </tbody>
       </table>
 

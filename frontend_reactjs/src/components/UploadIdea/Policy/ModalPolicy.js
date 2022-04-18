@@ -6,7 +6,7 @@ function ModalPolicy({ setOpenModal }) {
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModal(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModal(false);}} > X </button>
         </div>
         <div className="modaltitle">TERMS AND POLICIES</div>
         <div className="modalinput">
@@ -22,7 +22,7 @@ function ModalPolicy({ setOpenModal }) {
           {/* <button className="SubmitBtn">Submit</button> */}
         
       </div>
-    // </div>
+     </div>
   );
 }
 

@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 import "./ModalCategoryCreate.css";
-
-function ModalCategoryCreate({ setOpenModalCategoryCreate }) {
+import { Url } from "../../URL";
+function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate }) {
   const[CategoryName,setCategoryName]=useState('');
   const[desc,setdesc]=useState('');
    const [reloadpage,setreloadpage]= useState(false);
@@ -20,36 +20,37 @@ function ModalCategoryCreate({ setOpenModalCategoryCreate }) {
           body: raw,
           redirect: 'follow'
         };
-
-        fetch("https://localhost:5001/api/Category/CreateTag", requestOptions)
+        
+        fetch(Url+"/api/Category/CreateTag", requestOptions)
         .then(response => response.json())
         .then(result => {
-          console.log(result)
           setOpenModalCategoryCreate(false)
-          setreloadpage(!reloadpage)
+          addCate(CategoryName,desc)
+          alert(result)
         })
         .catch(error => {
           console.log('error', error)
           setOpenModalCategoryCreate(false)
           setreloadpage(!reloadpage)
+          alert('Error please try again')
         });
     }
   return (
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalCategoryCreate(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalCategoryCreate(false);}} > X </button>
         </div>
         <div className="modaltitle">Create New Category</div>
         <div className="modalinput">
             <span className="inputtitle">Category Name</span>
             <br/>
-            <input className="inputvl" value={CategoryName} onChange={e => setCategoryName(e.target.value)}></input>
+            <input className="inputvl"  onChange={e => setCategoryName(e.target.value)}></input>
         </div>
         <div className="modalinput">
             <span className="inputtitle">Description</span>
             <br/>
-            <textarea className="inputvl" placeholder="Write something..." value={desc} onChange={e => setdesc(e.target.value)}></textarea>
+            <textarea className="inputvl" placeholder="Write something..."  onChange={e => setdesc(e.target.value)}></textarea>
         </div>
         
 

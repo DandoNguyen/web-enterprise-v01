@@ -1,8 +1,9 @@
-import userEvent from '@testing-library/user-event';
+
 import React,{ useState,useEffect } from 'react';
 import './MyProfile.css';
 // import ModalPost from './ModalPost';
 import Navbar from '../Navbar';
+import { Url } from '../URL';
 
 
 function MyProfile (){
@@ -19,7 +20,7 @@ function MyProfile (){
             redirect: 'follow'
         };
 
-        fetch("https://localhost:5001/api/AuthManagement/GetUser", requestOptions)
+        fetch(Url+"/api/AuthManagement/GetUser", requestOptions)
             .then(response => {
                 if (response.ok) {
                     return response.json()

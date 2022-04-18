@@ -2,6 +2,7 @@ import React,{ useState ,useEffect } from 'react';
 import './ManageDepartmentAccount.css';
 import ModalDepartmentDetail from './detail/ModalDepartmentDetail';
 import Navbar from '../Navbar';
+import { Url } from '../URL';
 
 
 
@@ -21,7 +22,7 @@ function ManagementDepartmentAccount () {
     };
 
 
-    fetch("https://localhost:5001/api/Accounts", requestOptions)
+    fetch(Url+"/api/Accounts", requestOptions)
       .then(response => response.json())
       .then(data => {
         setuserAccounts(data)

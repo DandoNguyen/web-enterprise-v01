@@ -1,13 +1,13 @@
 import React from "react";
 import "./ModalDepartmentDetail.css";
 
+
 function ModalDepartmentDetail({ setOpenModalDepartmentDetail }) {
   return (
     <div className="modalBackground">
       <div className="modalContainer">
-        
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalDepartmentDetail(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalDepartmentDetail(false);}} > X </button>
         </div>
         <div className="modaltitle">Account Detail</div>
         

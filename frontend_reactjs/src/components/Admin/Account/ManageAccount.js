@@ -6,6 +6,7 @@ import ModalManageDetail from '../Detail/ModalManageDetail';
 import ModalManageDelete from '../Delete/ModalManageDelete';
 import Navbar from '../../Navbar';
 import ModlaAddrole from '../addrole/ModlaAddrole';
+import { Url } from '../../URL';
 
 
 function ManageAccount() {
@@ -16,11 +17,13 @@ function ManageAccount() {
   const [ModlaAddroleOpen, setModlaAddroleOpen] = useState(false);
   const [userAccounts, setuserAccounts] = useState([]);
   const [reloadpage] = useState(false);
+  const [editUser,seteditUser]=useState({})
+  const [userDetail,setuserDetail]=useState({})
 
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-
+    myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
       headers: myHeaders,
@@ -28,8 +31,14 @@ function ManageAccount() {
     };
 
 
-    fetch("https://localhost:5001/api/Accounts", requestOptions)
-      .then(response => response.json())
+    fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          throw new Error(response.status)
+        }
+      })
       .then(data => {
         setuserAccounts(data)
         // setreloadpage(!reloadpage)
@@ -39,20 +48,23 @@ function ManageAccount() {
         // setreloadpage(!reloadpage)
       });
   }, [reloadpage])
+  const handaleEdit =(data)=>{
+    setModalManageEdit(true)
+    seteditUser(data)
+  }
+  const handleviewDetail = (data)=>{
+     setModalManageDetail(true)
+     setuserDetail(data)
+  }
   const listAccounts = userAccounts.map(data => (
     <tr key={data.id}>
       <td >{data.email}</td>
       <td >{data.userName}</td>
-      <td >{data.id}</td>
       <td>
-
-        <button className='edit' onClick={() => { setModalManageEdit(true); }}>Edit</button>
-        {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={data} />}
+        <button className='edit' onClick={() => handaleEdit(data)}>Edit</button>   
       </td>
-
       <td>
-        <button className='Detail' onClick={() => { setModalManageDetail(true); }}>Detail</button>
-        {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={data} />}
+        <button className='Detail' onClick={() => handleviewDetail(data)}>Detail</button>
       </td>
 
       <td>
@@ -70,20 +82,21 @@ function ManageAccount() {
       <div className='buttonMana'>
         <a href='ManageAccount'><button type='button' className='buttonAccount'>Account</button></a>
         <a href='ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></a>
+        <a href='ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></a>
       </div>
 
       <div className='manage-header'>
         <div className="text">Management Account</div>
       </div>
       <div className='Btncreate'>
-      <div className='buttonAddUser'>
-        <button className='Add-user-bt' onClick={() => { setModalOpen(true); }}>Create User</button>
-        {modalOpen && <Modal setOpenModal={setModalOpen} />}
-      </div>
-      <div className='buttonAddUser'>
-        <button className='Add-user-bt' onClick={() => { setModlaAddroleOpen(true); }}>ADD ROLE</button>
-        {ModlaAddroleOpen && <ModlaAddrole setOpenModlaAddrole={setModlaAddroleOpen} />}
-      </div>
+        <div className='buttonAddUser'>
+          <button className='Add-user-bt' onClick={() => { setModalOpen(true); }}>Create User</button>
+          {modalOpen && <Modal setOpenModal={setModalOpen} />}
+        </div>
+        <div className='buttonAddUser'>
+          <button className='Add-user-bt' onClick={() => { setModlaAddroleOpen(true); }}>ADD ROLE</button>
+          {ModlaAddroleOpen && <ModlaAddrole setOpenModlaAddrole={setModlaAddroleOpen} />}
+        </div>
       </div>
       <div className='contentManage'>
         <div className='text'>List Account</div>
@@ -94,7 +107,6 @@ function ManageAccount() {
           <tr>
             <th>Email</th>
             <th>Username</th>
-            <th>Employee ID </th>
             <th>Edit</th>
             <th>Detail</th>
             <th>Delete</th>
@@ -102,6 +114,8 @@ function ManageAccount() {
         </thead>
         <tbody>
           {listAccounts}
+          {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={editUser} />}
+          {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} />}
         </tbody>
       </table>
 

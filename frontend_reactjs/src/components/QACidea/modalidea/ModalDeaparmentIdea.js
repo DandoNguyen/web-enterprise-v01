@@ -1,5 +1,6 @@
 import React,{useState} from "react";
 import "./ModalDepartmentIdea.css";
+import { Url } from "../../URL";
 
 
 
@@ -23,8 +24,8 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/Posts/QACfeedback", requestOptions)
-      .then(response => response.text())
+    fetch(Url+"/api/Posts/QACfeedback", requestOptions)
+      .then(response => response.json())
       .then(result => {
         console.log(result)
       alert('Approve success')
@@ -35,7 +36,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
     <div className="modalBackground">
       <div className="modalPostContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalDepartmentIdea(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalDepartmentIdea(false);}} > X </button>
         </div>
         <header>
         <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'/>
@@ -62,8 +63,6 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
         </div>
         <div className="Desc">
         <span className="TopicName">Description : {data.desc}</span>
-        
-        
         <div className='showselectModal'>
             <select name="show" id="showid">
                 <option value="Default">Choose your type of comments</option>
@@ -80,14 +79,10 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
 
         {/* <div className="modaltitle">TERMS AND POLICIES</div> */}
         <div className="modalInput">
-            <textarea  className="Commentbox" value={feadback} onChange={e => setfeadback(e.target.value)}>Write your comments here...</textarea>
-        </div>
-
-        
-        
-        
+            <textarea  className="Commentbox" placeholder='Write your comments here...' value={feadback} onChange={e => setfeadback(e.target.value)}></textarea>
+        </div> 
       </div>
-    // </div>
+     </div>
   );
 }
 

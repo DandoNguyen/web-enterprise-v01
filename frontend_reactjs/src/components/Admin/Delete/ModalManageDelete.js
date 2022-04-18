@@ -1,5 +1,6 @@
 import React from "react";
 import "./ModalManageDelete.css";
+import { Url } from "../../URL";
 
 function ModalManageDelete({ setOpenModalDelete , data}) {
   const deleteact = () => {
@@ -13,7 +14,7 @@ function ModalManageDelete({ setOpenModalDelete , data}) {
       redirect: 'follow'
     };
 
-    fetch(`https://localhost:5001/api/Accounts/removeUser?email=${data.email}`, requestOptions)
+    fetch(Url+`/api/Accounts/removeUser?email=${data.email}`, requestOptions)
       .then(response => response.text())
       .then(result => console.log(result))
       .catch(error => console.log('error', error));
@@ -23,7 +24,7 @@ function ModalManageDelete({ setOpenModalDelete , data}) {
       <div className="modalContainer">
 
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => { setOpenModalDelete(false); }} > X </a>
+          <button className="xbtn" onClick={() => { setOpenModalDelete(false); }} > X </button>
         </div>
         <div className="modaltitle">DO YOU WANT TO DELETE THIS ACCOUNT</div>
 

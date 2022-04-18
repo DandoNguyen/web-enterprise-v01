@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ModalDepartmentQamCreate.css";
+import { Url } from "../../URL";
 
 function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
   const [department, setdepartment] = useState('')
@@ -14,11 +15,10 @@ function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
       redirect: 'follow'
     };
 
-    fetch(`https://localhost:5001/api/Department/createDepartment?DepartmentName=${department}`, requestOptions)
+    fetch(Url+`/api/Department/createDepartment?DepartmentName=${department}`, requestOptions)
       .then(response => response.text())
       .then(result => {
-        console.log(result)
-        alert("thanh cong")
+        alert(result)
       })
       .catch(error => console.log('error', error));
   }
@@ -26,7 +26,7 @@ function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => { setOpenModalDepartmentQamCreate(false); }} > X </a>
+          <button className="xbtn"  onClick={() => { setOpenModalDepartmentQamCreate(false); }} > X </button>
         </div>
         <div className="modaltitle">Create Department</div>
         <div className="modalinput">

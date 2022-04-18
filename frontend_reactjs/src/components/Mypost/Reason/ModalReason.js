@@ -6,7 +6,7 @@ function ModalReason({ setOpenModal }) {
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModal(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModal(false);}} > X </button>
         </div>
         <div className="modaltitle">FEEDBACK</div>
         <div className="modalinput1">

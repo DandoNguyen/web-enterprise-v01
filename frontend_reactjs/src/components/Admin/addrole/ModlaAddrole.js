@@ -1,5 +1,6 @@
 import React,{useState , useEffect} from 'react'
 import "./ModalAddrole.css"
+import { Url } from '../../URL';
 
 function ModlaAddrole({setOpenModlaAddrole}) {
     const [allRole, setallRole] = useState([]);
@@ -15,7 +16,7 @@ function ModlaAddrole({setOpenModlaAddrole}) {
           redirect: 'follow'
         };
     
-        fetch("https://localhost:5001/api/Roles", requestOptions)
+        fetch(Url+"/api/Roles", requestOptions)
           .then(response => response.json())
           .then(data => {
             console.log(data)
@@ -39,19 +40,19 @@ function ModlaAddrole({setOpenModlaAddrole}) {
           redirect: 'follow'
         };
     
-        fetch(`https://localhost:5001/api/Roles/AddUserToRole?email=${Emailuer}&roleName=${roleselect}`, requestOptions)
+        fetch(Url+`/api/Roles/AddUserToRole?email=${Emailuer}&roleName=${roleselect}`, requestOptions)
           .then(response => response.json())
           .then(result => {
-            console.log(result)
+            console.log('Successful')
             alert(result.value)
           })
-          .catch(error => console.log('error', error));
+          .catch(error => alert(error));
       }
   return (
     <div className="modalBackground">
       <div className="modalContainer">
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModlaAddrole(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModlaAddrole(false);}} > X </button>
         </div>
         <div className="modaltitle">ADD ROLE</div>
         <div className="modalinput">

@@ -3,18 +3,20 @@ import './MyPost.css';
 // import ModalPost from './ModalPost';
 import ModalReason from './Reason/ModalReason';
 import Navbar from '../Navbar';
+import { Url } from '../URL';
+import PostDetail from '../Postdetail/PostDetail';
 
 
-function MyPost({user}) {
+function MyPost() {
     const [modalOpen, setModalOpen] = useState(false);
     const [allmypost, setallmypost] = useState([])
-    const [content,setcontent] = useState('')
+    const [detailopen, setdetailopen] = useState(false)
+    const [Post, setPost] = useState({})
 
-    
+    // view post
     useEffect(() => {
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-        myHeaders.append("Content-Type", "application/json");
 
         var requestOptions = {
             method: 'GET',
@@ -22,7 +24,7 @@ function MyPost({user}) {
             redirect: 'follow'
         };
 
-        fetch("https://localhost:5001/api/Posts/MyPost", requestOptions)
+        fetch(Url + "/api/Posts/MyPost", requestOptions)
             .then(response => response.json())
             .then(data => {
                 console.log(data)
@@ -32,6 +34,11 @@ function MyPost({user}) {
     }, [])
 
 
+
+    const handelView = (data) => {
+        setdetailopen(true)
+        setPost(data)
+    }
     const listmypost = allmypost.map(data => (
         <div className="PostContainer" key={data.postId}>
             <div className="titleCloseBtn">
@@ -65,70 +72,18 @@ function MyPost({user}) {
                 <span className="TopicName">Description : {data.desc}</span>
 
                 <div className="iconsPost">
-                    <button className='btn'>
-                        <i className='bx bx-upvote'>
-                            <span className='like'>12.5k</span>
-                        </i>
-                    </button>
-                    <button className='btn'>
-                        <i className='bx bx-downvote' >
-                            <span className='dislike'>12.5k</span>
-                        </i>
-                    </button>
-                    <button className='btn'>
-                        <i className='bx bx-comment'>
-                            <span className='cmt'>12.5k</span>
-                        </i>
-                    </button>
+                    <button className='btn' onClick={() => handelView(data)} >Detail</button>
+
                     <span>
                         <i className='bx bx-show-alt'>
                             <span className='view'>{data.viewsCount}</span>
                         </i>
                     </span>
                 </div>
-                <div className='showselectModal'>
-                    <select name="show" id="showid">
-                        <option value="Default">Choose your type of comments</option>
-                        <option value="Public">Public</option>
-                        <option value="Anonymously">Anonymously</option>
-                    </select>
-                </div>
-            </div>
-            <div className="modalInput">
-                <textarea className="Commentbox">Write your comments here...</textarea>
-                {/* <button className='btn' onClick={sumitcmnt}>Summit</button> */}
             </div>
         </div>
     ))
-    // const sumitcmnt = () => {
-    //     var myHeaders = new Headers();
-    //     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-    //     myHeaders.append("Content-Type", "text/plain");
 
-    //     var raw = JSON.stringify({
-    //         "postId": allmypost.postId,
-    //         "userId": user.userId,
-    //         "content": content,
-    //         "isAnonymous": true,
-    //         "createdDate": allmypost.createdDate,
-    //         "lastModifiedDate": allmypost.lastModifiedDate,
-    //         // "previousCommentId": "string",
-    //         // "isChild": true,
-    //         // "parentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-    //       });
-
-    //     var requestOptions = {
-    //         method: 'POST',
-    //         headers: myHeaders,
-    //         body: raw,
-    //         redirect: 'follow'
-    //     };
-
-    //     fetch("https://localhost:5001/api/Comments", requestOptions)
-    //         .then(response => response.json())
-    //         .then(result => console.log(result))
-    //         .catch(error => console.log('error', error));
-    // }
     return <div>
         <Navbar />
         <section className="home">
@@ -145,9 +100,10 @@ function MyPost({user}) {
                     </select>
                 </div>
             </div>
-            <body>
+            <div>
                 {listmypost}
-            </body>
+                {detailopen && <PostDetail setopendetail={setdetailopen} data={Post} />}
+            </div>
         </section>
     </div>
 }

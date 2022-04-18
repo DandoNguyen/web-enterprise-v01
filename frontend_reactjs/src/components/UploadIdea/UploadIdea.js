@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './UploadIdea.css';
 import Navbar from '../Navbar';
 import ModalPolicy from './Policy/ModalPolicy';
+import {Url} from '../URL'
+
 
 
 function UploadIdea() {
@@ -9,7 +11,6 @@ function UploadIdea() {
   const [content, setcontent] = useState('');
   const [Desc, setDesc] = useState('');
   const [IsAnonymous, setIsAnonymous] = useState(false);
-  const [IsAssigned] = useState(false);
   const [files, setfiles] = useState('');
   const [Topics, setTopics] = useState([]);
   const [alltag, setalltag] = useState([]);
@@ -20,17 +21,17 @@ function UploadIdea() {
   const sumbmitidea = () => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-
-    var formdata = new FormData();
+   
+    let formdata = new FormData()
     formdata.append("title", title);
     formdata.append("content", content);
-    formdata.append("desc", Desc);
-    formdata.append("isAnonymous", IsAnonymous);
-    formdata.append("isAssigned", IsAssigned);
+    formdata.append("Desc", Desc);
+    formdata.append("IsAnonymous", IsAnonymous);
     formdata.append("listCategoryId", cateselect);
-    formdata.append("topicId", topicselect);
-    formdata.append("files", files, files.name);
+    formdata.append("TopicId", topicselect);
+    formdata.append("files", files , files.name);
 
+    console.log(typeof files);
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
@@ -38,29 +39,30 @@ function UploadIdea() {
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/Posts/CreatePost", requestOptions)
+    fetch(Url+"/api/Posts/CreatePost", requestOptions)
       .then(response => {
         response.json()})
       .then(result => {console.log(result)
       alert('Summit success')})
-      .catch(error => console.log('error', error));
+      .catch(error => {console.log('error', error)
+    alert('Error please try again')});
   }
 
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-
+    myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/Topics/GetAllTopic", requestOptions)
+    fetch( Url+"/api/Topics/GetAllTopic", requestOptions)
       .then(response => response.json())
       .then(data => {
         setTopics(data)
-        // settopicId(data)
+
       })
       .catch(error => console.log('error', error))
   }, [])
@@ -68,14 +70,14 @@ function UploadIdea() {
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-
+    myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow'
     };
 
-    fetch("https://localhost:5001/api/Category/AllTag", requestOptions)
+    fetch(Url+"/api/Category/AllTag", requestOptions)
       .then(response => response.json())
       .then(data => {
         setalltag(data)
@@ -130,10 +132,10 @@ function UploadIdea() {
             </div>
             <div className='InputTitle'>
                 <span className="inputtitle">Input File: </span>
-                <input type="file" id="myfile" name="myfile" onChange={e => setfiles(e.target.files[0])}></input>
+                <input type="file" id="myfile" name="myfile" files={files} onChange={e => setfiles(e.target.files[0])}></input>
             </div>
             <button className='SubmitIdea1' onClick={sumbmitidea}>Submit</button>
-      {modalOpen && <ModalPolicy setOpenModal={setModalOpen} />}
+                {modalOpen && <ModalPolicy setOpenModal={setModalOpen} />}
             {/* <button className='SubmitIdea'>Submit</button> */}
             <button className='CancelButton'>Cancel</button>
         </div>

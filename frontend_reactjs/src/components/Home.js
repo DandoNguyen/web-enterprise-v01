@@ -1,9 +1,89 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/Home.css';
 import Navbar from './Navbar';
+import {Url} from './URL.js'
+import PostDetail from './Postdetail/PostDetail';
 
 
 function Home() {
+    const [postHome, setpostHome] = useState([]);
+    const [errorMes] = useState('No Posts Avalaible')
+    const [detailopen, setdetailopen] = useState(false)
+    const [homePost, sethomePost] = useState({})
+    useEffect(() => {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch(Url+"/api/Posts/PostFeed", requestOptions)
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error(response.status)
+                }
+            })
+            .then(data => {
+                // if(data.length !== 0){
+                //     if(data === []){
+                //     setpostHome(data)
+                // }else{
+                //     seterrorMes(data)
+                // }
+                setpostHome(data)
+            })
+            .catch(error => console.log('error', error));
+    }, [])
+
+    const handelView = (data) => {
+        setdetailopen(true)
+        sethomePost(data)
+    }
+    const listHomepost = postHome.map(data => (
+        <div className="PostContainer" key={data.postId}>
+            <div className="titleCloseBtn">
+            </div>
+            <header id='header'>
+                <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet' />
+                <div className="header_posts">
+                    <i className='bx bx-user-circle icon'></i>
+                    <div className="userposts_name">
+                        <span className="name_userposts">{data.username}</span>
+                        <div className='day'>
+                            <div className='day-sumit'>{data.createdDate}</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div className="Category">
+                <span className="TopicName">{data.listCategoryName}</span>
+            </div>
+            <div className="TitlePost">
+                <p className="TopicName">Title : {data.title}</p>
+            </div>
+            <div className="Content">
+                <span className="TopicName">Content : {data.content}</span>
+            </div>
+            <div className="Desc">
+                <span className="TopicName">Description : {data.desc}</span>
+
+                <div className="iconsPost">
+                    <button className='btn' onClick={() => handelView(data)} >Detail</button>
+
+                    <span>
+                        <i className='bx bx-show-alt'>
+                            <span className='view'>{data.viewsCount}</span>
+                        </i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    ))
     return <div>
         <Navbar />
         <section className="home">
@@ -20,79 +100,9 @@ function Home() {
                     </select>
                 </div>
             </div>
-            {/* copy từ đây */}
-            {/* <div className="modalBackground"> */}
-            <div className="PostContainer">
-                <div className="titleCloseBtn">
-                    {/* <a className="xbtn" onClick={() => {setOpenModal(false);}} > X </a> */}
-                </div>
-                <header>
-                    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet' />
-                    <div className="header_posts">
-                        <i className='bx bx-user-circle icon'></i>
-                        <div className="userposts_name">
-                            <span className="name_userposts">Author Name</span>
-                            <div className='day'>
-                                <div className='day-sumit'>02/03/2022</div>
-
-                            </div>
-                        </div>
-
-
-                    </div>
-                </header>
-                <div className="Categorypost">
-                    <span className="TopicName">Plapla</span>
-                </div>
-                <div className="TitlePost">
-                    <p className="TopicName">Title............................................................................................................................................................................................................</p>
-
-                </div>
-                {/* <div className="ex1">This is title</div> */}
-                <div className="Content">
-                    <span className="TopicName">Content.......................................................................................................................................................................................................................................................................</span>
-                </div>
-                <div className="Desc">
-                    <span className="TopicName">Description....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................</span>
-
-                    {/* đây là div chứa files */}
-                    <div className='files'>
-
-                    </div>
-                    <div className="iconsPost">
-                        <a href="#">
-                            <i className='bx bx-upvote'>
-                                <span className='like'>12.5k</span>
-                            </i>
-                        </a>
-                        <a href="#">
-                            <i className='bx bx-downvote' >
-                                <span className='dislike'>12.5k</span>
-                            </i>
-                        </a>
-                        <a href="#">
-                            <i className='bx bx-comment'>
-                                <span className='cmt'>12.5k</span>
-                            </i>
-                        </a>
-                        <a href="#">
-                            <i className='bx bx-show-alt'>
-                                <span className='view'>12.5k</span>
-                            </i>
-                        </a>
-                    </div>
-
-                    <div className='showselectModal'>
-                        <select name="show" id="showid">
-                            <option value="Default">Choose your type of comments</option>
-                            <option value="Public">Public</option>
-                            <option value="Anonymously">Anonymously</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="modalInput">
-                    <textarea className="Commentbox">Write your comments here...</textarea>
-                </div>
+            <div>
+                {errorMes && listHomepost}
+                {detailopen && <PostDetail setopendetail={setdetailopen} data={homePost} />}
             </div>
         </section>
     </div>

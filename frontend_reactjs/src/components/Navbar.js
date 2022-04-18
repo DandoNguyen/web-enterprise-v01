@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/Navbar.css';
-import MyPost from './Mypost/MyPost';
+import {Url} from './URL.js'
 
 
 
@@ -15,16 +15,15 @@ function Navbar() {
     }, [token])
     const loadDataProfile = () => {
         var myHeaders = new Headers();
-
         myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-        myHeaders.append("Content-Type", "application/json");
+        
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
         };
 
-        fetch("https://localhost:5001/api/AuthManagement/GetUser", requestOptions)
+        fetch( Url+"/api/AuthManagement/GetUser", requestOptions)
             .then(response => {
                 if (response.ok) {
                     return response.json()
@@ -35,7 +34,6 @@ function Navbar() {
             .then(result => {
                 setuser(result)
                 setuserrole(result.role)
-                console.log(result);
                 // result.role.map(data => {
                 //     arrayauth.push(data)
                 // })
@@ -49,14 +47,15 @@ function Navbar() {
 
 
     const logout = () => {
-        localStorage.removeItem("accessToken")
         Navigate('/')
+        localStorage.removeItem("accessToken")
+        
         // props.onLogoutSuccess()
     }
 
     // console.log(user.role);
     let Navbarrole
-    if (userrole[1] === 'admin') {
+    if (userrole[0] === 'admin') {
         Navbarrole = (
             <div className="menu">
 
@@ -119,53 +118,7 @@ function Navbar() {
                 </ul>
             </div>
         )
-    } else if (userrole[0] === 'staff') {
-        Navbarrole = (
-            <div className="menu">
-                <li className="search-box">
-                    <i className='bx bx-search icon'></i>
-                    <input className="text" placeholder="Search..." />
-                </li>
-
-                <ul className="menu-links">
-                    <li className="nav-link">
-                        <Link to='/Home'>
-                            <i className='bx bx-home icon' ></i>
-                            <span className="text nav-text">Home Page</span>
-                        </Link>
-                    </li>
-
-                    <li className="nav-link">
-                        <Link to='/MyProfile'>
-                            <i className='bx bx-user-circle icon' ></i>
-                            <span className="text nav-text">My Profile</span>
-                        </Link>
-                    </li>
-                    
-                    <li className="nav-link">
-                        <Link to='/UploadIdea'>
-                            <i className='bx bx-upload icon' ></i>
-                            <span className="text nav-text">Upload Idea</span>
-                        </Link>
-                    </li>
-
-                    <li className="nav-link">
-                        <Link to='/MyPost'>
-                            <i className='bx bx-id-card icon' ></i>
-                            <span className="text nav-text">My Post</span>
-                        </Link>
-                    </li>
-
-                    <li className="nav-link">
-                        <Link to='/AboutUs'>
-                            <i className='bx bx-buildings icon' ></i>
-                            <span className="text nav-text">About Company</span>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
-        )
-    } else if (userrole[0] === 'qac') {
+    }  else if (userrole[0] === 'qac') {
         Navbarrole = (
             <div className="menu">
                 <li className="search-box">
@@ -293,6 +246,52 @@ function Navbar() {
                 </ul>
             </div>
         )
+    }else if (userrole[0] === 'staff') {
+        Navbarrole = (
+            <div className="menu">
+                <li className="search-box">
+                    <i className='bx bx-search icon'></i>
+                    <input className="text" placeholder="Search..." />
+                </li>
+
+                <ul className="menu-links">
+                    <li className="nav-link">
+                        <Link to='/Home'>
+                            <i className='bx bx-home icon' ></i>
+                            <span className="text nav-text">Home Page</span>
+                        </Link>
+                    </li>
+
+                    <li className="nav-link">
+                        <Link to='/MyProfile'>
+                            <i className='bx bx-user-circle icon' ></i>
+                            <span className="text nav-text">My Profile</span>
+                        </Link>
+                    </li>
+                    
+                    <li className="nav-link">
+                        <Link to='/UploadIdea'>
+                            <i className='bx bx-upload icon' ></i>
+                            <span className="text nav-text">Upload Idea</span>
+                        </Link>
+                    </li>
+
+                    <li className="nav-link">
+                        <Link to='/MyPost'>
+                            <i className='bx bx-id-card icon' ></i>
+                            <span className="text nav-text">My Post</span>
+                        </Link>
+                    </li>
+
+                    <li className="nav-link">
+                        <Link to='/AboutUs'>
+                            <i className='bx bx-buildings icon' ></i>
+                            <span className="text nav-text">About Company</span>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
+        )
     }
 
     return (
@@ -304,7 +303,6 @@ function Navbar() {
                         <div className="text logo-text" >
                             <span className="name-user">{user.username}</span>
                             <span className="profession">{user.email}</span>
-                            {<MyPost user={user}/>}
                         </div>
                     </div>
                 </header>

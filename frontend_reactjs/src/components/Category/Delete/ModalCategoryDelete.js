@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import "./ModalCategoryDelete.css";
+import { Url } from "../../URL";
 
 function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
   const [reloadpage,setreloadpage]= useState(false);
@@ -14,12 +15,13 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
               redirect: 'follow'
             };
 
-            fetch(`https://localhost:5001/api/Category/DeleteCate?cateid=${data.categoryId}`, requestOptions)
+            fetch(Url+`/api/Category/DeleteCate?cateid=${data.categoryId}`, requestOptions)
               .then(response => response.json())
               .then(result => {
                 console.log(result)
                 setOpenModalCategoryDelete(false)
                 setreloadpage(!reloadpage)
+                alert(result)
               })
               .catch(error => {
                 console.log('error', error)
@@ -32,7 +34,7 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
       <div className="modalContainer">
         
         <div className="titleCloseBtn">
-          <a className="xbtn" onClick={() => {setOpenModalCategoryDelete(false);}} > X </a>
+          <button className="xbtn" onClick={() => {setOpenModalCategoryDelete(false);}} > X </button>
         </div>
         <div className="modaltitle">DO YOU WANT TO DELETE THIS CATEGORY</div>
         

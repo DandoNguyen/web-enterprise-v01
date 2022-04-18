@@ -3,6 +3,7 @@ import Navbar from '../Navbar'
 import './Category.css'
 import ModalCategoryCreate from './Create/ModalCategoryCreate';
 import ModalCategoryDelete from './Delete/ModalCategoryDelete'
+import { Url } from '../URL';
 
 function Category() {
     const[alltag,setalltag]=useState([]);
@@ -20,7 +21,7 @@ function Category() {
         redirect: 'follow'
       };
 
-      fetch("https://localhost:5001/api/Category/AllTag", requestOptions)
+      fetch(Url+"/api/Category/AllTag", requestOptions)
         .then(response => response.json())
         .then(data => {
           setalltag(data)
@@ -30,7 +31,6 @@ function Category() {
 
     const listCategory = alltag.map( data => (
       <tr key={data.categoryId}>
-        <td >{data.categoryId}</td>
       <td >{data.categoryName}</td>
       <td >{data.desc}</td>
       <td>
@@ -39,6 +39,11 @@ function Category() {
       </td>
     </tr>
     ))
+
+    const addCate = (categoryName , desc) =>{
+      alltag.push({categoryName , desc})
+    }
+     
   return (
     <div>
     <Navbar/>
@@ -51,7 +56,7 @@ function Category() {
 
     <div className='buttonAddUser'>
       <button className='buttonMana' onClick={() => {setOpenModalCategory(true);}}>Add Categories</button>
-      {ModalCategoryCreateOpen && <ModalCategoryCreate setOpenModalCategoryCreate={setOpenModalCategory}  />}
+      {ModalCategoryCreateOpen && <ModalCategoryCreate setOpenModalCategoryCreate={setOpenModalCategory} addCate={addCate} />}
     </div>
   
     <div className='contentManage'>
@@ -61,7 +66,6 @@ function Category() {
       <table className='tableuser'>
         <thead>
         <tr>
-          <th>ID</th>
           <th>Category Name</th>
           <th>Description</th>
           <th></th>
