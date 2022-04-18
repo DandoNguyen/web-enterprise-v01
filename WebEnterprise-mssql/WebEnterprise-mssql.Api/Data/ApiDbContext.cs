@@ -10,7 +10,8 @@ namespace WebEnterprise_mssql.Api.Data
         public virtual DbSet<Posts> Posts { get; set; }
         public virtual DbSet<FilesPath> FilesPath { get; set; }
         public virtual DbSet<Views> Views { get; set; }
-        public virtual DbSet<Votes> Votes { get; set; }
+        public virtual DbSet<UpVote> UpVotes { get; set; }
+        public virtual DbSet<DownVote> DownVotes { get; set; }
         public virtual DbSet<Comments> Comments { get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public virtual DbSet<Departments> Department { get; set; }
