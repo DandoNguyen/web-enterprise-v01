@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import '../css/Home.css';
-import Navbar from './Navbar';
-import {Url} from './URL.js'
-import PostDetail from './Postdetail/PostDetail';
+import React, { useState, useEffect } from 'react';
+import './MyPost.css';
+// import ModalPost from './ModalPost';
+import ModalReason from './Reason/ModalReason';
+import Navbar from '../Navbar';
+import { Url } from '../URL';
+import PostDetail from '../Postdetail/PostDetail';
 
 
-function Home() {
-    const [postHome, setpostHome] = useState([]);
-    const [errorMes] = useState('No Posts Avalaible')
+function MyPost() {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [allmypost, setallmypost] = useState([])
     const [detailopen, setdetailopen] = useState(false)
-    const [homePost, sethomePost] = useState({})
+    const [Post, setPost] = useState({})
+
+    // view post
     useEffect(() => {
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
@@ -20,31 +24,22 @@ function Home() {
             redirect: 'follow'
         };
 
-        fetch(Url+"/api/Posts/PostFeed", requestOptions)
-            .then(response => {
-                if (response.ok) {
-                    return response.json()
-                } else {
-                    throw new Error(response.status)
-                }
-            })
+        fetch(Url + "/api/Posts/MyPost", requestOptions)
+            .then(response => response.json())
             .then(data => {
-                // if(data.length !== 0){
-                //     if(data === []){
-                //     setpostHome(data)
-                // }else{
-                //     seterrorMes(data)
-                // }
-                setpostHome(data)
+                console.log(data)
+                setallmypost(data)
             })
             .catch(error => console.log('error', error));
     }, [])
 
+
+
     const handelView = (data) => {
         setdetailopen(true)
-        sethomePost(data)
+        setPost(data)
     }
-    const listHomepost = postHome.map(data => (
+    const listmypost = allmypost.map(data => (
         <div className="PostContainer" key={data.postId}>
             <div className="titleCloseBtn">
             </div>
@@ -58,6 +53,10 @@ function Home() {
                             <div className='day-sumit'>{data.createdDate}</div>
                         </div>
                     </div>
+                </div>
+                <div className='Status'>
+                    <button className='RJbutton' onClick={() => { setModalOpen(true); }}>Rejected</button>
+                    {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
                 </div>
             </header>
             <div className="Category">
@@ -84,15 +83,16 @@ function Home() {
             </div>
         </div>
     ))
+
     return <div>
         <Navbar />
         <section className="home">
             <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet' />
             <div className="text">
-                <button className='Newbtn'>New</button>
-                <button className='Mostpplbtn'>Most Popular</button>
-                <button className='Mostvbtn'>Most Viewed</button>
-                <button className='cmtbtn'>Last Comments</button>
+                <button className='Allbtn'>All</button>
+                <button className='Pendingbtn'>Pending</button>
+                <button className='Approvedbtn'>Approved</button>
+                <button className='Rejectedbtn'>Rejected</button>
                 <div className='showselect'>
                     <select name="show" id="showid">
                         <option value="Show1">Show 1</option>
@@ -101,11 +101,11 @@ function Home() {
                 </div>
             </div>
             <div>
-                {errorMes && listHomepost}
-                {detailopen && <PostDetail setopendetail={setdetailopen} data={homePost} />}
+                {listmypost}
+                {detailopen && <PostDetail setopendetail={setdetailopen} data={Post} />}
             </div>
         </section>
     </div>
 }
 
-export default Home;
+export default MyPost;
