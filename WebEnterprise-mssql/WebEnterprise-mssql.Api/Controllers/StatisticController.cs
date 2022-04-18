@@ -35,6 +35,10 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> GetAllPostByTopic() {
             var listPosts = await repo.Posts
                 .FindAll().ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listTopic = await repo.Topics
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -55,6 +59,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
+            if(listResult.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             return Ok(new {listResult, filePath, tille = "Percentage of Post by Topic"});
         }
 
@@ -65,6 +73,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.Status.Equals(1)) //Status = 1 (approved)
                 .Include(x => x.ApplicationUser)
                 .ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listDepartment = await repo.Departments
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -84,6 +96,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
+            
             return Ok(new {listResult, filePath, title = "Percentage of Approved Post by Department"});
         }
 
@@ -93,6 +106,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPosts = await repo.Posts
                 .FindAll().Include(x => x.ApplicationUser)
                 .ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listDepartment = await repo.Departments
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -113,6 +130,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
+
             return Ok(new {listResult, filePath, title = "Percentage of Post by Department"});
         }
 
