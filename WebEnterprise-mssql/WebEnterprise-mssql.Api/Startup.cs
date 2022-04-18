@@ -55,17 +55,17 @@ namespace WebEnterprise_mssql.Api
             //     )
             // );
 
-            // services.AddDbContext<ApiDbContext>(options => 
-            //     options.UseSqlServer(
-            //         Configuration.GetConnectionString("LocalConnection")
-            //     )
-            // );
-
-            services.AddDbContext<ApiDbContext>(options => 
+            services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("SmarterASPNETConnection")
+                    Configuration.GetConnectionString("LocalConnection")
                 )
             );
+
+            //services.AddDbContext<ApiDbContext>(options => 
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("SmarterASPNETConnection")
+            //    )
+            //);
 
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();

@@ -100,7 +100,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         //POST create Toptc
         [HttpPost]
         [Route("CreateTopic")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, staff, qac, qam")]
         public async Task<IActionResult> CreateTopicAsync(CreateTopicDto dto, [FromHeader] string Authorization) {
             ApplicationUser user = new();
             try

@@ -154,6 +154,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (post.Status.Equals(1)) //Status = 1 (approved)
                 {
                     var result = mapper.Map<PostDetailDto>(post);
+                    result.FilesPaths = await GetFilePaths(post.PostId);
                     List<string> listCateId = new();
                     foreach (var cate in post.categories)
                     {
@@ -294,12 +295,12 @@ namespace WebEnterprise_mssql.Api.Controllers
                 await SendNotiToEmail(qacEmail, mailContent);
                 await SendNotiToEmail(qamEmail, mailContent);
 
-                // var newPostDto = mapper.Map<PostDetailDto>(newPost);
+                var newPostDto = mapper.Map<PostDetailDto>(newPost);
 
-                // newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
-                // newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
+                newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
+                newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
-                return Ok("Idea Submitted Success");
+                return Ok(newPostDto);
                 // return Ok($"Post {newPost.PostId} created!");
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
@@ -587,7 +588,10 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task<List<string>> GetFilePaths(Guid postId)
         {
 
-            var listFilePaths = await repo.FilesPaths.GetListStringFilesPath(postId.ToString());
+            var listFilePaths = await repo.FilesPaths
+                .FindByCondition(x => x.PostId.Equals(postId))
+                .Select(x => x.filePath)
+                .ToListAsync();
 
             if (!listFilePaths.Count().Equals(0))
             {
@@ -673,7 +677,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 case ".doc": case ".docx": return true;
                 case ".xls": case ".xlsx": return true;
-                case ".jpg": case ".png": return true;
+                case ".jpg": case ".png": case ".jpeg": return true;
                 default: return false;
             }
         }
