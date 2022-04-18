@@ -49,11 +49,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(topic.TopicName, ListValue.Count());
+                double percent = (ListValue.Count()/listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(topic.TopicName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+            return Ok(new {listResult, filePath, tille = "Percentage of Post by Topic"});
         }
 
         [HttpGet]
@@ -76,11 +78,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(department.DepartmentName, ListValue.Count());
+                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+            return Ok(new {listResult, filePath, title = "Percentage of Approved Post by Department"});
         }
 
         [HttpGet]
@@ -103,17 +107,19 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(department.DepartmentName, ListValue.Count());
+                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+            return Ok(new {listResult, filePath, title = "Percentage of Post by Department"});
         }
 
-        private StatisticResultDto GetData(string topic, int value) {
+        private StatisticResultDto GetData(string topic, double value) {
             return new StatisticResultDto() {
                 DataName = topic,
-                Value = value
+                Percent = value
             };
         }
 
@@ -130,7 +136,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             range.AutoFitColumns();
             await package.SaveAsync();
 
-            return file.DirectoryName;
+            return file.FullName;
         }
 
         private string GetRootDirectory(string filePath)
