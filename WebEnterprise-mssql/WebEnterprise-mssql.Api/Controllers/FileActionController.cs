@@ -9,7 +9,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class FileActionController : ControllerBase
     {
         public FileActionController()
@@ -36,7 +36,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var contentType = Path.GetExtension(filePath);
             switch (contentType)
             {
-                case ".jpg": case ".png": return File(memory, "image/jpeg");
+                case ".jpg": case ".png": case ".jpeg": return File(memory, "image/jpeg");
                 default: {
                     var newContentType = GetContentType(filePath);
                     return File(memory, newContentType);

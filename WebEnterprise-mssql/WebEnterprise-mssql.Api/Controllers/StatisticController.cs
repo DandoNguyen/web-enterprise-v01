@@ -35,6 +35,10 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> GetAllPostByTopic() {
             var listPosts = await repo.Posts
                 .FindAll().ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listTopic = await repo.Topics
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -49,11 +53,17 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(topic.TopicName, ListValue.Count());
+                double percent = (ListValue.Count()/listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(topic.TopicName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+            if(listResult.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
+            return Ok(new {listResult, filePath, tille = "Percentage of Post by Topic"});
         }
 
         [HttpGet]
@@ -63,6 +73,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.Status.Equals(1)) //Status = 1 (approved)
                 .Include(x => x.ApplicationUser)
                 .ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listDepartment = await repo.Departments
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -76,11 +90,14 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(department.DepartmentName, ListValue.Count());
+                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+            
+            return Ok(new {listResult, filePath, title = "Percentage of Approved Post by Department"});
         }
 
         [HttpGet]
@@ -89,6 +106,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPosts = await repo.Posts
                 .FindAll().Include(x => x.ApplicationUser)
                 .ToListAsync();
+            if (listPosts.Count().Equals(0))
+            {
+                return Ok("No Data");
+            }
             var listDepartment = await repo.Departments
                 .FindAll().ToListAsync();
             var listResult = new List<StatisticResultDto>();
@@ -103,17 +124,20 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                var result = GetData(department.DepartmentName, ListValue.Count());
+                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                var roundedPercent = Math.Round(percent);
+                var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
-            return Ok(new {listResult, filePath});
+
+            return Ok(new {listResult, filePath, title = "Percentage of Post by Department"});
         }
 
-        private StatisticResultDto GetData(string topic, int value) {
+        private StatisticResultDto GetData(string topic, double value) {
             return new StatisticResultDto() {
                 DataName = topic,
-                Value = value
+                Percent = value
             };
         }
 
@@ -130,7 +154,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             range.AutoFitColumns();
             await package.SaveAsync();
 
-            return file.DirectoryName;
+            return file.FullName;
         }
 
         private string GetRootDirectory(string filePath)
