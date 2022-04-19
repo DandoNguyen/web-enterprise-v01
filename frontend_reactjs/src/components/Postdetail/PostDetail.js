@@ -166,6 +166,7 @@ function PostDetail({ setopendetail, data }) {
     })
     .catch(() => alert('oh no!'));
   }
+
   return (
     <div className="modalBackground">
       <div className="modalPostContainer">
@@ -211,11 +212,6 @@ function PostDetail({ setopendetail, data }) {
             <button className='btn' onClick={downVote}>
               <i className='bx bx-downvote'>
                 <span className='dislike'>{voteNumber.downVoteCount}</span>
-              </i>
-            </button>
-            <button className='btn'>
-              <i className='bx bx-comment'>
-                <span className='cmt'>12.5k</span>
               </i>
             </button>
             <span>

@@ -134,8 +134,8 @@ function UploadIdea() {
                 <span className="inputtitle">Input File: </span>
                 <input type="file" id="myfile" name="myfile" files={files} onChange={e => setfiles(e.target.files[0])}></input>
             </div>
-            <button className='SubmitIdea1' onClick={sumbmitidea}>Submit</button>
-                {modalOpen && <ModalPolicy setOpenModal={setModalOpen} />}
+            <button className='SubmitIdea1' onClick={() => setModalOpen(true)}>Submit</button>
+                {modalOpen && <ModalPolicy setOpenModal={setModalOpen} sumbmitidea={sumbmitidea}/>}
             {/* <button className='SubmitIdea'>Submit</button> */}
             <button className='CancelButton'>Cancel</button>
         </div>
