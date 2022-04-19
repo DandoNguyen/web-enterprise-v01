@@ -19,7 +19,6 @@ ChartJS.register(
     Legend
 );
 
-
 export const MyChart = () => {
     const [getData, setgetData] = useState([])
     const [getfile, setgetfile] = useState([])
@@ -32,13 +31,14 @@ export const MyChart = () => {
         fetch(Url + "/api/Statistic/AllPostByDepartment", requestOptions)
             .then(response => response.json())
             .then(result => {
-                setgetData(result.listResult)
+  setgetData(result.listResult)
                 setgetfile(result)
             })
             .catch(error => {
                 console.log('error', error)
             });
     }, [])
+
     const nameData = getData.map(data => [data.dataName])
     const valueData = getData.map(data => [data.value])
     const state = {

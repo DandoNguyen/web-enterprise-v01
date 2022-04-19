@@ -33,6 +33,7 @@ function MyPost() {
             .catch(error => console.log('error', error));
     }, [])
 
+
     // const deletepost = (data) => {
     //     var myHeaders = new Headers();
     //     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
@@ -57,6 +58,7 @@ function MyPost() {
     // }
     // console.log(allmypost);
 
+
     const handelView = (data) => {
         setdetailopen(true)
         setPost(data)
@@ -77,7 +79,7 @@ function MyPost() {
                     </div>
                 </div>
                 <div className='Status'>
-                    <button className='APbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
+             <button className='APbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
                     {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
                 </div>
             </header>
@@ -101,7 +103,9 @@ function MyPost() {
                             <span className='view'>{data.viewsCount}</span>
                         </i>
                     </span>
+
                     {/* <button className='btn delete' onClick={deletepost(data)}>Delete</button> */}
+
                 </div>
             </div>
         </div>
