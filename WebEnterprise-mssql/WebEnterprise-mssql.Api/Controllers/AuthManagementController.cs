@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Services;
 using WebEnterprise_mssql.Api.Repository;
+using AutoMapper;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -30,6 +31,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly ApiDbContext context;
         private readonly ISendMailService mailService;
         private readonly IRepositoryWrapper repo;
+        private readonly IMapper mapper;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ILogger<AuthManagementController> logger;
 
@@ -41,13 +43,15 @@ namespace WebEnterprise_mssql.Api.Controllers
             RoleManager<IdentityRole> roleManager,
             ApiDbContext context,
             ISendMailService mailService,
-            IRepositoryWrapper repo)
+            IRepositoryWrapper repo,
+            IMapper mapper)
         {
             this.logger = logger;
             this.roleManager = roleManager;
             this.context = context;
             this.mailService = mailService;
             this.repo = repo;
+            this.mapper = mapper;
             this.userManager = userManager;
             this.jwtConfig = optionsManager.CurrentValue;
             this.tokenValidationParams = tokenValidationParams;
@@ -63,15 +67,17 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             
             var user = await DecodeToken(Authorization);
-            
-            var userDto = new UserProfileResponseDto();
+            var departmentName = await repo.Departments
+                .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                .Select(x => x.DepartmentName)
+                .FirstOrDefaultAsync();
 
             var role = await userManager.GetRolesAsync(user);
 
             if (user is not null)
             {
-                userDto.username = user.UserName;
-                userDto.email = user.Email;
+                var userDto = mapper.Map<UserProfileResponseDto>(user);
+                userDto.Department = departmentName;
                 if (!role.Count().Equals(0))
                 {
                     userDto.role = role.ToList();
@@ -83,18 +89,18 @@ namespace WebEnterprise_mssql.Api.Controllers
                         string str = "No Role Assigned";
                         userDto.role.Add(str);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine($"Exceptions: {ex}");
                     }
                 }
                 userDto.message = "Token Verified";
+                return Ok(userDto);
             }
             else
             {
                 return BadRequest("Cannot get JWT token");
             }
-            return Ok(userDto);
         }
 
         [HttpPost]

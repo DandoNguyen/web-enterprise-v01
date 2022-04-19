@@ -10,6 +10,8 @@ namespace WebEnterprise_mssql.Api.Profiles
         {
             CreateMap<UpdateApplicationUserDto, ApplicationUser>();
             CreateMap<ApplicationUserDto, ApplicationUser>().ReverseMap();
+            CreateMap<ApplicationUser, UserProfileResponseDto>();
+            CreateMap<UserProfileResponseDto, ApplicationUser>().ReverseMap();
         }
     }
 }
