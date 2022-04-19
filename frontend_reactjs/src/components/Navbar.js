@@ -94,7 +94,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/#'>
+                    <Link to='/Chart'>  
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
@@ -156,7 +156,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/#'>
+                    <Link to='/Chart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
@@ -222,7 +222,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/#'>
+                    <Link to='/Chart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
