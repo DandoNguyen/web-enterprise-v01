@@ -15,7 +15,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // api/accounts
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin, qac, qam")]
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager; 
@@ -36,11 +36,10 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet] 
         [Route("GetAllUser")]
-        [Authorize(Roles = "admin, qac, qam")]
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
             var userList = await repo.Users.FindAll()
-                .Include(x => x.RoleName)
-                .Include(x => x.Departments)
+                .Include(x => x.RoleName.RoleName)
+                .Include(x => x.Departments.DepartmentName)
                 .ToListAsync();
             return userList;
             //return mapper.Map<List<ApplicationUserDto>>(userList);
