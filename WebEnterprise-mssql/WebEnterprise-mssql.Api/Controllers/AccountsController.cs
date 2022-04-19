@@ -65,7 +65,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             return user.UserName;
         }
 
-        [HttpGet("{email}")]
+        [HttpGet]
+        [Route("GetUserDetail")]
         public async Task<IActionResult> GetUserByEmailAsync(string email) {
             if(email is null) {
                 return BadRequest(new AccountsControllerResponseDto() {
@@ -86,7 +87,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                         }
                     });
                 }
-                return Ok(mapper.Map<ApplicationUserDto>(existingUser));
+                var result = mapper.Map<ApplicationUserDto>(existingUser);
+                result.Roles = (List<string>)await userManager.GetRolesAsync(existingUser);
+                return Ok(result);
             }
             return BadRequest(new AccountsControllerResponseDto() {
                 Errors = new List<string>() {

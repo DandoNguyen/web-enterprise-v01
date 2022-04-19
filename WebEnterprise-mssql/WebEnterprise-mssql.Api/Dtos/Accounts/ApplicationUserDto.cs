@@ -11,9 +11,9 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string Email { get; set; }
         public int? Age { get; set; }
         public string Address { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Fullname { get; set; }
         public DateTime? DOB { get; set; }
+        public List<string> Roles { get; set; }
 
         //Foreign Key
         public virtual ICollection<Posts> Posts { get; set; }
