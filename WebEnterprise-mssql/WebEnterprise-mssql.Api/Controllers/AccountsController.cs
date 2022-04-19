@@ -15,33 +15,40 @@ namespace WebEnterprise_mssql.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // api/accounts
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin, qac, qam")]
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager; 
         private readonly IMapper mapper;
         private readonly IRepositoryWrapper repo;
-        private readonly IPasswordHasher<ApplicationUser> passwordHasher;
+
         public AccountsController(
             UserManager<ApplicationUser> userManager, 
             IMapper mapper,
-            IRepositoryWrapper repo,
-            IPasswordHasher<ApplicationUser> passwordHasher)
+            IRepositoryWrapper repo)
         {
             this.mapper = mapper;
             this.repo = repo;
             this.userManager = userManager;
-            this.passwordHasher = passwordHasher;
         }
 
         [HttpGet] 
         [Route("GetAllUser")]
-        [Authorize(Roles = "admin, qac, qam")]
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
             var userList = await repo.Users.FindAll()
                 .Include(x => x.RoleName)
                 .Include(x => x.Departments)
                 .ToListAsync();
+            foreach(var user in userList)
+            {
+                var userDto = mapper.Map<UserProfileResponseDto>(user);
+                var roleList = await userManager.GetRolesAsync(user);
+                foreach(var role in roleList)
+                {
+                    userDto.role.Add(role);
+                }
+                userDto.Department = user.Departments.DepartmentName;
+            }
             return userList;
             //return mapper.Map<List<ApplicationUserDto>>(userList);
         }
