@@ -141,8 +141,65 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         //Staff Section
         [HttpGet]
-        [Route("PostFeed")]
-        public async Task<IActionResult> GetAllPostsAsync()
+        [Route("PostFeedSortByCreatedDate")]
+        public async Task<IActionResult> GetAllPostsSortedByCreatedDateAsync([FromHeader] string Authorization)
+        {
+            var user = await DecodeToken(Authorization);
+            var listPost = await GetAllPostsAsync(user);
+            if(listPost is null)
+            {
+                return NotFound("No Posts Available");
+            }
+            return Ok(listPost.OrderByDescending(x => x.createdDate).ToList());
+        }
+
+        [HttpGet]
+        [Route("GetAllPostsSortedByView")]
+        public async Task<IActionResult> GetAllPostsSortedByViewAsync([FromHeader] string Authorization)
+        {
+            var user = await DecodeToken(Authorization);
+            var listPost = await GetAllPostsAsync(user);
+            if(listPost is null)
+            {
+                return NotFound("No Posts Available");
+            }
+            return Ok(listPost.OrderByDescending(x => x.ViewsCount).ToList());
+        }
+
+        [HttpGet]
+        [Route("GetAllPostsSortedByCommentsCount")]
+        public async Task<IActionResult> GetAllPostsSortedByCommentsCountAsync([FromHeader] string Authorization)
+        {
+            var user = await DecodeToken(Authorization);
+            var listPost = await GetAllPostsAsync(user);
+            if (listPost is null)
+            {
+                return NotFound("No Posts Available");
+            }
+            var listItem = new List<dynamic>();
+            foreach(var post in listPost)
+            {
+                var listComments = await repo.Comments.FindByCondition(x => x.PostId.Equals(post.PostId.ToString())).ToListAsync();
+                var item = new
+                {
+                    post,
+                    commentCount = listComments.Count()
+                };
+                listItem.Add(item);
+            }
+            try
+            {
+                var sortedResult = listItem.OrderByDescending(x => x.commentCount).Select(x => x.post).ToList();
+                return Ok(sortedResult);
+            }
+            catch(Exception ex)
+            {
+                logger.LogInformation($"Error Sorted Result: {ex}");
+                return new JsonResult("Server Exception Error!!!") { StatusCode = 500 };
+            }
+        }
+        
+        private async Task<List<PostDetailDto>> GetAllPostsAsync(ApplicationUser user)
         {
             var listPosts = await repo.Posts
                 .FindAll()
@@ -162,16 +219,16 @@ namespace WebEnterprise_mssql.Api.Controllers
                     }
 
                     result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
+                    result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
                     allApprovedPosts.Add(result);
                 }
             }
             //var postsDto = mapper.Map<List<PostDto>>(listPosts);
             if (allApprovedPosts.Count().Equals(0))
             {
-                return new JsonResult("No Posts Avalaible") { StatusCode = 404 };
+                return null;
             }
-            var sortedResultList = allApprovedPosts.OrderByDescending(x => x.createdDate).ToList();
-            return Ok(sortedResultList);
+            return allApprovedPosts;
         }
 
         [HttpGet]
@@ -206,7 +263,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("PostDetail")]
-        public async Task<IActionResult> GetPostByIDAsync(getPostReqDto getPostReqDto, [FromHeader] string Authorization)
+        public async Task<IActionResult> GetPostByIDAsync(string postId, [FromHeader] string Authorization)
         {
             var user = await DecodeToken(Authorization);
             // //Check if username is correct
@@ -221,7 +278,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             //     });
             // }
 
-            var post = await repo.Posts.GetPostByIDAsync(getPostReqDto.postId);
+            var post = await repo.Posts.GetPostByIDAsync(Guid.Parse(postId));
             if (post is null)
             {
                 return NotFound();

@@ -50,7 +50,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("AllComments")]
-        public async Task<IActionResult> GetAllComment(string PostId)
+        private async Task<IActionResult> GetAllComment(string PostId)
         {
             // var listParent = await context.Comments
             //     .Where(x => x.PostId.Equals(PostId))
@@ -71,7 +71,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     resultList.Add(newParent);
                 }
             }
-            var sortedResultList = resultList.OrderByDescending(x => x.CreatedDate).ToList();
+            var sortedResultList = resultList.OrderBy(x => x.CreatedDate).ToList();
 
             return Ok(sortedResultList);
         }
