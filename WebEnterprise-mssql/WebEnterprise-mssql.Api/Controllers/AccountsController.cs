@@ -36,9 +36,10 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet] 
         [Route("GetAllUser")]
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
+        public async Task<IActionResult> GetAllUsersAsync() {
             var userList = await repo.Users.FindAll()
                 .ToListAsync();
+            List<UserProfileResponseDto> listUserDto = new();
             foreach(var user in userList)
             {
                 var userDto = mapper.Map<UserProfileResponseDto>(user);
@@ -54,8 +55,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                     .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                     .Select(x => x.DepartmentName)
                     .FirstOrDefaultAsync();
+                listUserDto.Add(userDto);
             }
-            return userList;
+            return Ok(listUserDto);
             //return mapper.Map<List<ApplicationUserDto>>(userList);
         }
 
