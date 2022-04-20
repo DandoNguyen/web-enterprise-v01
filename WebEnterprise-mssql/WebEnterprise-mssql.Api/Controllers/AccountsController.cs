@@ -43,9 +43,12 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 var userDto = mapper.Map<UserProfileResponseDto>(user);
                 var roleList = await userManager.GetRolesAsync(user);
-                foreach(var role in roleList)
+                if(!roleList.Count().Equals(0))
                 {
-                    userDto.role.Add(role);
+                    foreach (var role in roleList)
+                    {
+                        userDto.role.Add(role);
+                    }
                 }
                 userDto.Department = await repo.Departments
                     .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
