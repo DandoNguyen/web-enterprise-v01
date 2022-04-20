@@ -50,7 +50,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("AllComments")]
-        private async Task<IActionResult> GetAllComment(string PostId)
+        public async Task<IActionResult> GetAllComment(string PostId)
         {
             // var listParent = await context.Comments
             //     .Where(x => x.PostId.Equals(PostId))
