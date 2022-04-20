@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,8 +38,6 @@ namespace WebEnterprise_mssql.Api.Controllers
         [Route("GetAllUser")]
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync() {
             var userList = await repo.Users.FindAll()
-                .Include(x => x.RoleName.RoleName)
-                .Include(x => x.Departments.DepartmentName)
                 .ToListAsync();
             foreach(var user in userList)
             {
@@ -47,7 +47,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 {
                     userDto.role.Add(role);
                 }
-                userDto.Department = user.Departments.DepartmentName;
+                userDto.Department = await repo.Departments
+                    .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                    .Select(x => x.DepartmentName)
+                    .FirstOrDefaultAsync();
             }
             return userList;
             //return mapper.Map<List<ApplicationUserDto>>(userList);
