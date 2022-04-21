@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAdmYqMlAi0ki6IoQ0D2aU4gAAAAACAAAAAAAQZgAAAAEAACAAAABhzYYOlYksMJzIQKxhnNB3BunfBbKFpZ7G8Dq79OIDHAAAAAAOgAAAAAIAACAAAAAOczJ1ibYyNsFPWk1p7PPxn4hT8e+kY21QkrJKeaVAkzAAAAArXMzEav3k3r1+hnOmqiJM7Y5e7+imcx5F/JxouNq0XMVbBDZkeX74DWWuRAKKaVFAAAAAbZN6uBIYpGclyoXmrimTAq5fTBvlJNHkyy3nOpvM5qEP73MMX+G5fAl8e9Y8QmuODlGKQ2rLkemkOu3Q4JUpng==</EncryptedPassword>
+    <History>True|2022-04-18T13:39:43.3772672Z;</History>
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="SmarterASPNETConnection">
+      <Value>Data Source=SQL8001.site4now.net%3bInitial Catalog=db_a85948_productiondb%3bUser Id=db_a85948_productiondb_admin%3bPassword=QuangDung123456789</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="WebEnterprise_mssql.Api.Data.ApiDbContext">
+      <Value>Data Source=SQL8001.site4now.net%3bInitial Catalog=db_a85948_productiondb%3bUser Id=db_a85948_productiondb_admin%3bPassword=QuangDung123456789</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>
