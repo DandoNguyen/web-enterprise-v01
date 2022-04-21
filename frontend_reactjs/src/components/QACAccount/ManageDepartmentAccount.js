@@ -3,6 +3,7 @@ import './ManageDepartmentAccount.css';
 import ModalDepartmentDetail from './detail/ModalDepartmentDetail';
 import Navbar from '../Navbar';
 import { Url } from '../URL';
+import { Link } from 'react-router-dom';
 
 
 
@@ -37,7 +38,6 @@ function ManagementDepartmentAccount () {
     <tr key={data.id}>
       <td >{data.email}</td>
       <td >{data.userName}</td>
-      <td >{data.id}</td>
       <td>
         <button className='Detail' onClick={() => {setModalDepartmentDetail(true);}}>Detail</button>
           {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} />}
@@ -51,8 +51,8 @@ function ManagementDepartmentAccount () {
     <section className='Managementpage'>
 
     <div className='buttonMana'>
-      <a href='ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></a>
-      <a href='ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></a>
+      <Link  to='/ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></Link >
+      <Link  to='/ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></Link >
     </div>
 
     <div className='manage-header'>
@@ -71,7 +71,6 @@ function ManagementDepartmentAccount () {
         <tr>
           <th>Email</th>
           <th>Username</th>
-          <th>Password</th>
           <th>Deatail</th>
         </tr>
         </thead>

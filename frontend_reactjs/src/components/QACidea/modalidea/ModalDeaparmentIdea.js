@@ -7,6 +7,7 @@ import { Url } from "../../URL";
 function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
   const [feadback,setfeadback]=useState('')
 
+
   const Approcepost = () => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
@@ -28,7 +29,34 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
       .then(response => response.json())
       .then(result => {
         console.log(result)
-      alert('Approve success')
+        setOpenModalDepartmentIdea(false)
+        alert('Approve success')
+    })
+      .catch(error => console.log('error', error));
+  }
+
+  const Reject = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      "postId": data.postId,
+      "feedback": feadback,
+      "isApproved": false
+    });
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    fetch(Url+"/api/Posts/QACfeedback", requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        console.log(result)
+        alert('Approve success')
     })
       .catch(error => console.log('error', error));
   }
@@ -74,7 +102,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
 
         <div className="Modalfooter">
         <button className="SubmitBtn" onClick={Approcepost}>Approve</button>
-          <button className="cancelBtn" onClick={() => {setOpenModalDepartmentIdea(false);}} id="cancelBtn">Reject</button>
+          <button className="cancelBtn" onClick={Reject} id="cancelBtn">Reject</button>
         </div>
 
         {/* <div className="modaltitle">TERMS AND POLICIES</div> */}

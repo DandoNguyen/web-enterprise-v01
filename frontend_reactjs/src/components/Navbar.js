@@ -45,7 +45,6 @@ function Navbar() {
             });
     }
 
-
     const logout = () => {
         Navigate('/')
         localStorage.removeItem("accessToken")
@@ -94,7 +93,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                    <Link to='/Chart'>  
+                        <Link to='/Chart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
@@ -156,7 +155,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                    <Link to='/Chart'>
+                        <Link to='/Chart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
@@ -222,7 +221,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                    <Link to='/Chart'>
+                        <Link to='/Chart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>

@@ -32,7 +32,7 @@ function Modal({ setOpenModal }) {
       .then(response => response.json())
       .then(result => {
         console.log(result);
-        alert('thanh cong')
+        alert('Check Email')
       })
       .catch(error => alert( error.title));
 

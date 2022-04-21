@@ -1,60 +1,94 @@
-import React,{ useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import './ManageDepartmentQamAccount.css';
 import ModalDepartmentQamDetail from '../detail/ModalDepartmentQamDetail';
 import Navbar from '../../Navbar';
+import { Link } from 'react-router-dom';
+import { Url } from '../../URL';
 
 
 
 
-function ManagementDepartmentQamAccount () {
- const [ModalDepartmentQamDetailOpen, setModalDepartmentQamDetail] = useState(false);
-	return <div>
-    <Navbar/>
+function ManagementDepartmentQamAccount() {
+  const [ModalDepartmentQamDetailOpen, setModalDepartmentQamDetail] = useState(false);
+  const [userAccounts, setuserAccounts] = useState([]);
+  const [reloadpage] = useState(false);
+  const [userDetail,setuserDetail]=useState({})
+
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Content-Type", "application/json");
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+
+    fetch(Url + "/api/Accounts/GetAllUser", requestOptions)
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          throw new Error(response.status)
+        }
+      })
+      .then(data => {
+        setuserAccounts(data)
+        // setreloadpage(!reloadpage)
+      })
+      .catch(error => {
+        console.log('error', error)
+        // setreloadpage(!reloadpage)
+      });
+  }, [reloadpage])
+
+  const handleviewDetail = (data) => {
+    setModalDepartmentQamDetail(true)
+    setuserDetail(data)
+  }
+  console.log(userAccounts);
+  const listAccounts = userAccounts.map(data => (
+    <tr key={data.id}>
+      <td >{data.email}</td>
+      <td >{data.userName}</td>
+      <td>
+        <button className='Detail' onClick={() => handleviewDetail(data)}>Detail</button>
+      </td>
+    </tr>
+  ))
+  return <div>
+    <Navbar />
     <section className='Managementpage'>
 
-    <div className='buttonMana'>
-      <a href='ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></a>
-      <a href='ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></a>
-      <a href='ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></a>
-    </div>
+      <div className='buttonMana'>
+        <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
+        <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+      </div>
 
-    <div className='manage-header'>
-      <div className="text">Department Management</div>
+      <div className='manage-header'>
+        <div className="text">Department Management</div>
       </div>
 
       <div className='contentManage'>
         <div className='text'>List Account</div>
-    </div>
-
-
-
- 
+      </div>
       <table className='tableuser'>
+        <thead>
         <tr>
           <th>Email</th>
           <th>Username</th>
-          <th>Password</th>
-          <th>Department</th>
-          <th>Role</th>
           <th>Deatail</th>
         </tr>
+        </thead>
+        <tbody>
+            {listAccounts}
+            {ModalDepartmentQamDetailOpen && <ModalDepartmentQamDetail setOpenModalDepartmentQamDetail={setModalDepartmentQamDetail} data={userDetail}/>}
+        </tbody>
+      </table>
 
-        <tr>
-        <td>NamHPGCS18027@FPT.EDU.VN</td>
-        <td>Namho</td>
-        <td>98999999999</td>
-        <td>Department</td>
-        <td>Role</td>
-
-        <td>
-        <button className='Detail' onClick={() => {setModalDepartmentQamDetail(true);}}>Detail</button>
-          {ModalDepartmentQamDetailOpen && <ModalDepartmentQamDetail setOpenModalDepartmentQamDetail={setModalDepartmentQamDetail} />}
-        </td>
-        
-      </tr>
-    </table>
-
-  </section>
+    </section>
   </div>
 }
 export default ManagementDepartmentQamAccount;

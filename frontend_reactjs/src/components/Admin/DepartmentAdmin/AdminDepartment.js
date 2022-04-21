@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import './ManageDepartmentQamDepartment.css';
-import ModalDepartmentQamCreate from './create/ModalDepartmentQamCreate';
-import ModalDepartmentQamView from './view/ModalDepartmentQamView';
-import Navbar from '../Navbar';
-import { Url } from '../URL';
+import './AdminDepartment.css';
+import CreateDepartment from './Create/CreateDepartment';
+import ViewDepartment from './View/ViewDepartment';
+import AddDepartment from './Add/AddDepartment';
+import { Url } from '../../URL';
+import Navbar from '../../Navbar';
 import { Link } from 'react-router-dom';
 
 
 
 
-function ManageDepartmentQamDepartment() {
+function AdminDepartment() {
   const [ModalDepartmentQamCreateOpen, setModalDepartmentQamCreate] = useState(false);
   const [DepartmentQamViewOpen, setDepartmentQamView] = useState(false);
   const [GetAllDepartment, setGetAllDepartment] = useState([])
+  // const [deatailBtn, setdeatailBtn] = useState(false)
+  const [ModalAddusers,setModalAdduser]=useState(false)
   const [viewDepartment,setviewDepartment]=useState({})
   useEffect(() => {
     var myHeaders = new Headers();
@@ -51,16 +54,20 @@ function ManageDepartmentQamDepartment() {
     <Navbar />
     <section className='Managementpage'>
       <div className='buttonMana'>
-        <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
-        <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
-        <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
+        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
       </div>
       <div className='manage-header'>
         <div className="text">Department Management</div>
       </div>
       <div className='buttonAddUser'>
         <button className='Add-user-bt' onClick={() => { setModalDepartmentQamCreate(true); }}>Create Department</button>
-        {ModalDepartmentQamCreateOpen && <ModalDepartmentQamCreate setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} />}
+        {ModalDepartmentQamCreateOpen && <CreateDepartment setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} />}
+      </div>
+      <div className='buttonAddUser'>
+        <button className='Add-user-bt' onClick={() => { setModalAdduser(true); }}>ADD user Department</button>
+        {ModalAddusers && <AddDepartment setOpenModalAdduser={setModalAdduser} />}
       </div>
       <div className='contentManage'>
         <div className='text'>List Account</div>
@@ -74,10 +81,10 @@ function ManageDepartmentQamDepartment() {
         </thead>
         <tbody>
             {listDepartment}
-            {DepartmentQamViewOpen && <ModalDepartmentQamView setOpenDepartmentQamView={setDepartmentQamView} data={viewDepartment}/>}
+            {DepartmentQamViewOpen && <ViewDepartment setOpenDepartmentQamView={setDepartmentQamView} data={viewDepartment}/>}
         </tbody>
       </table>
     </section>
   </div>
 }
-export default ManageDepartmentQamDepartment;
+export default AdminDepartment;

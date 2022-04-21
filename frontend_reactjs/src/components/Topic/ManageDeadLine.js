@@ -5,6 +5,7 @@ import ModalDeadlineEdit from './Edit/ModalDeadlineEdit';
 import ModalDeadlineDelete from './Delete/ModalDeadlineDelete';
 import Navbar from '../Navbar';
 import { Url } from '../URL';
+import { Link } from 'react-router-dom';
 function ManageDeadLine() {
   const [modalOpenDeadlineCreate, setModalOpenDeadlineCreate] = useState(false);
   const [modalOpenDeadlineEdit, setModalOpenDeadlineEdit] = useState(false);
@@ -55,8 +56,9 @@ function ManageDeadLine() {
     <section className='Managementpage'>
 
       <div className='buttonMana'>
-        <a href='ManageAccount'><button type='button' className='buttonAccount'>Account</button></a>
-        <a href='DeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></a>
+        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
+        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
       </div>
 
       <div className='manage-header'>

@@ -29,7 +29,7 @@ function ManageDepartmentIdea() {
       })
       .catch(error => console.log('error', error));
   }, [])
-
+  
   const viewIdea = (data)=>{
     setModalDepartmentIdea(true)
     setviewIdea(data)

@@ -50,42 +50,22 @@ function MyProfile (){
       <div className="PostContainerMyIn4">
         
         <div className="In4">
-        <span className="TopicName">Full Name: {User.username} </span>
-        
+        <span className="TopicName">Full Name: {User.fullname} </span>
         </div>
-    
+        <div className="In4">
+        <span className="TopicName">Username : {User.username} </span>
+        </div>
+        <div className="In4">
+        <span className="TopicName">Email : {User.email} </span>
+        </div>
         <div className="In4">
         <span className="TopicName">Role : {User.role} </span>
         </div>
         <div className="In4">
-        <span className="TopicName">Date of Birth: </span>
+        <span className="TopicName">Department: {User.department}</span>
         {/* đây là div chứa files */}
         </div>
-        <div className="In4">
-        <span className="TopicName">Address: </span>
-        
-        </div>
-    
-        <div className="In4">
-        <span className="TopicName">Position: </span>
-        </div>
-        <div className="In4">
-        <span className="TopicName">Department: </span>
-        {/* đây là div chứa files */}
-        </div>
-        
-
-        
-
-        
-   
-    </div>
-
-
-
-
-    
-    
+    </div> 
 </section>
     </div>
 }

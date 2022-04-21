@@ -1,7 +1,7 @@
 import React from "react";
 import "./ModalDepartmentQamDetail.css";
 
-function ModalDepartmentQamDetail({ setOpenModalDepartmentQamDetail }) {
+function ModalDepartmentQamDetail({ setOpenModalDepartmentQamDetail , data }) {
   return (
     <div className="modalBackground">
       <div className="modalContainer">
@@ -12,39 +12,23 @@ function ModalDepartmentQamDetail({ setOpenModalDepartmentQamDetail }) {
         <div className="modaltitle">Account Detail</div>
         
         <div className="modalinput">
-            <span className="inputtitle">Full Name</span>
-            <br/>
-            <input readOnly className="inputvl"></input>
+            <span className="inputtitle">Full Name : {data.fullname}</span>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">Employee ID</span>
+            <span className="inputtitle">Employee ID : {data.dob}</span>
             <br/>
-            <input readOnly className="inputvl"></input>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">Email</span>
+            <span className="inputtitle">Email : {data.email}</span>
             <br/>
-            <input readOnly className="inputvl"></input>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">User name</span>
+            <span className="inputtitle">User name : {data.userName}</span>
             <br/>
-            <input readOnly className="inputvl"></input>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">Password</span>
+            <span className="inputtitle">Role : {data.RoleName}</span>
             <br/>
-            <input readOnly className="inputvl"></input>
-        </div>
-        <div className="modalinput">
-            <span className="inputtitle">Role</span>
-            <br/>
-            <input readOnly className="inputvl"></input>
-        </div>
-        <div className="modalinput">
-            <span className="inputtitle">Department</span>
-            <br/>
-            <input readOnly className="inputvl"></input>
         </div>
       </div>
     </div>

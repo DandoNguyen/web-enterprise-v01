@@ -28,16 +28,23 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
         };
 
         fetch(Url+"/api/Topics/CreateTopic", requestOptions)
-          .then(response => response.json())
+          .then(response => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                throw new Error(response.status)
+                
+            }
+        })
           .then(result =>{
+            setOpenModalDeadlineCreate(false) 
             console.log(result);
-            setOpenModalDeadlineCreate(false)  
             setreloadpage(!reloadpage)
           })
           .catch(error => {console.log('error', error)
-          setOpenModalDeadlineCreate(false)
-          setreloadpage(!reloadpage)
           alert('Full information needed')
+          
+          
         });
         }
   return (

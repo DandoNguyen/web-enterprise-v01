@@ -12,6 +12,7 @@ function MyPost() {
     const [allmypost, setallmypost] = useState([])
     const [detailopen, setdetailopen] = useState(false)
     const [Post, setPost] = useState({})
+    const [errorMes,seterrorMes]= useState('No Posts Avalaible')
 
     // view post
     useEffect(() => {
@@ -27,12 +28,14 @@ function MyPost() {
         fetch(Url + "/api/Posts/MyPost", requestOptions)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
-                setallmypost(data)
+                if(data.length !== 0){
+                    setallmypost(data)
+                }else{
+                    seterrorMes(data)
+                }
             })
             .catch(error => console.log('error', error));
     }, [])
-
 
     // const deletepost = (data) => {
     //     var myHeaders = new Headers();
@@ -58,7 +61,6 @@ function MyPost() {
     // }
     // console.log(allmypost);
 
-
     const handelView = (data) => {
         setdetailopen(true)
         setPost(data)
@@ -78,10 +80,23 @@ function MyPost() {
                         </div>
                     </div>
                 </div>
-                <div className='Status'>
-             <button className='APbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
-                    {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
-                </div>
+            {data.statusMessage === 'Approved' ?
+            <div className='Status'>
+                <button className='APbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
+                {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
+            </div>
+            :
+            data.statusMessage === 'Rejected' ?
+            <div className='Status'>
+                <button className='RJbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
+                {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
+            </div>
+            :
+            <div className='Status'>
+                <button className='PDbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
+                {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
+            </div>
+            }
             </header>
             <div className="Category">
                 <span className="TopicName">{data.listCategoryName}</span>
@@ -103,9 +118,7 @@ function MyPost() {
                             <span className='view'>{data.viewsCount}</span>
                         </i>
                     </span>
-
                     {/* <button className='btn delete' onClick={deletepost(data)}>Delete</button> */}
-
                 </div>
             </div>
         </div>
@@ -128,7 +141,7 @@ function MyPost() {
                 </div>
             </div>
             <div>
-                {listmypost}
+                {errorMes && listmypost}
                 {detailopen && <PostDetail setopendetail={setdetailopen} data={Post} />}
             </div>
         </section>

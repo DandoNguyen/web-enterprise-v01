@@ -40,9 +40,9 @@ export const ChartTopic = () => {
                 console.log('error', error)
             });
     }, [])
-
+   
     const nameData = getData.map(data => [data.dataName])
-    const valueData = getData.map(data => [data.value])
+    const valueData = getData.map(data => [data.percent])
     const state = {
         labels: nameData,
         datasets: [

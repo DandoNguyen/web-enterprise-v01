@@ -43,8 +43,8 @@ function ModlaAddrole({setOpenModlaAddrole}) {
         fetch(Url+`/api/Roles/AddUserToRole?email=${Emailuer}&roleName=${roleselect}`, requestOptions)
           .then(response => response.json())
           .then(result => {
-            console.log('Successful')
-            alert(result.value)
+            console.log(result.value)
+            alert('Successful')
           })
           .catch(error => alert(error));
       }

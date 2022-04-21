@@ -7,6 +7,7 @@ import ModalManageDelete from '../Delete/ModalManageDelete';
 import Navbar from '../../Navbar';
 import ModlaAddrole from '../addrole/ModlaAddrole';
 import { Url } from '../../URL';
+import { Link } from 'react-router-dom';
 
 
 function ManageAccount() {
@@ -29,8 +30,6 @@ function ManageAccount() {
       headers: myHeaders,
       redirect: 'follow'
     };
-
-
     fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
       .then(response => {
         if (response.ok) {
@@ -47,6 +46,7 @@ function ManageAccount() {
         console.log('error', error)
         // setreloadpage(!reloadpage)
       });
+      
   }, [reloadpage])
   const handaleEdit =(data)=>{
     setModalManageEdit(true)
@@ -80,9 +80,9 @@ function ManageAccount() {
     <section className='Managementpage'>
 
       <div className='buttonMana'>
-        <a href='ManageAccount'><button type='button' className='buttonAccount'>Account</button></a>
-        <a href='ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></a>
-        <a href='ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></a>
+        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
+        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
       </div>
 
       <div className='manage-header'>
@@ -118,7 +118,6 @@ function ManageAccount() {
           {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} />}
         </tbody>
       </table>
-
     </section>
   </div>
 

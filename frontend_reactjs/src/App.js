@@ -19,6 +19,9 @@ import AboutInvestor from './components/AboutUs/AboutInvestor';
 import ManagementDepartmentQamAccount from './components/QAMAccount/Account/ManageDepartmentQamAccount';
 import ManageDepartmentQamIdea from './components/QAMIdea/ManageDepartmentQamIdea';
 import { ChartPage } from './components/Chart/ChartPage';
+import AdminDepartment from './components/Admin/DepartmentAdmin/AdminDepartment';
+import PostPopular from './components/PostPopular';
+import PostLastComment from './components/PostLastComment';
 // import PostDetail from './components/Postdetail/PostDetail';
 
 class App extends Component {
@@ -49,6 +52,10 @@ render() {
 				<Route exact path='/ManageDepartmentQamDepartment' element={< ManageDepartmentQamDepartment/>}></Route>
 				{/* <Route exact path='/PostDetail' element={< PostDetail/>}></Route> */}
 				<Route exact path='/Chart' element={< ChartPage/>}></Route>
+				<Route exact path='/AdminDepartment' element={< AdminDepartment/>}></Route>
+				<Route exact path='/Popular' element={< PostPopular/>}></Route>
+				<Route exact path='/LastComment' element={< PostLastComment/>}></Route>
+				
 
 				
 

@@ -5,8 +5,7 @@ import {Url} from './URL.js'
 import PostDetail from './Postdetail/PostDetail';
 import { Link } from 'react-router-dom';
 
-
-function Home() {
+function PostLastComment() {
     const [postHome, setpostHome] = useState([]);
     const [errorMes,seterrorMes] = useState('No Posts Avalaible')
     const [detailopen, setdetailopen] = useState(false)
@@ -21,7 +20,7 @@ function Home() {
             redirect: 'follow'
         };
 
-        fetch(Url+"/api/Posts/PostFeedSortByCreatedDate", requestOptions)
+        fetch(Url+"/api/Posts/GetAllPostsSortedByCommentsCount", requestOptions)
             .then(response => {
                 if (response.ok) {
                     return response.json()
@@ -91,12 +90,13 @@ function Home() {
             </div>
         </div>
     ))
-    return <div>
+  return (
+    <div>
         <Navbar />
         <section className="home">
             <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet' />
             <div className="text">
-               <Link to='/Home'><button className='Newbtn'>New</button></Link> 
+            <Link to='/Home'><button className='Newbtn'>New</button></Link> 
                <Link to='/Popular'><button className='Mostpplbtn'>Most Popular</button></Link> 
                <Link to='/LastComment'><button className='cmtbtn'>Last Comments</button></Link> 
                 <div className='showselect'>
@@ -112,6 +112,7 @@ function Home() {
             </div>
         </section>
     </div>
+  )
 }
 
-export default Home;
+export default PostLastComment
