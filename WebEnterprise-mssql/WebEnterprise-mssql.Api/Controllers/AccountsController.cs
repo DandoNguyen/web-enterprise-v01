@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
@@ -23,14 +24,17 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly UserManager<ApplicationUser> userManager; 
         private readonly IMapper mapper;
         private readonly IRepositoryWrapper repo;
+        private readonly ILogger<AccountsController> logger;
 
         public AccountsController(
             UserManager<ApplicationUser> userManager, 
             IMapper mapper,
-            IRepositoryWrapper repo)
+            IRepositoryWrapper repo,
+            ILogger<AccountsController> logger)
         {
             this.mapper = mapper;
             this.repo = repo;
+            this.logger = logger;
             this.userManager = userManager;
         }
 
@@ -43,12 +47,19 @@ namespace WebEnterprise_mssql.Api.Controllers
             foreach(var user in userList)
             {
                 var userDto = mapper.Map<UserProfileResponseDto>(user);
-                var roleList = await userManager.GetRolesAsync(user);
-                if(!roleList.Count().Equals(0))
+                var roleUser = await userManager.GetRolesAsync(user);
+                if(roleUser is not null)
                 {
-                    foreach (var role in roleList)
+                    foreach(var role in roleUser)
                     {
-                        userDto.role.Add(role);
+                        try
+                        {
+                            userDto.role.Add(role.ToLower());
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogInformation($"Error in line 57: {ex}");
+                        }
                     }
                 }
                 userDto.Department = await repo.Departments
