@@ -10,5 +10,9 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string email { get; set; }
         public List<string> role { get; set; }
         public string message { get; set; }
+        public UserProfileResponseDto()
+        {
+            role = new List<string>();
+        }
     }
 }

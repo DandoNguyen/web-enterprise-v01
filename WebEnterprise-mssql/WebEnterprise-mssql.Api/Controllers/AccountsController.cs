@@ -52,14 +52,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 {
                     foreach(var role in roleUser)
                     {
-                        try
-                        {
-                            userDto.role.Add(role.ToLower());
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogInformation($"Error in line 57: {ex}");
-                        }
+                        userDto.role.Add(role.ToLower());
                     }
                 }
                 userDto.Department = await repo.Departments
