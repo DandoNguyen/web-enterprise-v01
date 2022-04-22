@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Services;
 using WebEnterprise_mssql.Api.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -59,6 +61,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetUser")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUserProfileAsync([FromHeader] string Authorization)
         {
             if (Authorization is null)
@@ -67,10 +70,14 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             
             var user = await DecodeToken(Authorization);
-            var departmentName = await repo.Departments
+            string departmentName = "";
+            if(user.DepartmentId is not null)
+            {
+                departmentName = await repo.Departments
                 .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                 .Select(x => x.DepartmentName)
                 .FirstOrDefaultAsync();
+            }
 
             var role = await userManager.GetRolesAsync(user);
 

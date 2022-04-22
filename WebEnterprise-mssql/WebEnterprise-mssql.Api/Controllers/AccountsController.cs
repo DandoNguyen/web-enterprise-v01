@@ -41,7 +41,8 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet] 
         [Route("GetAllUser")]
         public async Task<IActionResult> GetAllUsersAsync() {
-            var userList = await repo.Users.FindAll()
+            var userList = await repo.Users
+                .FindAll()
                 .ToListAsync();
             List<UserProfileResponseDto> listUserDto = new();
             foreach(var user in userList)
@@ -55,10 +56,15 @@ namespace WebEnterprise_mssql.Api.Controllers
                         userDto.role.Add(role.ToLower());
                     }
                 }
-                userDto.Department = await repo.Departments
-                    .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
-                    .Select(x => x.DepartmentName)
-                    .FirstOrDefaultAsync();
+                string department = "No Departments";
+                if (user.DepartmentId is not null)
+                {
+                    department = await repo.Departments
+                        .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                        .Select(x => x.DepartmentName)
+                        .FirstOrDefaultAsync();
+                }
+                userDto.Department = department;
                 listUserDto.Add(userDto);
             }
             return Ok(listUserDto);
