@@ -59,7 +59,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 listResult.Add(result);
             }
             var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
-            if(listResult.Count().Equals(0))
+
+            filePath = Path.Combine("~App_Data", "Statistics", filePath);
+
+            if (listResult.Count().Equals(0))
             {
                 return Ok("No Data");
             }
@@ -154,7 +157,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             range.AutoFitColumns();
             await package.SaveAsync();
 
-            return file.FullName;
+            return file.Name;
         }
 
         private string GetRootDirectory(string filePath)
