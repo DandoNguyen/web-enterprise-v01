@@ -255,6 +255,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
 
                 result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
+                result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
                 listPostsDto.Add(result);
             }
 
