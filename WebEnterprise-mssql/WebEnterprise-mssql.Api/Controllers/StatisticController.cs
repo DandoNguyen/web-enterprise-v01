@@ -58,9 +58,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(topic.TopicName, roundedPercent);
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
+            var name = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
 
-            filePath = Path.Combine("~App_Data", "Statistics", filePath);
+            var filePath = Path.Combine("~App_Data", "Statistics", name);
 
             if (listResult.Count().Equals(0))
             {
