@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using WebEnterprise_mssql.Api.Services;
 using WebEnterprise_mssql.Api.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -59,6 +61,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet]
         [Route("GetUser")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUserProfileAsync([FromHeader] string Authorization)
         {
             if (Authorization is null)
@@ -67,10 +70,14 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             
             var user = await DecodeToken(Authorization);
-            var departmentName = await repo.Departments
+            string departmentName = "";
+            if(user.DepartmentId is not null)
+            {
+                departmentName = await repo.Departments
                 .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                 .Select(x => x.DepartmentName)
                 .FirstOrDefaultAsync();
+            }
 
             var role = await userManager.GetRolesAsync(user);
 
@@ -132,11 +139,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     });
                 }
 
-                var newUser = new ApplicationUser()
-                {
-                    Email = dto.Email,
-                    UserName = dto.Username
-                };
+                var newUser = mapper.Map<ApplicationUser>(dto);
 
                 var isCreated = await userManager.CreateAsync(newUser, dto.Password);
 
@@ -146,7 +149,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 {
 
                     //Add the user to a role
-                    //await userManager.AddToRoleAsync(newUser, "Staff");
+                    await userManager.AddToRoleAsync(newUser, "staff".ToLower());
 
                     //var jwttoken = await GenerateJwtToken(newUser);
 
@@ -380,7 +383,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             };
         }
 
-
         //Get all vailda Claims for the user
         private async Task<List<Claim>> GetAllValidclaims(ApplicationUser user)
         {
@@ -417,7 +419,6 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             return claims;
         }
-
 
         private async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto)
         {
