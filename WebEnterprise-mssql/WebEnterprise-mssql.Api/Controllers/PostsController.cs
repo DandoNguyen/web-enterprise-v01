@@ -164,7 +164,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPost = await GetAllPostsAsync(user);
             if(listPost is null)
             {
-                return NotFound("No Posts Available");
+                return new JsonResult("No Posts Available") { StatusCode = 204 };
             }
             return Ok(listPost.OrderByDescending(x => x.ViewsCount).ToList());
         }
@@ -177,7 +177,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPost = await GetAllPostsAsync(user);
             if (listPost is null)
             {
-                return NotFound("No Posts Available");
+                return new JsonResult("No Posts Available") { StatusCode = 204 };
             }
             var listItem = new List<dynamic>();
             foreach(var post in listPost)
