@@ -23,20 +23,17 @@ namespace WebEnterprise_mssql.Controllers
         private readonly ILogger<SumUpController> logger;
         private readonly IConfiguration configuration;
         private readonly IMapper mapper;
-        private readonly IFileActionService<SumUpDto> fileAction;
 
         public SumUpController(
             IRepositoryWrapper repo,
             ILogger<SumUpController> logger,
             IConfiguration configuration,
-            IMapper mapper,
-            IFileActionService<SumUpDto> fileAction)
+            IMapper mapper)
         {
             this.repo = repo;
             this.logger = logger;
             this.configuration = configuration;
             this.mapper = mapper;
-            this.fileAction = fileAction;
         }
 
         [HttpGet]
@@ -54,6 +51,10 @@ namespace WebEnterprise_mssql.Controllers
             foreach(var post in listPosts)
             {
                 var item = mapper.Map<SumUpDto>(post);
+                foreach (var file in post.filesPaths)
+                {
+                    item.sumUpFilePath.Add(file.filePath);
+                }
                 var votes = await GetVote(post.PostId.ToString());
                 mapper.Map(votes, item);
                 ListItem.Add(item);
