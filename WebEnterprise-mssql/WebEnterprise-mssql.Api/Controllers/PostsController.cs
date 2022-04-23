@@ -53,7 +53,7 @@ namespace WebEnterprise_mssql.Api.Controllers
         //QAC Sections
         [HttpGet]
         [Route("QACListPost")]
-        [Authorize(Roles = "qac")]
+        [Authorize(Roles = "qac, qam")]
         public async Task<IActionResult> GetAllUnAssignedPosts()
         {
             var listPosts = await repo.Posts
@@ -107,9 +107,12 @@ namespace WebEnterprise_mssql.Api.Controllers
                 case false: post.Status = 2; break; //Status = 2 (rejected)
             }
 
-            repo.Posts.Update(post);
-            await repo.Save();
-
+            if(ModelState.IsValid)
+            {
+                repo.Posts.Update(post);
+                await repo.Save();
+            }
+            
             //Send Notification to Author
             var today = DateTime.UtcNow;
             var topic = await repo.Topics
@@ -126,11 +129,11 @@ namespace WebEnterprise_mssql.Api.Controllers
             switch (dto.IsApproved)
             {
                 case true:
-                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been approved by a QAC on {today}";
+                    mailContent.Body = $"Your Idea on Topic '{topic.TopicName}' has been approved by a QAC on {today}";
                     break;
 
                 case false:
-                    mailContent.Body = $"Your Idea on Topic {topic.TopicName} has been rejected on {today}";
+                    mailContent.Body = $"Your Idea on Topic '{topic.TopicName}' has been rejected on {today}";
                     break;
             }
 
@@ -148,7 +151,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPost = await GetAllPostsAsync(user);
             if(listPost is null)
             {
-                return NotFound("No Posts Available");
+                return new JsonResult("No Posts Available") { StatusCode = 204 };
             }
             return Ok(listPost.OrderByDescending(x => x.createdDate).ToList());
         }
@@ -161,7 +164,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPost = await GetAllPostsAsync(user);
             if(listPost is null)
             {
-                return NotFound("No Posts Available");
+                return new JsonResult("No Posts Available") { StatusCode = 204 };
             }
             return Ok(listPost.OrderByDescending(x => x.ViewsCount).ToList());
         }
@@ -174,7 +177,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPost = await GetAllPostsAsync(user);
             if (listPost is null)
             {
-                return NotFound("No Posts Available");
+                return new JsonResult("No Posts Available") { StatusCode = 204 };
             }
             var listItem = new List<dynamic>();
             foreach(var post in listPost)
@@ -205,6 +208,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindAll()
                 .Include(x => x.categories)
                 .ToListAsync();
+            var listTopic = await repo.Topics
+                .FindAll().ToListAsync();
             var allApprovedPosts = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
@@ -217,7 +222,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         listCateId.Add(cate.CategoryId.ToString());
                     }
-
+                    result.TopicName = listTopic.Where(x => x.TopicId.Equals(post.TopicId))
+                        .Select(x => x.TopicName)
+                        .FirstOrDefault();
                     result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                     result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
                     allApprovedPosts.Add(result);
@@ -255,6 +262,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
 
                 result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
+                result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
                 listPostsDto.Add(result);
             }
 
@@ -291,6 +299,16 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 listCateIdOfThisPost.Add(cate.CategoryId.ToString());
             }
+
+            var topicName = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(post.TopicId))
+                .Select(x => x.TopicName)
+                .FirstOrDefaultAsync();
+            if (topicName is not null)
+            {
+                result.TopicName = topicName;
+            }
+
             result.ListCategoryName = await GetListCategoriesNameAsync(listCateIdOfThisPost);
             result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
             result.FilesPaths = await GetFilePaths(post.PostId);

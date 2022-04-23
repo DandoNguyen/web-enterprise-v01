@@ -12,6 +12,8 @@ namespace WebEnterprise_mssql.Api.Profiles
             CreateMap<ApplicationUserDto, ApplicationUser>().ReverseMap();
             CreateMap<ApplicationUser, UserProfileResponseDto>();
             CreateMap<UserProfileResponseDto, ApplicationUser>().ReverseMap();
+            CreateMap<UsersRegistrationDto, ApplicationUser>().ReverseMap();
+            CreateMap<UsersRegistrationDto, ApplicationUser>();
         }
     }
 }

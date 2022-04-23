@@ -47,7 +47,6 @@ namespace WebEnterprise_mssql.Api.Controllers
                 List<Posts> ListValue = new();
                 foreach (var post in listPosts)
                 {
-
                     if (topic.TopicId.Equals(post.TopicId))
                     {
                         ListValue.Add(post);
@@ -58,8 +57,11 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(topic.TopicName, roundedPercent);
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
-            if(listResult.Count().Equals(0))
+            var name = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByTopic)}.xlsx", "default");
+
+            var filePath = Path.Combine("~App_Data", "Statistics", name);
+
+            if (listResult.Count().Equals(0))
             {
                 return Ok("No Data");
             }
@@ -95,8 +97,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
-            
+            var name = await SaveExcelFileAsync(listResult, $"{nameof(GetPostApproveRatioByDepartment)}.xlsx", "default");
+
+            var filePath = Path.Combine("~App_Data", "Statistics", name);
+
             return Ok(new {listResult, filePath, title = "Percentage of Approved Post by Department"});
         }
 
@@ -129,7 +133,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                 var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
             }
-            var filePath = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
+            var name = await SaveExcelFileAsync(listResult, $"{nameof(GetAllPostByDepartment)}.xlsx", "default");
+
+            var filePath = Path.Combine("~App_Data", "Statistics", name);
 
             return Ok(new {listResult, filePath, title = "Percentage of Post by Department"});
         }
@@ -154,7 +160,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             range.AutoFitColumns();
             await package.SaveAsync();
 
-            return file.FullName;
+            return file.Name;
         }
 
         private string GetRootDirectory(string filePath)
