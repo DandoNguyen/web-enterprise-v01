@@ -165,7 +165,11 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound($"No user found by email {email}");
             }
-            await userManager.DeleteAsync(user);
+            if(ModelState.IsValid)
+            {
+                await userManager.DeleteAsync(user);
+                await repo.Save();
+            }
             return Ok($"User {user.UserName} removed!");
         }
     }
