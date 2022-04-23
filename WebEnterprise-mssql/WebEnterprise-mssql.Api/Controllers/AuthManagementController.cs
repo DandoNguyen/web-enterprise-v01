@@ -139,11 +139,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                     });
                 }
 
-                var newUser = new ApplicationUser()
-                {
-                    Email = dto.Email,
-                    UserName = dto.Username
-                };
+                var newUser = mapper.Map<ApplicationUser>(dto);
 
                 var isCreated = await userManager.CreateAsync(newUser, dto.Password);
 
@@ -153,7 +149,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 {
 
                     //Add the user to a role
-                    //await userManager.AddToRoleAsync(newUser, "Staff");
+                    await userManager.AddToRoleAsync(newUser, "staff".ToLower());
 
                     //var jwttoken = await GenerateJwtToken(newUser);
 
@@ -387,7 +383,6 @@ namespace WebEnterprise_mssql.Api.Controllers
             };
         }
 
-
         //Get all vailda Claims for the user
         private async Task<List<Claim>> GetAllValidclaims(ApplicationUser user)
         {
@@ -424,7 +419,6 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             return claims;
         }
-
 
         private async Task<AuthResult> VerifyAndGenerateToken(TokenRequestDto tokenRequestDto)
         {

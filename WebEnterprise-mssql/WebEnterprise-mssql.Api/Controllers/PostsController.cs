@@ -205,6 +205,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindAll()
                 .Include(x => x.categories)
                 .ToListAsync();
+            var listTopic = await repo.Topics
+                .FindAll().ToListAsync();
             var allApprovedPosts = new List<PostDetailDto>();
             foreach (var post in listPosts)
             {
@@ -217,7 +219,9 @@ namespace WebEnterprise_mssql.Api.Controllers
                     {
                         listCateId.Add(cate.CategoryId.ToString());
                     }
-
+                    result.TopicName = listTopic.Where(x => x.TopicId.Equals(post.TopicId))
+                        .Select(x => x.TopicName)
+                        .FirstOrDefault();
                     result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                     result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
                     allApprovedPosts.Add(result);
