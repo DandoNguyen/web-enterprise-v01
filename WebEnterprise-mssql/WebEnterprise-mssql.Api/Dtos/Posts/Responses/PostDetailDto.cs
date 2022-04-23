@@ -9,6 +9,7 @@ namespace WebEnterprise_mssql.Api.Dtos
         public string title { get; set; }
         public string Desc { get; set; }
         public string content { get; set; }
+        public string feedback { get; set; }
         public DateTimeOffset createdDate { get; set; }
         public DateTimeOffset LastModifiedDate { get; set; }
         public bool isAnonymous { get; set; }
