@@ -39,41 +39,6 @@ namespace WebEnterprise_mssql.Controllers
             this.mapper = mapper;
         }
 
-        private void AddToExistingZip(string zipPath, string postFilePath)
-        {
-            using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Open))
-            {
-                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
-                {
-                    var fileName = postFilePath.Split("~");
-                    ZipArchiveEntry postFileEntry = archive.CreateEntryFromFile(postFilePath, fileName[1]);
-                }
-            }
-        }
-
-        private string CreateZipFile(string topicName)
-        {
-            var rootPath = configuration["FileConfig:SumUpFilePath"];
-            if (!Directory.Exists(rootPath))
-            {
-                Directory.CreateDirectory(rootPath);
-            }
-            var zipRootPath = configuration["FileConfig:ZipFilePath"];
-            if (!Directory.Exists(zipRootPath))
-            {
-                Directory.CreateDirectory(zipRootPath);
-            }
-            //var dest = Path.Combine(rootPath, folderPath);
-
-            var saveLocation = Path.Combine(zipRootPath, $"{topicName}.zip");
-            FileInfo fileInfo = new FileInfo(saveLocation);
-            DeleteIfExist(fileInfo);
-            ZipFile.CreateFromDirectory(rootPath, saveLocation);
-            
-            //AddToExistingZip(zipPath, postFilePath);
-            return saveLocation;
-        }
-
         [HttpGet]
         [Route("SumUp")]
         public async Task<IActionResult> SumUpAsync(string TopicId)
@@ -86,7 +51,7 @@ namespace WebEnterprise_mssql.Controllers
                 .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
                 .ToListAsync();
             List<SumUpDto> ListItem = new();
-            foreach(var post in listPosts)
+            foreach (var post in listPosts)
             {
                 var item = mapper.Map<SumUpDto>(post);
                 if (post.filesPaths is not null)
@@ -96,7 +61,7 @@ namespace WebEnterprise_mssql.Controllers
                         item.sumUpFilePath.Add(file.filePath);
                     }
                 }
-                
+
                 var votes = await GetVote(post.PostId.ToString());
                 mapper.Map(votes, item);
                 ListItem.Add(item);
@@ -105,11 +70,11 @@ namespace WebEnterprise_mssql.Controllers
             var fileName = await SaveExcelFileAsync(ListItem, $"{newTopicName}.xlsx", "sheet 1");
             var filePath = GetRootDirectory(fileName);
             var zipPath = CreateZipFile(topicName);
-            foreach(var item in ListItem)
+            foreach (var item in ListItem)
             {
-                if(!item.sumUpFilePath.Count().Equals(0))
+                if (!item.sumUpFilePath.Count().Equals(0))
                 {
-                    foreach(var file in item.sumUpFilePath)
+                    foreach (var file in item.sumUpFilePath)
                     {
                         AddToExistingZip(zipPath, file);
                     }
@@ -118,6 +83,43 @@ namespace WebEnterprise_mssql.Controllers
             FileInfo fileInfo = new FileInfo(filePath);
             DeleteIfExist(fileInfo);
             return Ok(zipPath);
+        }
+
+        private void AddToExistingZip(string zipPath, string postFilePath)
+        {
+            using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Open))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                {
+                    var fileName = postFilePath.Split("~");
+                    ZipArchiveEntry postFileEntry = archive.CreateEntryFromFile(postFilePath, fileName[1]);
+                }
+            }
+        }
+
+        private void CheckIfValidDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        private string CreateZipFile(string topicName)
+        {
+            var rootPath = configuration["FileConfig:SumUpFilePath"];
+            CheckIfValidDirectory(rootPath);
+            var zipRootPath = configuration["FileConfig:ZipFilePath"];
+            CheckIfValidDirectory(zipRootPath);
+            //var dest = Path.Combine(rootPath, folderPath);
+
+            var saveLocation = Path.Combine(zipRootPath, $"{topicName}.zip");
+            FileInfo fileInfo = new FileInfo(saveLocation);
+            DeleteIfExist(fileInfo);
+            ZipFile.CreateFromDirectory(rootPath, saveLocation);
+            
+            //AddToExistingZip(zipPath, postFilePath);
+            return saveLocation;
         }
 
         public static string ReplaceWhitespace(string input, string replacement)
@@ -154,10 +156,7 @@ namespace WebEnterprise_mssql.Controllers
         private string GetRootDirectory(string filePath)
         {
             var rootPath = configuration["FileConfig:SumUpFilePath"];
-            if (!Directory.Exists(rootPath))
-            {
-                Directory.CreateDirectory(rootPath);
-            }
+            CheckIfValidDirectory(rootPath);
 
             var newFilePath = Path.Combine(rootPath, filePath);
             return newFilePath;
