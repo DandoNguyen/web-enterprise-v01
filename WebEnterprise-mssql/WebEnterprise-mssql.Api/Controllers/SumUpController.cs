@@ -7,7 +7,9 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebEnterprise_mssql.Api.Repository;
 using WebEnterprise_mssql.Api.Services;
@@ -19,6 +21,7 @@ namespace WebEnterprise_mssql.Controllers
     [ApiController]
     public class SumUpController : ControllerBase
     {
+        private static readonly Regex sWhitespace = new Regex(@"\s+");
         private readonly IRepositoryWrapper repo;
         private readonly ILogger<SumUpController> logger;
         private readonly IConfiguration configuration;
@@ -36,6 +39,41 @@ namespace WebEnterprise_mssql.Controllers
             this.mapper = mapper;
         }
 
+        private void AddToExistingZip(string zipPath, string postFilePath)
+        {
+            using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Open))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                {
+                    var fileName = postFilePath.Split("~");
+                    ZipArchiveEntry postFileEntry = archive.CreateEntryFromFile(postFilePath, fileName[1]);
+                }
+            }
+        }
+
+        private string CreateZipFile(string topicName)
+        {
+            var rootPath = configuration["FileConfig:SumUpFilePath"];
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
+            var zipRootPath = configuration["FileConfig:ZipFilePath"];
+            if (!Directory.Exists(zipRootPath))
+            {
+                Directory.CreateDirectory(zipRootPath);
+            }
+            //var dest = Path.Combine(rootPath, folderPath);
+
+            var saveLocation = Path.Combine(zipRootPath, $"{topicName}.zip");
+            FileInfo fileInfo = new FileInfo(saveLocation);
+            DeleteIfExist(fileInfo);
+            ZipFile.CreateFromDirectory(rootPath, saveLocation);
+            
+            //AddToExistingZip(zipPath, postFilePath);
+            return saveLocation;
+        }
+
         [HttpGet]
         [Route("SumUp")]
         public async Task<IActionResult> SumUpAsync(string TopicId)
@@ -51,18 +89,40 @@ namespace WebEnterprise_mssql.Controllers
             foreach(var post in listPosts)
             {
                 var item = mapper.Map<SumUpDto>(post);
-                foreach (var file in post.filesPaths)
+                if (post.filesPaths is not null)
                 {
-                    item.sumUpFilePath.Add(file.filePath);
+                    foreach (var file in post.filesPaths)
+                    {
+                        item.sumUpFilePath.Add(file.filePath);
+                    }
                 }
+                
                 var votes = await GetVote(post.PostId.ToString());
                 mapper.Map(votes, item);
                 ListItem.Add(item);
             }
-            var fileName = await SaveExcelFileAsync(ListItem, $"{topicName}.xlsx", "sheet 1");
+            var newTopicName = ReplaceWhitespace(topicName, "");
+            var fileName = await SaveExcelFileAsync(ListItem, $"{newTopicName}.xlsx", "sheet 1");
             var filePath = GetRootDirectory(fileName);
+            var zipPath = CreateZipFile(topicName);
+            foreach(var item in ListItem)
+            {
+                if(!item.sumUpFilePath.Count().Equals(0))
+                {
+                    foreach(var file in item.sumUpFilePath)
+                    {
+                        AddToExistingZip(zipPath, file);
+                    }
+                }
+            }
+            FileInfo fileInfo = new FileInfo(filePath);
+            DeleteIfExist(fileInfo);
+            return Ok(zipPath);
+        }
 
-            return Ok(filePath);
+        public static string ReplaceWhitespace(string input, string replacement)
+        {
+            return sWhitespace.Replace(input, replacement);
         }
 
         private async Task<SumUpDto> GetVote(string postId)
