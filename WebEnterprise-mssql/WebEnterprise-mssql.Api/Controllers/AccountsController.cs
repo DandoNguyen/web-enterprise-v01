@@ -165,9 +165,25 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return NotFound($"No user found by email {email}");
             }
-            if(ModelState.IsValid)
+
+            var listPostOfUser = await repo.Posts
+                .FindByCondition(x => x.UserId.Equals(user.Id))
+                .ToListAsync();
+            if(!listPostOfUser.Count().Equals(0))
             {
-                await userManager.DeleteAsync(user);
+                repo.Posts.DeleteRange(listPostOfUser);
+                await repo.Save();
+            }
+            else if(ModelState.IsValid)
+            {
+                try
+                {
+                    await userManager.DeleteAsync(user);
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(ex.Message) { StatusCode = 500 };
+                }
                 await repo.Save();
             }
             return Ok($"User {user.UserName} removed!");

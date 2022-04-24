@@ -93,7 +93,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpPost]
         [Route("QACfeedback")]
-        [Authorize(Roles = "qac")]
+        [Authorize(Roles = "qac, qam")]
         public async Task<IActionResult> GetFeedbackFromQAC(QACFeedbackDto dto)
         {
             var post = await repo.Posts
