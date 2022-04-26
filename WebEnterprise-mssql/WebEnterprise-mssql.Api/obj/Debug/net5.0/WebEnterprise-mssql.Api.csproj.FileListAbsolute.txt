@@ -7,7 +7,6 @@ C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\weben
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\WebEnterprise-mssql.Api.runtimeconfig.json
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\WebEnterprise-mssql.Api.runtimeconfig.dev.json
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\WebEnterprise-mssql.Api.dll
-C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\ref\WebEnterprise-mssql.Api.dll
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\WebEnterprise-mssql.Api.pdb
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\AutoMapper.dll
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\webenterprise-mssql.api\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
@@ -209,3 +208,4 @@ C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEn
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\bin\Debug\net5.0\EPPlus.System.Drawing.dll
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\bin\Debug\net5.0\Microsoft.IO.RecyclableMemoryStream.dll
 C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\net5.0\WebEnterprise-mssql.Api.csproj.AssemblyReference.cache
+C:\Users\USER\Desktop\new git clone\web-enterprise-v01\WebEnterprise-mssql\WebEnterprise-mssql.Api\obj\Debug\net5.0\refint\WebEnterprise-mssql.Api.dll
