@@ -25,16 +25,19 @@ namespace WebEnterprise_mssql.Api.Controllers
         private readonly IMapper mapper;
         private readonly IRepositoryWrapper repo;
         private readonly ILogger<AccountsController> logger;
+        private readonly ApiDbContext context;
 
         public AccountsController(
             UserManager<ApplicationUser> userManager, 
             IMapper mapper,
             IRepositoryWrapper repo,
-            ILogger<AccountsController> logger)
+            ILogger<AccountsController> logger,
+            ApiDbContext context)
         {
             this.mapper = mapper;
             this.repo = repo;
             this.logger = logger;
+            this.context = context;
             this.userManager = userManager;
         }
 
@@ -174,10 +177,15 @@ namespace WebEnterprise_mssql.Api.Controllers
                 repo.Posts.DeleteRange(listPostOfUser);
                 await repo.Save();
             }
+
+           
+
             else if(ModelState.IsValid)
             {
                 try
                 {
+                    var listRefrestToken = await context.RefreshTokens.ToListAsync();
+                    context.RefreshTokens.RemoveRange(listRefrestToken);
                     await userManager.DeleteAsync(user);
                 }
                 catch (Exception ex)
