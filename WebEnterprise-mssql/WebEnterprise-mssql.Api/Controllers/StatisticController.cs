@@ -52,7 +52,8 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                double percent = (ListValue.Count()/listPosts.Count()) * 100;
+                
+                double percent = ((double)ListValue.Count() / (double)listPosts.Count()) * 100;
                 var roundedPercent = Math.Round(percent);
                 var result = GetData(topic.TopicName, roundedPercent);
                 listResult.Add(result);
@@ -92,7 +93,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                double percent = ((double)ListValue.Count() / (double)listPosts.Count()) * 100;
                 var roundedPercent = Math.Round(percent);
                 var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
@@ -128,7 +129,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         ListValue.Add(post);
                     }
                 }
-                double percent = (ListValue.Count() / listPosts.Count()) * 100;
+                double percent = ((double)ListValue.Count() / (double)listPosts.Count()) * 100;
                 var roundedPercent = Math.Round(percent);
                 var result = GetData(department.DepartmentName, roundedPercent);
                 listResult.Add(result);
