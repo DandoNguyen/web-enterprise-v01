@@ -49,15 +49,17 @@ namespace WebEnterprise_mssql.Controllers
             var listPosts = await repo.Posts
                 .FindByCondition(x => x.TopicId.Equals(Guid.Parse(TopicId)))
                 .ToListAsync();
+            var listFilePaths = await repo.FilesPaths
+                .FindAll().ToListAsync();
             List<SumUpDto> ListItem = new();
             foreach (var post in listPosts)
             {
                 var item = mapper.Map<SumUpDto>(post);
-                if (post.filesPaths is not null)
+                foreach(var filesPath in listFilePaths)
                 {
-                    foreach (var file in post.filesPaths)
+                    if (post.PostId.Equals(filesPath.PostId))
                     {
-                        item.sumUpFilePath.Add(file.filePath);
+                        item.sumUpFilePath.Add(filesPath.filePath);
                     }
                 }
 
@@ -91,7 +93,14 @@ namespace WebEnterprise_mssql.Controllers
                 using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
                 {
                     var fileName = postFilePath.Split("~");
-                    ZipArchiveEntry postFileEntry = archive.CreateEntryFromFile(postFilePath, fileName[1]);
+                    try
+                    {
+                        ZipArchiveEntry postFileEntry = archive.CreateEntryFromFile(postFilePath, fileName[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogInformation($"File Paths Error: {ex}");
+                    }
                 }
             }
         }
