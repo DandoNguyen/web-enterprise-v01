@@ -12,7 +12,7 @@ function ManageDepartmentIdea() {
   const [ viewIdeas , setviewIdea]=useState('')
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     // myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -24,21 +24,21 @@ function ManageDepartmentIdea() {
     fetch(Url+"/api/Posts/QACListPost", requestOptions)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         setQACIdea(data)
       })
       .catch(error => console.log('error', error));
   }, [])
-
+  
   const viewIdea = (data)=>{
     setModalDepartmentIdea(true)
     setviewIdea(data)
   }
+  
   const listQACidea = QACIdea.map(data => (
     <tr key={data.postId}>
       <td>{data.title}</td>
       <td>{data.username}</td>
-      <td>{data.categoryId}</td>
+      <td>{data.categoryName}</td>
       <td>{data.message}</td>
       <td>
         <button className='View' onClick={() => viewIdea(data)}>View</button>

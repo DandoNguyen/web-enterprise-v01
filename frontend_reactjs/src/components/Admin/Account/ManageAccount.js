@@ -7,6 +7,8 @@ import ModalManageDelete from '../Delete/ModalManageDelete';
 import Navbar from '../../Navbar';
 import ModlaAddrole from '../addrole/ModlaAddrole';
 import { Url } from '../../URL';
+import { Link } from 'react-router-dom';
+
 
 
 function ManageAccount() {
@@ -16,21 +18,21 @@ function ManageAccount() {
   const [ModalManageDeleteOpen, setModalManageDelete] = useState(false);
   const [ModlaAddroleOpen, setModlaAddroleOpen] = useState(false);
   const [userAccounts, setuserAccounts] = useState([]);
-  const [reloadpage] = useState(false);
   const [editUser,seteditUser]=useState({})
   const [userDetail,setuserDetail]=useState({})
+  const [loading , setloading]=useState(false)
+  const[userDelete,setuserDelete]=useState({})
+  const [reloadpage,setreloadpage]=useState(false)
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow'
     };
-
-
     fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
       .then(response => {
         if (response.ok) {
@@ -42,12 +44,15 @@ function ManageAccount() {
       .then(data => {
         setuserAccounts(data)
         // setreloadpage(!reloadpage)
+        setloading(true)
       })
       .catch(error => {
         console.log('error', error)
         // setreloadpage(!reloadpage)
       });
+      
   }, [reloadpage])
+  
   const handaleEdit =(data)=>{
     setModalManageEdit(true)
     seteditUser(data)
@@ -56,10 +61,14 @@ function ManageAccount() {
      setModalManageDetail(true)
      setuserDetail(data)
   }
+  const handleDelete = (data)=>{
+    setModalManageDelete(true)
+    setuserDelete(data)
+  }
   const listAccounts = userAccounts.map(data => (
     <tr key={data.id}>
       <td >{data.email}</td>
-      <td >{data.userName}</td>
+      <td >{data.username}</td>
       <td>
         <button className='edit' onClick={() => handaleEdit(data)}>Edit</button>   
       </td>
@@ -68,8 +77,7 @@ function ManageAccount() {
       </td>
 
       <td>
-        <button className='Delete' onClick={() => { setModalManageDelete(true); }}>Delete</button>
-        {ModalManageDeleteOpen && <ModalManageDelete setOpenModalDelete={setModalManageDelete} data={data} />}
+        <button className='Delete' onClick={() => handleDelete(data)}>Delete</button>
       </td>
 
     </tr>
@@ -80,9 +88,9 @@ function ManageAccount() {
     <section className='Managementpage'>
 
       <div className='buttonMana'>
-        <a href='ManageAccount'><button type='button' className='buttonAccount'>Account</button></a>
-        <a href='ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></a>
-        <a href='ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></a>
+        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
+        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
       </div>
 
       <div className='manage-header'>
@@ -101,7 +109,6 @@ function ManageAccount() {
       <div className='contentManage'>
         <div className='text'>List Account</div>
       </div>
-
       <table className='tableuser'>
         <thead>
           <tr>
@@ -112,13 +119,16 @@ function ManageAccount() {
             <th>Delete</th>
           </tr>
         </thead>
+        {loading ?
         <tbody>
           {listAccounts}
-          {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={editUser} />}
-          {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} />}
-        </tbody>
+          {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={editUser} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
+          {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
+          {ModalManageDeleteOpen && <ModalManageDelete setOpenModalDelete={setModalManageDelete} data={userDelete} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
+        </tbody>:
+        <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+      }
       </table>
-
     </section>
   </div>
 

@@ -3,6 +3,7 @@ import './ManageDepartmentAccount.css';
 import ModalDepartmentDetail from './detail/ModalDepartmentDetail';
 import Navbar from '../Navbar';
 import { Url } from '../URL';
+import { Link } from 'react-router-dom';
 
 
 
@@ -10,10 +11,11 @@ function ManagementDepartmentAccount () {
  const [ModalDepartmentDetailOpen, setModalDepartmentDetail] = useState(false);
  const [userAccounts, setuserAccounts] = useState([]);
   const [reloadpage] = useState(false);
+  const [userDetail,setuserDetail]=useState({})
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -22,7 +24,7 @@ function ManagementDepartmentAccount () {
     };
 
 
-    fetch(Url+"/api/Accounts", requestOptions)
+    fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
       .then(response => response.json())
       .then(data => {
         setuserAccounts(data)
@@ -33,14 +35,17 @@ function ManagementDepartmentAccount () {
         // setreloadpage(!reloadpage)
       });
   }, [reloadpage])
+
+  const handleviewDetail = (data) => {
+    setModalDepartmentDetail(true)
+    setuserDetail(data)
+  }
   const listAccounts = userAccounts.map(data => (
     <tr key={data.id}>
       <td >{data.email}</td>
-      <td >{data.userName}</td>
-      <td >{data.id}</td>
+      <td >{data.username}</td>
       <td>
-        <button className='Detail' onClick={() => {setModalDepartmentDetail(true);}}>Detail</button>
-          {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} />}
+        <button className='Detail' onClick={() => handleviewDetail(data)}>Detail</button>
         </td>
     </tr>
   ))
@@ -51,8 +56,8 @@ function ManagementDepartmentAccount () {
     <section className='Managementpage'>
 
     <div className='buttonMana'>
-      <a href='ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></a>
-      <a href='ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></a>
+      <Link  to='/ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></Link >
+      <Link  to='/ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></Link >
     </div>
 
     <div className='manage-header'>
@@ -71,12 +76,12 @@ function ManagementDepartmentAccount () {
         <tr>
           <th>Email</th>
           <th>Username</th>
-          <th>Password</th>
           <th>Deatail</th>
         </tr>
         </thead>
         <tbody>
           {listAccounts}
+          {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} data={userDetail}/>}
         </tbody>
     </table>
 

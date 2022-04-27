@@ -3,7 +3,6 @@ import "./ModalDeadlineCreate.css";
 import {Url} from '../../URL'
 
 function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
-  const [reloadpage,setreloadpage]= useState(false);
   const[topicName,settopicName]= useState('');
   const[closureDate,setclosureDate]= useState('');
   const[finalClosureDate,setfinalClosureDate]= useState('');
@@ -11,7 +10,7 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
 
   const Summittopic = () =>{
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
         var raw = JSON.stringify({
           "topicName": topicName,
@@ -28,16 +27,14 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
         };
 
         fetch(Url+"/api/Topics/CreateTopic", requestOptions)
-          .then(response => response.json())
+          .then(response => response.text())
           .then(result =>{
-            console.log(result);
-            setOpenModalDeadlineCreate(false)  
-            setreloadpage(!reloadpage)
+            alert(result);
           })
           .catch(error => {console.log('error', error)
-          setOpenModalDeadlineCreate(false)
-          setreloadpage(!reloadpage)
           alert('Full information needed')
+          
+          
         });
         }
   return (
@@ -60,12 +57,12 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate }) {
         <div className="modalinput">
             <span className="inputtitle">Closure Date</span>
             <br/>
-            <input type = "date" className="inputvl" value={closureDate} onChange={e => setclosureDate(e.target.value)}></input>
+            <input type="datetime-local" className="inputvl" value={closureDate} onChange={e => setclosureDate(e.target.value)}></input>
         </div>
         <div className="modalinput">
             <span className="inputtitle">Final Closure Date</span>
             <br/>
-            <input type = "date" className="inputvl" value={finalClosureDate} onChange={e => setfinalClosureDate(e.target.value)}></input>
+            <input type="datetime-local" className="inputvl" value={finalClosureDate} onChange={e => setfinalClosureDate(e.target.value)}></input>
         </div>
 
         <div className="Modalfooter">

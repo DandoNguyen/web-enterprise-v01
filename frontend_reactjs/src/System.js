@@ -27,12 +27,13 @@ import Navbar from './components/Navbar';
 // import PostDetail from './components/Postdetail/PostDetail';
 
 
-class App extends Component {
+class System extends Component {
 	render() {
 		return (
+        <React.Fragment>
+            {sessionStorage.getItem("accessToken") != null && <Navbar/>} 
 			<Router>
 				<Routes>
-					<Route exact path='/' element={<Login />}></Route>
 					<Route exact path='/Home' element={< Home />}></Route>
 					<Route exact path='/AboutUs' element={< AboutUs />}></Route>
 					<Route exact path='/UploadIdea' element={< UploadIdea />}></Route>
@@ -61,8 +62,9 @@ class App extends Component {
 					<Route exact path='/AdminChart' element={< AdminChartPage />}></Route>
 				</Routes>
 			</Router>
+        </React.Fragment>
 		);
 	}
 }
 
-export default App;
+export default System;

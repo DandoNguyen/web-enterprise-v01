@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./ModalDepartmentQamView.css";
-import { Url } from "../../URL";
+import "./ViewDepartment.css";
+import { Url } from "../../../URL";
 
-function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
+function ViewDepartment({ setOpenDepartmentQamView, data }) {
   const [user, setuser] = useState([])
   
   useEffect(() => {
@@ -60,4 +60,4 @@ function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
   );
 }
 
-export default ModalDepartmentQamView
+export default ViewDepartment
