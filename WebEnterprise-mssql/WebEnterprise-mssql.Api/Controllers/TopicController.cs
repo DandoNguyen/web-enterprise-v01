@@ -142,6 +142,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listPosts = await repo.Posts
                 .FindByCondition(x => x.TopicId.Equals(removeTopicDto.TopicId))
                 .ToListAsync();
+            repo.Posts.DeleteRange(listPosts);
+
             var Topic = await repo.Topics
                 .FindByCondition(x => x.TopicId.Equals(Guid.Parse(removeTopicDto.TopicId)))
                 .FirstOrDefaultAsync();

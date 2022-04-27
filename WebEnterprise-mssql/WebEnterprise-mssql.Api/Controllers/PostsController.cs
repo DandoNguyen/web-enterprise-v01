@@ -65,7 +65,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 if (post.Status.Equals(0) /*Status = 0 (in progress)*/ && post.IsAssigned.Equals(false))
                 {
                     var newPostDto = mapper.Map<PostDto>(post);
-                    listPostsDto.Add(newPostDto);
+                    if(post.TopicId is not null)
+                    {
+                        listPostsDto.Add(newPostDto);
+                    }
                 }
             }
             return Ok(listPostsDto);
@@ -227,7 +230,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                         .FirstOrDefault();
                     result.ListCategoryName = await GetListCategoriesNameAsync(listCateId);
                     result.ViewsCount = await CheckViewCount(user.UserName, post.PostId);
-                    allApprovedPosts.Add(result);
+                    if(result.TopicName is not null)
+                    {
+                        allApprovedPosts.Add(result);
+                    }
                 }
             }
             //var postsDto = mapper.Map<List<PostDto>>(listPosts);
