@@ -10,23 +10,24 @@ function UploadIdea() {
   const [title, settitle] = useState('');
   const [content, setcontent] = useState('');
   const [Desc, setDesc] = useState('');
-  const [IsAnonymous, setIsAnonymous] = useState(false);
+  const [IsAnonymous] = useState([false,true]);
   const [files, setfiles] = useState('');
   const [Topics, setTopics] = useState([]);
   const [alltag, setalltag] = useState([]);
   const [cateselect, setcateselect] = useState('')
   const [topicselect, settopicselect] = useState('')
   const [modalOpen, setModalOpen] = useState(false);
+  const [getAnonymous,setgetAnonymous]=useState('')
 
   const sumbmitidea = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
    
     let formdata = new FormData()
     formdata.append("title", title);
     formdata.append("content", content);
     formdata.append("Desc", Desc);
-    formdata.append("IsAnonymous", IsAnonymous);
+    formdata.append("IsAnonymous", getAnonymous);
     formdata.append("listCategoryId", cateselect);
     formdata.append("TopicId", topicselect);
     formdata.append("files", files , files.name);
@@ -40,17 +41,17 @@ function UploadIdea() {
     };
 
     fetch(Url+"/api/Posts/CreatePost", requestOptions)
-      .then(response => {
-        response.json()})
-      .then(result => {console.log(result)
-      alert('Summit success')})
-      .catch(error => {console.log('error', error)
-    alert('Error please try again')});
+      .then(response => response.text())
+      .then(result => 
+      alert(result)
+    )
+      .catch(error => 
+    alert(error));
   }
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -69,7 +70,7 @@ function UploadIdea() {
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -93,6 +94,7 @@ function UploadIdea() {
   const listCategory = alltag.map(data => (
     <option key={data.categoryId} value={data.categoryId}>{data.categoryName}</option>
   ))
+
   return (
     <div>
     <Navbar/>
@@ -113,18 +115,22 @@ function UploadIdea() {
                 <textarea className='IdeaDct' placeholder="Write something..." value={Desc} onChange={e => setDesc(e.target.value)}></textarea>
             </div>
             <div className='styleofpost'>
-            <select name="posttyle" id="posttyle">
-                <option value="public">public</option>
-                <option  value="private" onChange={() => setIsAnonymous(true)}>private</option>
+              <span>Anonymity : </span>
+            <select name="posttyle" id="posttyle" value={getAnonymous} onChange={e => setgetAnonymous(e.target.value)}>
+                <option value=''></option>
+                <option value={IsAnonymous[0]}   >public</option>
+                <option  value={IsAnonymous[1]}  >private</option>
             </select>
             </div>
             <div className='styleofcategory'>
+              <span>Topic : </span>
             <select name="category" id="category" value={topicselect} onChange={e => settopicselect(e.target.value)}>
              <option value=''></option>
             {listTopics}
             </select>
             </div>
             <div className='styleofcategory'>
+              <span>Category : </span>
             <select name="category" id="category" value={cateselect} onChange={e => setcateselect(e.target.value)}> 
             <option value=''></option>
                {listCategory}
@@ -134,7 +140,7 @@ function UploadIdea() {
                 <span className="inputtitle">Input File: </span>
                 <input type="file" id="myfile" name="myfile" files={files} onChange={e => setfiles(e.target.files[0])}></input>
             </div>
-                <button className='SubmitIdea1' onClick={() => setModalOpen(true)}>Submit</button>
+            <button className='SubmitIdea1' onClick={() => setModalOpen(true)}>Submit</button>
                 {modalOpen && <ModalPolicy setOpenModal={setModalOpen} sumbmitidea={sumbmitidea}/>}
             {/* <button className='SubmitIdea'>Submit</button> */}
             <button className='CancelButton'>Cancel</button>

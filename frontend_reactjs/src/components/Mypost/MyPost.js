@@ -7,16 +7,20 @@ import { Url } from '../URL';
 import PostDetail from '../Postdetail/PostDetail';
 
 
+
 function MyPost() {
     const [modalOpen, setModalOpen] = useState(false);
     const [allmypost, setallmypost] = useState([])
     const [detailopen, setdetailopen] = useState(false)
     const [Post, setPost] = useState({})
+    const [errorMes,seterrorMes]= useState('No Posts Avalaible')
+    const [feedback,setfeadback]= useState('')
+    const [loading , setloading]=useState(false)
 
     // view post
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -27,16 +31,19 @@ function MyPost() {
         fetch(Url + "/api/Posts/MyPost", requestOptions)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
-                setallmypost(data)
+                if(data.length !== 0){
+                    setallmypost(data)
+                }else{
+                    seterrorMes(data)
+                }
+                setloading(true)
             })
             .catch(error => console.log('error', error));
     }, [])
 
-
     // const deletepost = (data) => {
     //     var myHeaders = new Headers();
-    //     myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    //     myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     //     myHeaders.append("Content-Type", "application/json");
 
     //     var raw = JSON.stringify({
@@ -58,11 +65,15 @@ function MyPost() {
     // }
     // console.log(allmypost);
 
-
     const handelView = (data) => {
         setdetailopen(true)
         setPost(data)
     }
+    const handelfeedback = (data) => {
+        setModalOpen(true)
+        setfeadback(data)
+    }
+    
     const listmypost = allmypost.map(data => (
         <div className="PostContainer" key={data.postId}>
             <div className="titleCloseBtn">
@@ -78,10 +89,20 @@ function MyPost() {
                         </div>
                     </div>
                 </div>
-                <div className='Status'>
-             <button className='APbutton' onClick={() => { setModalOpen(true); }}>{data.statusMessage}</button>
-                    {modalOpen && <ModalReason setOpenModal={setModalOpen} />}
-                </div>
+            {data.statusMessage === 'Approved' ?
+            <div className='Status'>
+                <button className='APbutton' onClick={() => handelfeedback(data)}>{data.statusMessage}</button>
+            </div>
+            :
+            data.statusMessage === 'Rejected' ?
+            <div className='Status'>
+                <button className='RJbutton' onClick={() => handelfeedback(data)}>{data.statusMessage}</button>
+            </div>
+            :
+            <div className='Status'>
+                <button className='PDbutton' onClick={() => handelfeedback(data)}>{data.statusMessage}</button>
+            </div>
+            }
             </header>
             <div className="Category">
                 <span className="TopicName">{data.listCategoryName}</span>
@@ -103,9 +124,7 @@ function MyPost() {
                             <span className='view'>{data.viewsCount}</span>
                         </i>
                     </span>
-
                     {/* <button className='btn delete' onClick={deletepost(data)}>Delete</button> */}
-
                 </div>
             </div>
         </div>
@@ -115,22 +134,14 @@ function MyPost() {
         <Navbar />
         <section className="home">
             <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet' />
-            <div className="text">
-                <button className='Allbtn'>All</button>
-                <button className='Pendingbtn'>Pending</button>
-                <button className='Approvedbtn'>Approved</button>
-                <button className='Rejectedbtn'>Rejected</button>
-                <div className='showselect'>
-                    <select name="show" id="showid">
-                        <option value="Show1">Show 1</option>
-                        <option value="Show2">Show 2</option>
-                    </select>
-                </div>
-            </div>
+            {loading ? 
             <div>
-                {listmypost}
+                {errorMes && listmypost}
                 {detailopen && <PostDetail setopendetail={setdetailopen} data={Post} />}
-            </div>
+                {modalOpen && <ModalReason setOpenModal={setModalOpen} data={feedback}/>}
+            </div>:
+            <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+            }
         </section>
     </div>
 }

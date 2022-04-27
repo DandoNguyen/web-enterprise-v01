@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import './ModalAdduser.css'
-import { Url } from '../../URL'
+import './AddDepartment.css'
+import { Url } from '../../../URL'
 
-function ModalAdduser({ setOpenModalAdduser }) {
+function AddDepartment ({ setOpenModalAdduser }) {
     const [users, setusers] = useState([])
     const [departments, setdepartments] = useState([])
     const [usersId, setusersId] = useState('')
@@ -10,7 +10,7 @@ function ModalAdduser({ setOpenModalAdduser }) {
 
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -35,7 +35,7 @@ function ModalAdduser({ setOpenModalAdduser }) {
     }, [])
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -59,7 +59,7 @@ function ModalAdduser({ setOpenModalAdduser }) {
     ))
     const SummitUser = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
@@ -76,7 +76,7 @@ function ModalAdduser({ setOpenModalAdduser }) {
 
         fetch(Url+"/api/Department/AssignUserToDepartment", requestOptions)
             .then(response => response.json())
-            .then(result => alert(result))
+            .then(() => alert('Add user success'))
             .catch(error => {console.log('error', error)
         alert('Error please try again')});
     }
@@ -111,4 +111,4 @@ function ModalAdduser({ setOpenModalAdduser }) {
     )
 }
 
-export default ModalAdduser
+export default AddDepartment

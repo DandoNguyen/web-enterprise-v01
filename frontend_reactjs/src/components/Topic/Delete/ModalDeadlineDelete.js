@@ -7,7 +7,7 @@ function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data}) {
   const [reloadpage,setreloadpage]= useState(false)
   const handleDelete = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
   var raw = JSON.stringify({
     "topicId": data.topicId

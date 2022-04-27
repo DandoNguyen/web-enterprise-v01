@@ -6,9 +6,9 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
   const [reloadpage,setreloadpage]= useState(false);
   const Deletetag = () => {
       var myHeaders = new Headers();
-          myHeaders.append("Authorization" , "Bearer "+ localStorage.getItem("accessToken"));
+          myHeaders.append("Authorization" , "Bearer "+ sessionStorage.getItem("accessToken"));
           myHeaders.append("Content-Type", "application/json");
-
+            
             var requestOptions = {
               method: 'DELETE',
               headers: myHeaders,

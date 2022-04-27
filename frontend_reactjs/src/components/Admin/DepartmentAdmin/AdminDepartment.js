@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import './ManageDepartmentQamDepartment.css';
-import ModalDepartmentQamCreate from './create/ModalDepartmentQamCreate';
-import ModalDepartmentQamView from './view/ModalDepartmentQamView';
-import Navbar from '../Navbar';
-import { Url } from '../URL';
+import './AdminDepartment.css';
+import ViewDepartment from './View/ViewDepartment';
+import AddDepartment from './Add/AddDepartment';
+import { Url } from '../../URL';
+import Navbar from '../../Navbar';
 import { Link } from 'react-router-dom';
 
 
 
 
-
-function ManageDepartmentQamDepartment() {
-  const [ModalDepartmentQamCreateOpen, setModalDepartmentQamCreate] = useState(false);
+function AdminDepartment() {
   const [DepartmentQamViewOpen, setDepartmentQamView] = useState(false);
   const [GetAllDepartment, setGetAllDepartment] = useState([])
+  // const [deatailBtn, setdeatailBtn] = useState(false)
+  const [ModalAddusers,setModalAdduser]=useState(false)
   const [viewDepartment,setviewDepartment]=useState({})
-  const [loading , setloading]=useState(false)
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
@@ -30,7 +29,6 @@ function ManageDepartmentQamDepartment() {
       .then(response => response.json())
       .then(data => {
         setGetAllDepartment(data)
-        setloading(true)
       })
       .catch(error => console.log('error', error));
   }, [])
@@ -54,16 +52,16 @@ function ManageDepartmentQamDepartment() {
     <Navbar />
     <section className='Managementpage'>
       <div className='buttonMana'>
-        <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
-        <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
-        <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
+        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
       </div>
       <div className='manage-header'>
         <div className="text">Department Management</div>
       </div>
       <div className='buttonAddUser'>
-        <button className='Add-user-bt' onClick={() => { setModalDepartmentQamCreate(true); }}>Create Department</button>
-        {ModalDepartmentQamCreateOpen && <ModalDepartmentQamCreate setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} />}
+        <button className='Add-user-bt' onClick={() => { setModalAdduser(true); }}>ADD user Department</button>
+        {ModalAddusers && <AddDepartment setOpenModalAdduser={setModalAdduser} />}
       </div>
       <div className='contentManage'>
         <div className='text'>List Account</div>
@@ -75,15 +73,12 @@ function ManageDepartmentQamDepartment() {
             <th>Detail</th>
           </tr>
         </thead>
-        {loading ? 
         <tbody>
             {listDepartment}
-            {DepartmentQamViewOpen && <ModalDepartmentQamView setOpenDepartmentQamView={setDepartmentQamView} data={viewDepartment}/>}
-        </tbody>:
-        <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
-        }
+            {DepartmentQamViewOpen && <ViewDepartment setOpenDepartmentQamView={setDepartmentQamView} data={viewDepartment}/>}
+        </tbody>
       </table>
     </section>
   </div>
 }
-export default ManageDepartmentQamDepartment;
+export default AdminDepartment;

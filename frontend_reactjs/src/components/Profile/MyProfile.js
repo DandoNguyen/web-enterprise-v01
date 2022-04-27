@@ -6,13 +6,14 @@ import Navbar from '../Navbar';
 import { Url } from '../URL';
 
 
+
 function MyProfile (){
     const[User,setUser]=useState([])
+    const [loading , setloading]=useState(false)
     
     useEffect(() => {
         var myHeaders = new Headers();
-
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
         var requestOptions = {
             method: 'GET',
@@ -30,12 +31,13 @@ function MyProfile (){
             })
             .then(result => {
                 setUser(result)
+                setloading(true)
             })
             .catch(error => {
                 console.log('error', error)
             });
     }, [])
-    
+    console.log(User);
 	return <div>
         <Navbar/>
         <section className="homeMyIn4">
@@ -47,45 +49,28 @@ function MyProfile (){
         </div>
     {/* copy từ đây */}
     {/* <div className="modalBackground"> */}
+    {loading ? 
       <div className="PostContainerMyIn4">
         
         <div className="In4">
-        <span className="TopicName">Full Name: {User.username} </span>
-        
+        <span className="TopicName">Full Name: {User.fullname} </span>
         </div>
-    
+        <div className="In4">
+        <span className="TopicName">Username : {User.username} </span>
+        </div>
+        <div className="In4">
+        <span className="TopicName">Email : {User.email} </span>
+        </div>
         <div className="In4">
         <span className="TopicName">Role : {User.role} </span>
         </div>
         <div className="In4">
-        <span className="TopicName">Date of Birth: </span>
+        <span className="TopicName">Department: {User.department}</span>
         {/* đây là div chứa files */}
         </div>
-        <div className="In4">
-        <span className="TopicName">Address: </span>
-        
-        </div>
-    
-        <div className="In4">
-        <span className="TopicName">Position: </span>
-        </div>
-        <div className="In4">
-        <span className="TopicName">Department: </span>
-        {/* đây là div chứa files */}
-        </div>
-        
-
-        
-
-        
-   
-    </div>
-
-
-
-
-    
-    
+    </div>:
+    <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+    }
 </section>
     </div>
 }

@@ -9,7 +9,7 @@ function ModlaAddrole({setOpenModlaAddrole}) {
 
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         var requestOptions = {
           method: 'GET',
           headers: myHeaders,
@@ -31,7 +31,7 @@ function ModlaAddrole({setOpenModlaAddrole}) {
 
     const adduserrole = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
     
         var requestOptions = {
@@ -43,8 +43,8 @@ function ModlaAddrole({setOpenModlaAddrole}) {
         fetch(Url+`/api/Roles/AddUserToRole?email=${Emailuer}&roleName=${roleselect}`, requestOptions)
           .then(response => response.json())
           .then(result => {
-            console.log('Successful')
-            alert(result.value)
+            console.log(result.value)
+            alert('Successful')
           })
           .catch(error => alert(error));
       }
