@@ -10,10 +10,11 @@ function Category() {
     const [reloadpage]= useState(false);
     const [ModalCategoryCreateOpen, setOpenModalCategory] = useState(false);
     const [ModalCategoryDeleteOpen, setModalCategoryDelete] = useState(false);
+    const [deleteCate,setdelateCate]=useState('')
   
     useEffect(() => {
       var myHeaders = new Headers();
-      myHeaders.append("Authorization" , "Bearer "+ localStorage.getItem("accessToken"));
+      myHeaders.append("Authorization" , "Bearer "+ sessionStorage.getItem("accessToken"));
       myHeaders.append("Content-Type", "application/json");
       var requestOptions = {
         method: 'GET',
@@ -28,14 +29,16 @@ function Category() {
         })
         .catch(error => console.log('error', error));
     }, [reloadpage])
-
+    const handaleDelete = (data) => {
+      setModalCategoryDelete(true)
+      setdelateCate(data)
+    }
     const listCategory = alltag.map( data => (
       <tr key={data.categoryId}>
       <td >{data.categoryName}</td>
       <td >{data.desc}</td>
       <td>
-        <button className='submit-user' onClick={() => {setModalCategoryDelete(true);}}>Delete</button>
-        {ModalCategoryDeleteOpen && <ModalCategoryDelete setOpenModalCategoryDelete={setModalCategoryDelete} data={data} />}
+        <button className='submit-user' onClick={() => handaleDelete(data)}>Delete</button>
       </td>
     </tr>
     ))
@@ -73,6 +76,7 @@ function Category() {
         </thead>
         <tbody>
         {listCategory}
+        {ModalCategoryDeleteOpen && <ModalCategoryDelete setOpenModalCategoryDelete={setModalCategoryDelete} data={deleteCate} />}
       </tbody>
     </table>
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './AdminDepartment.css';
-import CreateDepartment from './Create/CreateDepartment';
 import ViewDepartment from './View/ViewDepartment';
 import AddDepartment from './Add/AddDepartment';
 import { Url } from '../../URL';
@@ -11,7 +10,6 @@ import { Link } from 'react-router-dom';
 
 
 function AdminDepartment() {
-  const [ModalDepartmentQamCreateOpen, setModalDepartmentQamCreate] = useState(false);
   const [DepartmentQamViewOpen, setDepartmentQamView] = useState(false);
   const [GetAllDepartment, setGetAllDepartment] = useState([])
   // const [deatailBtn, setdeatailBtn] = useState(false)
@@ -19,7 +17,7 @@ function AdminDepartment() {
   const [viewDepartment,setviewDepartment]=useState({})
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     
     var requestOptions = {
       method: 'GET',
@@ -60,10 +58,6 @@ function AdminDepartment() {
       </div>
       <div className='manage-header'>
         <div className="text">Department Management</div>
-      </div>
-      <div className='buttonAddUser'>
-        <button className='Add-user-bt' onClick={() => { setModalDepartmentQamCreate(true); }}>Create Department</button>
-        {ModalDepartmentQamCreateOpen && <CreateDepartment setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} />}
       </div>
       <div className='buttonAddUser'>
         <button className='Add-user-bt' onClick={() => { setModalAdduser(true); }}>ADD user Department</button>

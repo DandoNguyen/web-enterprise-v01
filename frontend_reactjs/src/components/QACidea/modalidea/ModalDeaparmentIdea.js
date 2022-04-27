@@ -5,17 +5,17 @@ import { Url } from "../../URL";
 
 
 function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
-  const [feadback,setfeadback]=useState('')
-
+  const [feedback,setfeadback]=useState('')
 
   const Approcepost = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("access-control-allow-origin" , "*")
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
       "postId": data.postId,
-      "feedback": feadback,
+      "feedback": feedback,
       "isApproved": true
     });
     var requestOptions = {
@@ -37,12 +37,12 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
 
   const Reject = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
       "postId": data.postId,
-      "feedback": feadback,
+      "feedback": feedback,
       "isApproved": false
     });
     var requestOptions = {
@@ -79,7 +79,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
         </div>
         </header>
         <div className="Category">
-        <span className="TopicName">{data.categoryId}</span>
+        <span className="TopicName">{data.listCategoryName}</span>
         </div>
         <div className="TitlePost">
         <p className="TopicName">Title : {data.title}</p>
@@ -91,13 +91,6 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
         </div>
         <div className="Desc">
         <span className="TopicName">Description : {data.desc}</span>
-        <div className='showselectModal'>
-            <select name="show" id="showid">
-                <option value="Default">Choose your type of comments</option>
-                <option value="Public">Public</option>
-                <option value="Anonymously">Anonymously</option>
-            </select>
-            </div>
         </div>
 
         <div className="Modalfooter">
@@ -107,7 +100,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
 
         {/* <div className="modaltitle">TERMS AND POLICIES</div> */}
         <div className="modalInput">
-            <textarea  className="Commentbox" placeholder='Write your comments here...' value={feadback} onChange={e => setfeadback(e.target.value)}></textarea>
+            <textarea  className="Commentbox" placeholder='Write your comments here...' value={feedback} onChange={e => setfeadback(e.target.value)}></textarea>
         </div> 
       </div>
      </div>

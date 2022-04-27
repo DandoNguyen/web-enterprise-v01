@@ -6,7 +6,7 @@ function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
   const [department, setdepartment] = useState('')
   const summitdepartment = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
   
     var requestOptions = {

@@ -16,9 +16,9 @@ function PostDetail({ setopendetail, data }) {
   // const [getCmtId, setgetCmtId] = useState('')
 
 
-  useEffect(() => {
+  useEffect(() => { //detail tra ve nhu cc
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -27,7 +27,7 @@ function PostDetail({ setopendetail, data }) {
       redirect: 'follow'
     };
 
-    fetch(`https://localhost:5001/api/Posts/PostDetail?postId=${data.postId}`, requestOptions)
+    fetch( Url +`/api/Posts/PostDetail?postId=${data.postId}`, requestOptions)
       .then(response => response.json())
       .then(result => setDetail(result))
       .catch(error => console.log('error', error));
@@ -36,7 +36,7 @@ function PostDetail({ setopendetail, data }) {
   const sumitcmnt = () => {
     setpostId(postId)
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
@@ -55,19 +55,28 @@ function PostDetail({ setopendetail, data }) {
     };
 
     fetch(Url + "/api/Comments", requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        console.log(result)
-        setreloadpage(!reloadpage)
-        alert('thanh cong')
+      .then(response => {
+        if(response.ok){
+          response.json()
+        }else{
+          throw new Error(response.status)
+        }
+        
       })
-      .catch(error => console.log('error', error));
+      .then(() => {
+        setreloadpage(!reloadpage)
+        alert('Success')
+      })
+      .catch(error => {
+        console.log('error', error)
+        alert("No more comment can be added to this post after final closure date",error)
+      });
   }
 
   //cmt
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -104,7 +113,7 @@ function PostDetail({ setopendetail, data }) {
   //vote
   const upvote = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
@@ -121,15 +130,14 @@ function PostDetail({ setopendetail, data }) {
 
     fetch(Url + "/api/Votes/voteBtnClick", requestOptions)
       .then(response => response.json())
-      .then(result => {
-        console.log(result)
+      .then(() => {
         setreloadpage(!reloadpage)
       })
       .catch(error => console.log('error', error));
   }
   const downVote = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
@@ -146,8 +154,7 @@ function PostDetail({ setopendetail, data }) {
 
     fetch(Url + "/api/Votes/voteBtnClick", requestOptions)
       .then(response => response.json())
-      .then(result => {
-        console.log(result)
+      .then(() => {
         setreloadpage(!reloadpage)
       })
       .catch(error => console.log('error', error));
@@ -155,7 +162,7 @@ function PostDetail({ setopendetail, data }) {
   //vote
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
     var requestOptions = {
       method: 'GET',
@@ -173,7 +180,7 @@ function PostDetail({ setopendetail, data }) {
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
     var requestOptions = {
       method: 'GET',
@@ -208,10 +215,13 @@ function PostDetail({ setopendetail, data }) {
           </div>
         </header>
         <div className="Category">
-          <span className="TopicName">{Detail.listCategoryName}</span>
+          <span className="TopicName">{data.listCategoryName}</span>
         </div>
         <div className="TitlePost">
           <p className="TopicName">Title : {Detail.title}</p>
+        </div>
+        <div className="Content">
+          <span className="TopicName">Topic : {Detail.topicName}</span>
         </div>
         <div className="Content">
           <span className="TopicName">Content : {Detail.content}</span>
@@ -226,7 +236,7 @@ function PostDetail({ setopendetail, data }) {
             </select> */}
             <select name="posttyle" id="posttyle" value={getAnonymous} onChange={e => setgetAnonymous(e.target.value)}>
                 <option value=''>Choose your type of comments</option>
-                <option value={IsAnonymous[0]}   >public</option>
+                <option value={IsAnonymous[0]}   >publicly</option>
                 <option  value={IsAnonymous[1]}  >Anonymously</option>
             </select>
           </div>

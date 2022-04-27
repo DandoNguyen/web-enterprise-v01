@@ -120,24 +120,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .UploadIdeapage 
 .text{
     text-align: center;
@@ -363,4 +345,8 @@
     margin-top: 20px;
 
 }
-  
+.loading{
+    text-align: center;
+    font-weight: 500;
+    
+}

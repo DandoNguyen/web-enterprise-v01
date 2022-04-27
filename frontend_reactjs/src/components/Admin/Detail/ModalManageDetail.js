@@ -23,11 +23,15 @@ function ModalManageDetail({ setOpenModalDetail ,data}) {
             <br/>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">User name : {data.userName}</span>
+            <span className="inputtitle">User name : {data.username}</span>
             <br/>
         </div>
         <div className="modalinput">
             <span className="inputtitle">Role : {data.role}</span>
+            <br/>
+        </div>
+        <div className="modalinput">
+            <span className="inputtitle">Department : {data.department}</span>
             <br/>
         </div>
       </div>

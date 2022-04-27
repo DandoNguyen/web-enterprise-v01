@@ -15,7 +15,7 @@ function ModalDepartmentQamDetail({ setOpenModalDepartmentQamDetail , data }) {
             <span className="inputtitle">Full Name : {data.fullname}</span>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">Employee ID : {data.dob}</span>
+            <span className="inputtitle">Employee ID : {data.employeeId}</span>
             <br/>
         </div>
         <div className="modalinput">
@@ -23,11 +23,15 @@ function ModalDepartmentQamDetail({ setOpenModalDepartmentQamDetail , data }) {
             <br/>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">User name : {data.userName}</span>
+            <span className="inputtitle">User name : {data.username}</span>
             <br/>
         </div>
         <div className="modalinput">
-            <span className="inputtitle">Role : {data.RoleName}</span>
+            <span className="inputtitle">Role : {data.role}</span>
+            <br/>
+        </div>
+        <div className="modalinput">
+            <span className="inputtitle">Department : {data.department}</span>
             <br/>
         </div>
       </div>

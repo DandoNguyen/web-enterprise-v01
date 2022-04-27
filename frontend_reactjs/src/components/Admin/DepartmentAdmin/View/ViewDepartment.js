@@ -7,7 +7,7 @@ function ViewDepartment({ setOpenDepartmentQamView, data }) {
   
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -54,7 +54,6 @@ function ViewDepartment({ setOpenDepartmentQamView, data }) {
         </table>
         <div className="Modalfooter">
           <button className="cancelBtn" onClick={() => { setOpenDepartmentQamView(false); }} id="cancelBtn">Cancel</button>
-          <button className="SubmitBtn">Confirm</button>
         </div>
       </div>
     </div>

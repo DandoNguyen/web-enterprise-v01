@@ -8,7 +8,7 @@ function Login() {
     const [password, setpassword] = useState('')
     const Navigate = useNavigate()
     useEffect(() => {
-        if (localStorage.getItem("accessToken") != null) {
+        if (sessionStorage.getItem("accessToken") != null) {
             Navigate('/Home')
         } else {
             console.log('khong');
@@ -42,8 +42,7 @@ function Login() {
             // response.json()
         })
         .then(result => {
-            console.log(result)
-            localStorage.setItem("accessToken", result.token)
+            sessionStorage.setItem("accessToken", result.token)
             Navigate('/Home')
         })
         .catch(error => {
@@ -58,11 +57,8 @@ function Login() {
     // }
     return (
         <div>
+        
             <div>
-                {/* <link rel="stylesheet" href="css/style.css" />
-                <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css" /> */}
                 <title>Sign in</title>
                 <div className="main">
                     <p className="sign" align="center">Sign in</p>
@@ -73,6 +69,7 @@ function Login() {
                     </div>
                 </div>
             </div>
+          
         </div>
     )
 }

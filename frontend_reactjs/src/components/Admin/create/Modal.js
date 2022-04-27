@@ -10,7 +10,7 @@ function Modal({ setOpenModal }) {
   const [employeeId, setemployeeId] = useState('')
   const registration = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({

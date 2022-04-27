@@ -10,7 +10,7 @@ function AddDepartment ({ setOpenModalAdduser }) {
 
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -35,7 +35,7 @@ function AddDepartment ({ setOpenModalAdduser }) {
     }, [])
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -59,7 +59,7 @@ function AddDepartment ({ setOpenModalAdduser }) {
     ))
     const SummitUser = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
@@ -76,7 +76,7 @@ function AddDepartment ({ setOpenModalAdduser }) {
 
         fetch(Url+"/api/Department/AssignUserToDepartment", requestOptions)
             .then(response => response.json())
-            .then(result => alert(result))
+            .then(() => alert('Add user success'))
             .catch(error => {console.log('error', error)
         alert('Error please try again')});
     }

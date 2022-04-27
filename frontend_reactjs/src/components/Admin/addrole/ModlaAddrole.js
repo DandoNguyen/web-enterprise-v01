@@ -9,7 +9,7 @@ function ModlaAddrole({setOpenModlaAddrole}) {
 
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         var requestOptions = {
           method: 'GET',
           headers: myHeaders,
@@ -31,7 +31,7 @@ function ModlaAddrole({setOpenModlaAddrole}) {
 
     const adduserrole = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
     
         var requestOptions = {

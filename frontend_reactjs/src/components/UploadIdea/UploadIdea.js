@@ -21,7 +21,7 @@ function UploadIdea() {
 
   const sumbmitidea = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
    
     let formdata = new FormData()
     formdata.append("title", title);
@@ -41,17 +41,17 @@ function UploadIdea() {
     };
 
     fetch(Url+"/api/Posts/CreatePost", requestOptions)
-      .then(response => {
-        response.json()})
-      .then(result => {console.log(result)
-      alert('Summit success')})
-      .catch(error => {console.log('error', error)
-    alert('Error please try again')});
+      .then(response => response.text())
+      .then(result => 
+      alert(result)
+    )
+      .catch(error => 
+    alert(error));
   }
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -70,7 +70,7 @@ function UploadIdea() {
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',

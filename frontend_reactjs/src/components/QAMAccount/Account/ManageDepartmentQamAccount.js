@@ -16,7 +16,7 @@ function ManagementDepartmentQamAccount() {
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -51,7 +51,7 @@ function ManagementDepartmentQamAccount() {
   const listAccounts = userAccounts.map(data => (
     <tr key={data.id}>
       <td >{data.email}</td>
-      <td >{data.userName}</td>
+      <td >{data.username}</td>
       <td>
         <button className='Detail' onClick={() => handleviewDetail(data)}>Detail</button>
       </td>

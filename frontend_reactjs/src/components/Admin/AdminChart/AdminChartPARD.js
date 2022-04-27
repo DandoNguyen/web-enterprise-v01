@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Url } from '../URL';
+import { Url } from '../../URL';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-export const ChartPARD = () => {
+export const AdminChartPARD = () => {
     const [getData, setgetData] = useState([])
-    const [getfile,setgetfile]=useState([])
+  
 
     useEffect(() => {
         var requestOptions = {
@@ -19,7 +19,6 @@ export const ChartPARD = () => {
             .then(response => response.json())
             .then(result => {
                 setgetData(result.listResult)
-                setgetfile(result)
             })
             .catch(error => {
                 console.log('error', error)
@@ -55,32 +54,6 @@ export const ChartPARD = () => {
           ],
     }
 
-    const download = () => {
-        var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
-    
-        var requestOptions = {
-          method: 'GET',
-          headers: myHeaders,
-          redirect: 'follow'
-        };
-    
-        fetch(Url + `/api/FileAction/GetFile?filePath=${getfile.filePath}`, requestOptions)
-        .then(resp => resp.blob())
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          // the filename you want
-          a.download = getfile.filePath[0];
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          alert('your file has downloaded!'); // or you know, something with better UX...
-        })
-        .catch(() => alert('oh no!'));
-      }
 
     return (
         <div>
@@ -100,7 +73,6 @@ export const ChartPARD = () => {
                     }
                 }}
             />
-            <button onClick={download}>Download</button>
             </div>
         </div>
     )

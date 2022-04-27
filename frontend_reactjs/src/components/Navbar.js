@@ -8,15 +8,14 @@ import {Url} from './URL.js'
 function Navbar() {
     const [user, setuser] = useState([]);
     const [userrole, setuserrole] = useState([])
-    const token = localStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
     const Navigate = useNavigate();
     useEffect(() => {
         loadDataProfile()
     }, [token])
     const loadDataProfile = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
-        
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
@@ -41,13 +40,12 @@ function Navbar() {
             })
             .catch(error => {
                 console.log('error', error)
-                logout()
             });
     }
 
     const logout = () => {
         Navigate('/')
-        localStorage.removeItem("accessToken")
+        sessionStorage.removeItem("accessToken")
         
         // props.onLogoutSuccess()
     }
@@ -93,7 +91,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/Chart'>
+                        <Link to='/AdminChart'>
                             <i className='bx bx-pie-chart-alt-2 icon'></i>
                             <span className="text nav-text">Statistical</span>
                         </Link>
@@ -151,13 +149,6 @@ function Navbar() {
                         <Link to='/UploadIdea'>
                             <i className='bx bx-upload icon' ></i>
                             <span className="text nav-text">Upload Idea</span>
-                        </Link>
-                    </li>
-
-                    <li className="nav-link">
-                        <Link to='/Chart'>
-                            <i className='bx bx-pie-chart-alt-2 icon'></i>
-                            <span className="text nav-text">Statistical</span>
                         </Link>
                     </li>
 

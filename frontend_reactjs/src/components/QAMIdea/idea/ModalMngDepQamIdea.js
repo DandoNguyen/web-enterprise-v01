@@ -11,7 +11,7 @@ function ModalMngDepQamIdea({ setOpenModalMngDepQamIdea ,data}) {
   //vote
   const upvote = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
@@ -36,7 +36,7 @@ function ModalMngDepQamIdea({ setOpenModalMngDepQamIdea ,data}) {
   }
   const downVote = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var raw = JSON.stringify({
@@ -62,7 +62,7 @@ function ModalMngDepQamIdea({ setOpenModalMngDepQamIdea ,data}) {
   //vote
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
     var requestOptions = {
       method: 'GET',
@@ -81,7 +81,7 @@ function ModalMngDepQamIdea({ setOpenModalMngDepQamIdea ,data}) {
 
   const download = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
     var requestOptions = {
       method: 'GET',

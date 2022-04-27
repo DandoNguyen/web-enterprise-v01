@@ -1,7 +1,7 @@
 import React from "react";
 import "./ModalReason.css";
 
-function ModalReason({ setOpenModal }) {
+function ModalReason({ setOpenModal ,data}) {
   return (
     <div className="modalBackground">
       <div className="modalContainer">
@@ -10,7 +10,7 @@ function ModalReason({ setOpenModal }) {
         </div>
         <div className="modaltitle">FEEDBACK</div>
         <div className="modalinput1">
-            <textarea readOnly className="inputvl2">This box will contains content feedback reason</textarea>
+            <textarea readOnly className="inputvl2">{data.feedback}</textarea>
         </div>
       </div>
      </div>

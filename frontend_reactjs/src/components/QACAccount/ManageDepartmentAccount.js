@@ -11,10 +11,11 @@ function ManagementDepartmentAccount () {
  const [ModalDepartmentDetailOpen, setModalDepartmentDetail] = useState(false);
  const [userAccounts, setuserAccounts] = useState([]);
   const [reloadpage] = useState(false);
+  const [userDetail,setuserDetail]=useState({})
 
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: 'GET',
@@ -23,7 +24,7 @@ function ManagementDepartmentAccount () {
     };
 
 
-    fetch(Url+"/api/Accounts", requestOptions)
+    fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
       .then(response => response.json())
       .then(data => {
         setuserAccounts(data)
@@ -34,13 +35,17 @@ function ManagementDepartmentAccount () {
         // setreloadpage(!reloadpage)
       });
   }, [reloadpage])
+
+  const handleviewDetail = (data) => {
+    setModalDepartmentDetail(true)
+    setuserDetail(data)
+  }
   const listAccounts = userAccounts.map(data => (
     <tr key={data.id}>
       <td >{data.email}</td>
-      <td >{data.userName}</td>
+      <td >{data.username}</td>
       <td>
-        <button className='Detail' onClick={() => {setModalDepartmentDetail(true);}}>Detail</button>
-          {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} />}
+        <button className='Detail' onClick={() => handleviewDetail(data)}>Detail</button>
         </td>
     </tr>
   ))
@@ -76,6 +81,7 @@ function ManagementDepartmentAccount () {
         </thead>
         <tbody>
           {listAccounts}
+          {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} data={userDetail}/>}
         </tbody>
     </table>
 

@@ -4,10 +4,10 @@ import { Url } from "../../URL";
 function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate }) {
   const[CategoryName,setCategoryName]=useState('');
   const[desc,setdesc]=useState('');
-   const [reloadpage,setreloadpage]= useState(false);
+  //  const [reloadpage,setreloadpage]= useState(false);
   const Summittag = () => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
         myHeaders.append("Content-Type", "application/json");
         var raw = JSON.stringify({
           "categoryName": CategoryName,
@@ -22,16 +22,14 @@ function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate }) {
         };
         
         fetch(Url+"/api/Category/CreateTag", requestOptions)
-        .then(response => response.json())
+        .then(response => response.text())
         .then(result => {
-          setOpenModalCategoryCreate(false)
-          addCate(CategoryName,desc)
           alert(result)
+          setOpenModalCategoryCreate(false)
+          // addCate(CategoryName,desc)
         })
         .catch(error => {
           console.log('error', error)
-          setOpenModalCategoryCreate(false)
-          setreloadpage(!reloadpage)
           alert('Error please try again')
         });
     }

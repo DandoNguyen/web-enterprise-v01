@@ -1,32 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import { Url } from '../URL';
+import { Url } from '../../URL';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-export const ChartTopic = () => {
+export const AdminChartDepartment = () => {
     const [getData, setgetData] = useState([])
-    const [getfile, setgetfile] = useState([])
 
     useEffect(() => {
         var requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
-        fetch(Url + "/api/Statistic/AllPostByTopic", requestOptions)
+        fetch(Url + "/api/Statistic/AllPostByDepartment", requestOptions)
             .then(response => response.json())
             .then(result => {
                 setgetData(result.listResult)
-                setgetfile(result)
-                console.log(result);
             })
             .catch(error => {
                 console.log('error', error)
             });
     }, [])
-   
     const nameData = getData.map(data => [data.dataName])
     const valueData = getData.map(data => [data.percent])
     const state = {
@@ -55,38 +50,12 @@ export const ChartTopic = () => {
             },
           ],
     }
-    const download = () => {
-        var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
-    
-        var requestOptions = {
-          method: 'GET',
-          headers: myHeaders,
-          redirect: 'follow'
-        };
-    
-        fetch(Url + `/api/FileAction/GetFile?filePath=${getfile.filePath}`, requestOptions)
-        .then(resp => resp.blob())
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          // the filename you want
-          a.download = getfile.filePath[0];
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          alert('your file has downloaded!'); // or you know, something with better UX...
-        })
-        .catch(() => alert('oh no!'));
-      }
 
     return (
         <div>
             <div className='chart'>
-            <h1 className='text'>All Post By Topic</h1>
-            <Pie
+                <h1 className='text' >All Post By Department</h1>
+                <Pie
                     data={state}
                     options={{
                         title: {
@@ -101,7 +70,6 @@ export const ChartTopic = () => {
                         
                     }}
                 />
-            <button onClick={download}>Download</button>
             </div>
         </div>
     )

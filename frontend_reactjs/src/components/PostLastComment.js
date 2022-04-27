@@ -4,15 +4,19 @@ import Navbar from './Navbar';
 import {Url} from './URL.js'
 import PostDetail from './Postdetail/PostDetail';
 import { Link } from 'react-router-dom';
+import Pagination from './Pagination';
 
 function PostLastComment() {
     const [postHome, setpostHome] = useState([]);
     const [errorMes,seterrorMes] = useState('No Posts Avalaible')
     const [detailopen, setdetailopen] = useState(false)
     const [homePost, sethomePost] = useState({})
+    const [loading , setloading]=useState(false)
+    const [currentPage, setcurrentPage] = useState(1)
+    const [postsPerPage] = useState(5)
     useEffect(() => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+        myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
 
         var requestOptions = {
             method: 'GET',
@@ -34,16 +38,23 @@ function PostLastComment() {
                 }else{
                     seterrorMes(data)
                 }
+                setloading(true)
                 // setpostHome(data)
             })
             .catch(error => console.log('error', error));
     }, [])
 
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFistPost = indexOfLastPost - postsPerPage;
+    const currentPosts = postHome.slice(indexOfFistPost, indexOfLastPost);
+
+    const paginate = (pageNumber) => setcurrentPage(pageNumber);
+
     const handelView = (data) => {
         setdetailopen(true)
         sethomePost(data)
     }
-    const listHomepost = postHome.map(data => (
+    const listHomepost = currentPosts.map(data => (
         <div className="PostContainer" key={data.postId}>
             <div className="titleCloseBtn">
             </div>
@@ -99,17 +110,15 @@ function PostLastComment() {
             <Link to='/Home'><button className='Newbtn'>New</button></Link> 
                <Link to='/Popular'><button className='Mostpplbtn'>Most Popular</button></Link> 
                <Link to='/LastComment'><button className='cmtbtn'>Last Comments</button></Link> 
-                <div className='showselect'>
-                    <select name="show" id="showid">
-                        <option value="Show1">Show 1</option>
-                        <option value="Show2">Show 2</option>
-                    </select>
-                </div>
             </div>
+            {loading ? 
             <div>
                 {errorMes && listHomepost}
                 {detailopen && <PostDetail setopendetail={setdetailopen} data={homePost} />}
-            </div>
+                <Pagination postsPerPage={postsPerPage} totalPosts={postHome.length} paginate={paginate} />
+            </div>:
+            <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+            }
         </section>
     </div>
   )

@@ -1,12 +1,12 @@
-import React,{useState} from "react";
+import React from "react";
 import "./ModalManageDelete.css";
 import { Url } from "../../URL";
 
-function ModalManageDelete({ setOpenModalDelete , data}) {
-  const [reloadpage,setreloadpage] = useState(false);
+function ModalManageDelete({ setOpenModalDelete , data ,setreloadpage ,reloadpage}) {
+  
   const deleteact = () => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -16,9 +16,9 @@ function ModalManageDelete({ setOpenModalDelete , data}) {
     };
 
     fetch(Url+`/api/Accounts/removeUser?email=${data.email}`, requestOptions)
-      .then(response => response.json())
+      .then(response => response.text())
       .then(result => {
-        console.log(result)
+        alert(result)
         setreloadpage(!reloadpage)
       })
       .catch(error => console.log('error', error));

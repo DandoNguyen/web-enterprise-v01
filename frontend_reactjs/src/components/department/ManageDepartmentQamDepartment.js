@@ -9,14 +9,16 @@ import { Link } from 'react-router-dom';
 
 
 
+
 function ManageDepartmentQamDepartment() {
   const [ModalDepartmentQamCreateOpen, setModalDepartmentQamCreate] = useState(false);
   const [DepartmentQamViewOpen, setDepartmentQamView] = useState(false);
   const [GetAllDepartment, setGetAllDepartment] = useState([])
   const [viewDepartment,setviewDepartment]=useState({})
+  const [loading , setloading]=useState(false)
   useEffect(() => {
     var myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer " + localStorage.getItem("accessToken"));
+    myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     
     var requestOptions = {
       method: 'GET',
@@ -28,6 +30,7 @@ function ManageDepartmentQamDepartment() {
       .then(response => response.json())
       .then(data => {
         setGetAllDepartment(data)
+        setloading(true)
       })
       .catch(error => console.log('error', error));
   }, [])
@@ -72,10 +75,13 @@ function ManageDepartmentQamDepartment() {
             <th>Detail</th>
           </tr>
         </thead>
+        {loading ? 
         <tbody>
             {listDepartment}
             {DepartmentQamViewOpen && <ModalDepartmentQamView setOpenDepartmentQamView={setDepartmentQamView} data={viewDepartment}/>}
-        </tbody>
+        </tbody>:
+        <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+        }
       </table>
     </section>
   </div>
