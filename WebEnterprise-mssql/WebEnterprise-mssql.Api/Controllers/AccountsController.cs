@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -43,18 +44,56 @@ namespace WebEnterprise_mssql.Api.Controllers
 
         [HttpGet] 
         [Route("GetAllUser")]
-        public async Task<IActionResult> GetAllUsersAsync() {
+        public async Task<IActionResult> GetAllUsersAsync([FromHeader] string Authorization) {
+
+            //Get Logged in user
+            var loggedInUser = await DecodeToken(Authorization);
+
+            //Get Role of above user
+            var roleOfLoggedInUser = await userManager.GetRolesAsync(loggedInUser);
+
+            //Get Department of above user
+            var departmentOfLoggedInUser = await repo.Departments
+                .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(loggedInUser.DepartmentId)))
+                .FirstOrDefaultAsync();
+
+            var listUserDto = await GetAllUser();
+            var returnListUserDto = new List<UserProfileResponseDto>();
+
+            if(roleOfLoggedInUser.Contains("admin"))
+            {
+                return Ok(listUserDto);
+            }
+            else
+            {
+                foreach(var user in listUserDto)
+                {
+                    if(user.Department.ToLower().Equals(departmentOfLoggedInUser.DepartmentName.ToLower()))
+                    {
+                        returnListUserDto.Add(user);
+                    }
+                }
+
+                return new JsonResult(returnListUserDto, departmentOfLoggedInUser) { StatusCode = 200 };
+            }
+
+            return new JsonResult("error in getting return values") { StatusCode = 500 };
+            //return mapper.Map<List<ApplicationUserDto>>(userList);
+        }
+
+        private async Task<List<UserProfileResponseDto>> GetAllUser()
+        {
             var userList = await repo.Users
                 .FindAll()
                 .ToListAsync();
             List<UserProfileResponseDto> listUserDto = new();
-            foreach(var user in userList)
+            foreach (var user in userList)
             {
                 var userDto = mapper.Map<UserProfileResponseDto>(user);
                 var roleUser = await userManager.GetRolesAsync(user);
-                if(roleUser is not null)
+                if (roleUser is not null)
                 {
-                    foreach(var role in roleUser)
+                    foreach (var role in roleUser)
                     {
                         userDto.role.Add(role.ToLower());
                     }
@@ -70,8 +109,26 @@ namespace WebEnterprise_mssql.Api.Controllers
                 userDto.Department = department;
                 listUserDto.Add(userDto);
             }
-            return Ok(listUserDto);
-            //return mapper.Map<List<ApplicationUserDto>>(userList);
+            return listUserDto;
+        }
+
+        private async Task<ApplicationUser> DecodeToken(string Authorization)
+        {
+
+            string[] Collection = Authorization.Split(" ");
+
+            //Decode the token
+            var stream = Collection[1];
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = jsonToken as JwtSecurityToken;
+
+            //get the user
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var user = await userManager.FindByEmailAsync(email);
+
+            //return the user
+            return user;
         }
 
         [HttpGet] //Convert list string id to list string username

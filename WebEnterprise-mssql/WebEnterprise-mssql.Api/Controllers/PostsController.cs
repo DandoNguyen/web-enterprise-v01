@@ -103,7 +103,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                         }
                     }
 
-                    //Check if Topic still Exist
+                    //Check if Topic still Exist and department is the same as department of QAC
                     if(post.TopicId is not null && department.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                     {
                         listPostsDto.Add(newPostDto);
