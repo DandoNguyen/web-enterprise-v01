@@ -73,10 +73,15 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet]
         [Route("QACListPost")]
         [Authorize(Roles = "qac, qam")]
-        public async Task<IActionResult> GetAllUnAssignedPosts()
+        public async Task<IActionResult> GetAllUnAssignedPosts([FromHeader] string Authorization)
         {
+            //Get current Logged in user
+            var user = await DecodeToken(Authorization);
+
+            //Get all Ideas
             var listPosts = await repo.Posts
                 .FindAll()
+                .Include(x => x.UserId)
                 .Include(x => x.categories)
                 .ToListAsync();
             var listCategory = await repo.Categories
@@ -86,7 +91,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 if (post.Status.Equals(0) /*Status = 0 (in progress)*/ && post.IsAssigned.Equals(false))
                 {
+                    var department = await GetUserDepartmentOfPost(post.UserId);
                     var newPostDto = mapper.Map<PostDto>(post);
+
+                    //Get CateName for each Idea
                     foreach(var category in listCategory)
                     {
                         if (post.categories.Contains(category))
@@ -94,13 +102,22 @@ namespace WebEnterprise_mssql.Api.Controllers
                             newPostDto.CategoryName.Add(category.CategoryName);
                         }
                     }
-                    if(post.TopicId is not null)
+
+                    //Check if Topic still Exist
+                    if(post.TopicId is not null && department.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                     {
                         listPostsDto.Add(newPostDto);
                     }
                 }
             }
-            return Ok(listPostsDto);
+
+            //Get Department Name of logged in User
+            var departmentName = await repo.Departments
+                .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                .Select(x => x.DepartmentName)
+                .FirstOrDefaultAsync();
+
+            return new JsonResult(listPostsDto, departmentName) { StatusCode = 200 };
         }
 
         [HttpPost]
@@ -507,6 +524,14 @@ namespace WebEnterprise_mssql.Api.Controllers
         //INTERAL STATIC METHODS
         //=================================================================================================================================
         //=================================================================================================================================
+        private async Task<Departments> GetUserDepartmentOfPost(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            var department = await repo.Departments
+                .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                .FirstOrDefaultAsync();
+            return department;
+        }
         private string GetStatusMessageAsync(int StatusCode)
         {
             switch (StatusCode)
