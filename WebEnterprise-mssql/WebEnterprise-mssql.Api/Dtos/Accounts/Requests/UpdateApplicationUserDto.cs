@@ -7,6 +7,7 @@ namespace WebEnterprise_mssql.Api.Dtos
     {
         [Required]
         public string Email { get; set; }
+        public string EmployeeId { get; set; }
         public string UserName { get; set; }
         public string Address { get; set; }
         public string fullname { get; set; }

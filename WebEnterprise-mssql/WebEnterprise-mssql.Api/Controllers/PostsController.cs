@@ -51,6 +51,25 @@ namespace WebEnterprise_mssql.Api.Controllers
         }
 
         //QAC Sections
+        [HttpDelete]
+        [Route("RemoveLeftPosts")]
+        public async Task<IActionResult> ClearLeftOverPosts()
+        {
+            var leftPosts = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(null))
+                .ToListAsync();
+            try
+            {
+                repo.Posts.DeleteRange(leftPosts);
+                await repo.Save();
+                return Ok("Done!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("QACListPost")]
         [Authorize(Roles = "qac, qam")]
@@ -381,7 +400,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
-                return Ok(newPostDto);
+                return Ok("Idea Submssion Successful!");
                 // return Ok($"Post {newPost.PostId} created!");
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };

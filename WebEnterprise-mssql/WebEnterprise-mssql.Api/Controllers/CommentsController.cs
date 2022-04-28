@@ -245,11 +245,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.TopicId.Equals(topicId))
                 .Select(x => x.FinalClosureDate)
                 .FirstOrDefaultAsync();
-            if (DateTimeOffset.UtcNow >= finalClosureDate)
-            {
-                return true;
-            }
-            return false;
+            return DateTimeOffset.UtcNow > finalClosureDate;
         }
 
         private async void DeleteRangeComment(Guid parentId)
