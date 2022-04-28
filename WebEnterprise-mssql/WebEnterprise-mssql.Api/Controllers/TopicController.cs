@@ -15,7 +15,6 @@ using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
 using WebEnterprise_mssql.Api.Services;
 using Microsoft.Extensions.Logging;
-using WebEnterprise_mssql.Dtos.Topics;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {

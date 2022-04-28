@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebEnterprise_mssql.Dtos.Topics
+namespace WebEnterprise_mssql.Api.Dtos
 {
     public class TopicDto
     {

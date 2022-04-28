@@ -11,8 +11,7 @@ namespace WebEnterprise_mssql.Api.Profiles
         {
             CreateMap<Topics, CreateTopicDto>().ReverseMap();
             CreateMap<Topics, UpdateTopicDto>().ReverseMap();
-            CreateMap<Topics, TopicIdDto>();
-            CreateMap<Topics, TopicIdDto>().ReverseMap();
+            CreateMap<Topics, TopicDto>();
         }
     }
 }
