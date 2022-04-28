@@ -77,13 +77,23 @@ namespace WebEnterprise_mssql.Api.Controllers
         {
             var listPosts = await repo.Posts
                 .FindAll()
+                .Include(x => x.categories)
                 .ToListAsync();
+            var listCategory = await repo.Categories
+                .FindAll().ToListAsync();
             var listPostsDto = new List<PostDto>();
             foreach (var post in listPosts)
             {
                 if (post.Status.Equals(0) /*Status = 0 (in progress)*/ && post.IsAssigned.Equals(false))
                 {
                     var newPostDto = mapper.Map<PostDto>(post);
+                    foreach(var category in listCategory)
+                    {
+                        if (post.categories.Contains(category))
+                        {
+                            newPostDto.CategoryName.Add(category.CategoryName);
+                        }
+                    }
                     if(post.TopicId is not null)
                     {
                         listPostsDto.Add(newPostDto);
