@@ -74,10 +74,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                     }
                 }
 
-                return new JsonResult(returnListUserDto, departmentOfLoggedInUser) { StatusCode = 200 };
+                return new JsonResult(new { returnListUserDto, departmentOfLoggedInUser.DepartmentName }) { StatusCode = 200 };
             }
 
-            return new JsonResult("error in getting return values") { StatusCode = 500 };
+            //return new JsonResult("error in getting return values") { StatusCode = 500 };
             //return mapper.Map<List<ApplicationUserDto>>(userList);
         }
 

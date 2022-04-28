@@ -4,6 +4,7 @@ namespace WebEnterprise_mssql.Api.Dtos
 {
     public class TopicDto
     {
+        public Guid PostId { get; set; }
         public string TopicName { get; set; }
         public string TopicDesc { get; set; }
         public DateTimeOffset ClosureDate { get; set; }

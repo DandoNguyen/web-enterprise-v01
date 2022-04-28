@@ -81,11 +81,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             //Get all Ideas
             var listPosts = await repo.Posts
                 .FindAll()
-                .Include(x => x.UserId)
                 .Include(x => x.categories)
                 .ToListAsync();
-            var listCategory = await repo.Categories
-                .FindAll().ToListAsync();
             var listPostsDto = new List<PostDto>();
             foreach (var post in listPosts)
             {
@@ -95,13 +92,12 @@ namespace WebEnterprise_mssql.Api.Controllers
                     var newPostDto = mapper.Map<PostDto>(post);
 
                     //Get CateName for each Idea
-                    foreach(var category in listCategory)
+                    var listCateId = new List<string>();
+                    foreach(var category in post.categories)
                     {
-                        if (post.categories.Contains(category))
-                        {
-                            newPostDto.CategoryName.Add(category.CategoryName);
-                        }
+                        listCateId.Add(category.CategoryId.ToString());
                     }
+                    newPostDto.CategoryName = await GetListCategoriesNameAsync(listCateId);
 
                     //Check if Topic still Exist and department is the same as department of QAC
                     if(post.TopicId is not null && department.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
@@ -116,8 +112,15 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
                 .Select(x => x.DepartmentName)
                 .FirstOrDefaultAsync();
+            if(listPostsDto.Count().Equals(0))
+            {
+                return new JsonResult(new { listPostsDto = new List<string>
+                {
+                    "No Content"
+                }, departmentName }) { StatusCode = 204 };
+            }
 
-            return new JsonResult(listPostsDto, departmentName) { StatusCode = 200 };
+            return new JsonResult(new { listPostsDto, departmentName }) { StatusCode = 200 };
         }
 
         [HttpPost]
