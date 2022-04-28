@@ -200,7 +200,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return "In Progress";
             }
-            else if (currentDate > topic.ClosureDate %% currentDate < topic.FinalClosureDate)
+            else if (currentDate > topic.ClosureDate && currentDate < topic.FinalClosureDate)
             {
                 return "Comment Only";
             }
