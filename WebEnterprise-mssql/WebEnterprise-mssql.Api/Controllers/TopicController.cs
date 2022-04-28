@@ -79,7 +79,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .ToListAsync();
             if (listTopics.Count().Equals(0))
             {
-                return Ok("No Topic available");
+                return NoContent();
             }
 
             var listTopicDto = new List<TopicDto>();
