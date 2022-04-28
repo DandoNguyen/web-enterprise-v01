@@ -15,6 +15,7 @@ using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
 using WebEnterprise_mssql.Api.Services;
 using Microsoft.Extensions.Logging;
+using WebEnterprise_mssql.Dtos.Topics;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -80,7 +81,15 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 return Ok("No Topic available");
             }
-            return Ok(listTopics);
+
+            var listTopicDto = new List<TopicDto>();
+            foreach(var topic in listTopics)
+            {
+                var topicDto = mapper.Map<TopicDto>(topic);
+                topicDto.Status = await GetStatus(topic.TopicId);
+                listTopicDto.Add(topicDto);
+            }
+            return Ok(listTopicDto);
         }
 
         //GET get Topic Details
@@ -175,6 +184,30 @@ namespace WebEnterprise_mssql.Api.Controllers
                 return Ok($"Topic {newTopic.TopicName} has been updated");
             }
             return BadRequest($"Error in updating Topic {dto.TopicName}");
+        }
+
+        private async Task<string> GetStatus(Guid topicId)
+        {
+            var topic = await repo.Topics
+                .FindByCondition(x => x.TopicId.Equals(topicId))
+                .FirstOrDefaultAsync();
+            if (topic is null)
+            {
+                return "Cannot Get Status!";
+            }
+            var currentDate = DateTimeOffset.UtcNow;
+            if (currentDate < topic.ClosureDate)
+            {
+                return "In Progress";
+            }
+            else if (currentDate > topic.ClosureDate %% currentDate < topic.FinalClosureDate)
+            {
+                return "Comment Only";
+            }
+            else
+            {
+                return "Closed";
+            }
         }
 
         private List<string> GetListCategoriesName(Posts post) {
