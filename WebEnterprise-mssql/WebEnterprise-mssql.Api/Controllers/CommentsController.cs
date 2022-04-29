@@ -154,16 +154,22 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             var user = await DecodeToken(Authorization);
 
-            if (dto.IsChild)
+            if (dto.IsChild) //Check if this comment is level 2
             {
                 if (dto.ParentId is null)
                 {
                     return BadRequest("ParentId cannot be null when IsChild is set to true");
                 } 
-                else
+                else if (await IsLevel2Comment(dto.ParentId)) //check if parent comment ID  is level 2
                 {
-                    await AddReplyCommentAsync(dto, user);
-                    return RedirectToAction(nameof(GetAllComment), new { dto.PostId });
+                    await AddLevel3ReplyCommentAsync(dto, user);
+                    return Ok("Comment Submission success");
+                    //return 
+                }
+                else //Check if this parent comment ID  is level 1
+                {
+                    await AddLevel2ReplyCommentAsync(dto, user);
+                    return RedirectToAction(nameof(GetAllComment), new { dto.PostId }); //??? return json as return values
                 }
             }
             
@@ -210,6 +216,71 @@ namespace WebEnterprise_mssql.Api.Controllers
                     return new JsonResult($"Error message: {ex}") {StatusCode = 500};
                 }
             }
+        }
+
+        private async Task AddLevel3ReplyCommentAsync(CommentDto dto, ApplicationUser user)
+        {
+            //Get author of target parent comment
+            var parentCommentAuthor = await repo.Comments
+                .FindByCondition(x => x.CommentId.Equals(Guid.Parse(dto.ParentId)))
+                .Include(x => x.ApplicationUser)
+                .Select(x => x.ApplicationUser)
+                .FirstOrDefaultAsync();
+
+            //Create Comment
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
+                .FirstOrDefaultAsync();
+            var newComment = mapper.Map<Comments>(dto);
+            newComment.CreatedDate = DateTimeOffset.UtcNow;
+            newComment.ApplicationUser = user;
+            if(!parentCommentAuthor.Id.Equals(user.Id))
+            {
+                newComment.Content = $"Reply to {parentCommentAuthor.UserName}: {dto.Content}";
+            }
+            else
+            {
+                newComment.Content = $"Reply to himself/herself: {dto.Content}";
+            }
+
+            //Create and Save comment to database
+            if(ModelState.IsValid)
+            {
+                repo.Comments.Create(newComment);
+                await repo.Save();
+            }
+
+            //Send an email notification to the author of replied comment
+            if (!parentCommentAuthor.Id.Equals(user.Id))
+            {
+                MailContent mailContent = new MailContent();
+                mailContent.To = parentCommentAuthor.Email;
+                switch (dto.IsAnonymous)
+                {
+                    case false:
+                        mailContent.Subject = $"User {user.UserName} has reply to your comment";
+                        mailContent.Body = $"Your Comment on Idea {post.title} has been reply by User {user.UserName}";
+                        break;
+                    case true:
+                        mailContent.Subject = "Someone has reply to your comment";
+                        mailContent.Body = $"Your Comment on Idea {post.title} has been reply by an anonymous";
+                        break;
+                }
+                await mailService.SendMail(mailContent);
+            }
+        }
+
+        private async Task<bool> IsLevel2Comment(string parentId)
+        {
+            var existingComment = await repo.Comments
+                .FindByCondition(x => x.CommentId.Equals(Guid.Parse(parentId)))
+                .Select(x => x.IsChild)
+                .FirstOrDefaultAsync();
+            if (existingComment)
+            {
+                return true;
+            }
+            return false;
         }
 
         private async Task<ApplicationUser> DecodeToken(string Authorization)
@@ -274,7 +345,9 @@ namespace WebEnterprise_mssql.Api.Controllers
             // var parent = await context.Comments
             //     .Where(x => x.CommentId.Equals(Guid.Parse(ParentId)))
             //     .FirstOrDefaultAsync();
-            var parent = await repo.Comments.GetParentByCommentIdAsync(ParentId);
+            var parent = await repo.Comments
+                .FindByCondition(x => x.CommentId.Equals(Guid.Parse(ParentId)))
+                .FirstOrDefaultAsync();
 
             var parentDto = mapper.Map<ParentItemDto>(parent);
 
@@ -289,16 +362,44 @@ namespace WebEnterprise_mssql.Api.Controllers
             var newListChildren = new List<ChildItemDto>();
             foreach (var child in ListChildren)
             {
+                //private method check for level3 comment
+                var level3ChildList = await CheckForLevel3CommentAsync(child.CommentId);
+
                 var newChild = mapper.Map<ChildItemDto>(child);
                 var user = await userManager.FindByIdAsync(child.ApplicationUser.Id);
                 newChild.Username = user.UserName;
+
                 newListChildren.Add(newChild);
+                if(!level3ChildList.Count().Equals(0))
+                {
+                    foreach(var level3Child in level3ChildList)
+                    {
+                        newListChildren.Add(level3Child);
+                    }
+                }
             }
             parentDto.childItems = newListChildren;
             return parentDto;
         }
 
-        private async Task AddReplyCommentAsync(CommentDto dto, ApplicationUser user)
+        private async Task<List<ChildItemDto>> CheckForLevel3CommentAsync(Guid level2CommentId)
+        {
+            var listLevel3Comment = await repo.Comments
+                .FindByCondition(x => x.ParentId.Equals(level2CommentId.ToString()))
+                .Include(x => x.ApplicationUser)
+                .ToListAsync();
+            List<ChildItemDto> resultList = new();
+            foreach(var child in listLevel3Comment)
+            {
+                var newChildDto = mapper.Map<ChildItemDto>(child);
+                var user = await userManager.FindByIdAsync(child.ApplicationUser.Id);
+                newChildDto.Username = user.UserName;
+                resultList.Add(newChildDto);
+            }
+            return resultList;
+        }
+
+        private async Task AddLevel2ReplyCommentAsync(CommentDto dto, ApplicationUser user)
         {
             var post = await repo.Posts
                 .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
@@ -306,6 +407,8 @@ namespace WebEnterprise_mssql.Api.Controllers
             var newComment = mapper.Map<Comments>(dto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
             newComment.ApplicationUser = user;
+
+            //Send email notification to author of replied comment
             var parentCommentAuthor = await repo.Comments
                 .FindByCondition(x => x.CommentId.Equals(Guid.Parse(dto.ParentId)))
                 .Include(x => x.ApplicationUser)
@@ -315,10 +418,21 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 MailContent mailContent = new MailContent();
                 mailContent.To = parentCommentAuthor.Email;
-                mailContent.Subject = $"User {user.UserName} has reply to your comment";
-                mailContent.Body = $"Your Comment on Idea {post.title} has been reply by User {user.UserName}";
+                switch(dto.IsAnonymous)
+                {
+                    case false:
+                        mailContent.Subject = $"User {user.UserName} has reply to your comment";
+                        mailContent.Body = $"Your Comment on Idea {post.title} has been reply by User {user.UserName}";
+                        break;
+                    case true:
+                        mailContent.Subject = "Someone has reply to your comment";
+                        mailContent.Body = $"Your Comment on Idea {post.title} has been reply by an anonymous";
+                        break;
+                }
                 await mailService.SendMail(mailContent);
             }
+
+            //Create and save to database
             if (ModelState.IsValid)
             {
                 repo.Comments.Create(newComment);

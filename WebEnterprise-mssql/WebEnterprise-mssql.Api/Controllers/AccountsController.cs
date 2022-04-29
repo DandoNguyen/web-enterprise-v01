@@ -60,7 +60,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             var listUserDto = await GetAllUser();
             var returnListUserDto = new List<UserProfileResponseDto>();
 
-            if(roleOfLoggedInUser.Contains("admin"))
+            if(roleOfLoggedInUser.Contains("admin") || roleOfLoggedInUser.Contains("pam"))
             {
                 return Ok(listUserDto);
             }
