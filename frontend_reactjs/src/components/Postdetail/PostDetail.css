@@ -64,24 +64,6 @@
     
 }
 
-/* .SubmitIdea:hover{
-    background-color: var(--primary-color);
-}
-
-.SubmitIdea:hover{
-    color: var(--sidebar-color);
-}
-.CancelButton:hover{
-    background-color: var(--primary-color);
-}
-.CancelButton:hover{
-    color: var(--sidebar-color);
-} */
-
-/* .IdeaTile1, .IdeaTile2
-{
-    position: relative;
-  } */
 .IdeaTile1{
     margin-left: 10px;
     width: 98%;
@@ -188,14 +170,6 @@
     animation-duration: 0.5s;
 }
 
-/* .textarea {
-    width: 300px;
-    height: 200px;
-    
-    max-width: 500px;
-    max-height: 400px;
-    resize: vertical;
-}    */
 .Commentbox{
     margin-top: 20px;
     width: 95%;
@@ -250,9 +224,7 @@
     align-items: center;
     justify-content: center;
 }
-.bxd{
-    margin-left: 10px;
-}
+
 .bx-downvote{
     font-size: 20px;
     min-width: 30px;
@@ -261,15 +233,7 @@
     align-items: center;
     justify-content: center;
 }
-.bx-comment{
-    margin-left: 40px;
-    font-size: 20px;
-    min-width: 60px;
-    border-radius: 6px;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-}
+
 .bx-show-alt{
     margin-left: 40px;
     font-size: 20px;
@@ -306,7 +270,7 @@
     margin-right: 10px;
 }
 .Titlcmt{
-    background-color: rgba(0, 0, 0, 0.181);
+    background-color: rgba(254, 254, 254, 0.181);
     border-radius: 5px;
     margin-top: 3px;
     border: 2px solid #080808;
@@ -327,6 +291,24 @@
 }
 
 
-/* .btn{
-    width: 65px;
-} */
+.bt{
+    width: 80px;
+    border-radius: 30px;
+    margin: 2px;
+}
+
+.btnrepcmt{
+    background-color: #fbfbfb;
+    position: absolute;
+    right: 25px;
+    border-radius: 5px;
+}
+.Titlchildcmt{
+    margin-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 2px;
+    font-weight: 200;
+    border: 1px solid #000000;
+    border-radius: 5px;
+}

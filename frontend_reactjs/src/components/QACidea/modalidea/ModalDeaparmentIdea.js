@@ -4,7 +4,7 @@ import { Url } from "../../URL";
 
 
 
-function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
+function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data ,setreloadpage}) {
   const [feedback,setfeadback]=useState('')
 
   const Approcepost = () => {
@@ -31,6 +31,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
         console.log(result)
         setOpenModalDepartmentIdea(false)
         alert('Approve success')
+        setreloadpage(true)
     })
       .catch(error => console.log('error', error));
   }
@@ -57,6 +58,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
       .then(result => {
         console.log(result)
         alert('Approve success')
+        setreloadpage(true)
     })
       .catch(error => console.log('error', error));
   }
@@ -79,7 +81,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data }) {
         </div>
         </header>
         <div className="Category">
-        <span className="TopicName">{data.listCategoryName}</span>
+        <span className="TopicName">{data.categoryName}</span>
         </div>
         <div className="TitlePost">
         <p className="TopicName">Title : {data.title}</p>

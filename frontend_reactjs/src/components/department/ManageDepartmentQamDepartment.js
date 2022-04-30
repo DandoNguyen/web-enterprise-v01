@@ -16,6 +16,7 @@ function ManageDepartmentQamDepartment() {
   const [GetAllDepartment, setGetAllDepartment] = useState([])
   const [viewDepartment,setviewDepartment]=useState({})
   const [loading , setloading]=useState(false)
+  const[reloadpage,setreloadpage]=useState(false)
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
@@ -33,7 +34,7 @@ function ManageDepartmentQamDepartment() {
         setloading(true)
       })
       .catch(error => console.log('error', error));
-  }, [])
+  }, [reloadpage])
   const handleviewDetail=(data)=>{
     setDepartmentQamView(true)
     setviewDepartment(data)
@@ -54,19 +55,20 @@ function ManageDepartmentQamDepartment() {
     <Navbar />
     <section className='Managementpage'>
       <div className='buttonMana'>
-        <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+      <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
         <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
         <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/QamDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
       </div>
       <div className='manage-header'>
         <div className="text">Department Management</div>
       </div>
       <div className='buttonAddUser'>
         <button className='Add-user-bt' onClick={() => { setModalDepartmentQamCreate(true); }}>Create Department</button>
-        {ModalDepartmentQamCreateOpen && <ModalDepartmentQamCreate setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} />}
+        {ModalDepartmentQamCreateOpen && <ModalDepartmentQamCreate setOpenModalDepartmentQamCreate={setModalDepartmentQamCreate} setreloadpage={setreloadpage}/>}
       </div>
       <div className='contentManage'>
-        <div className='text'>List Account</div>
+        <div className='text'>List Department</div>
       </div>
       <table className='tableuser'>
         <thead>

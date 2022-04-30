@@ -1,7 +1,7 @@
 import React,{useState} from "react";
 import "./ModalCategoryCreate.css";
 import { Url } from "../../URL";
-function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate }) {
+function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate ,setreloadpage}) {
   const[CategoryName,setCategoryName]=useState('');
   const[desc,setdesc]=useState('');
   //  const [reloadpage,setreloadpage]= useState(false);
@@ -26,11 +26,12 @@ function ModalCategoryCreate({ setOpenModalCategoryCreate , addCate }) {
         .then(result => {
           alert(result)
           setOpenModalCategoryCreate(false)
-          // addCate(CategoryName,desc)
+          setreloadpage(true)
         })
         .catch(error => {
           console.log('error', error)
           alert('Error please try again')
+          setreloadpage(true)
         });
     }
   return (

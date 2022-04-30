@@ -12,6 +12,8 @@ function ManagementDepartmentAccount () {
  const [userAccounts, setuserAccounts] = useState([]);
   const [reloadpage] = useState(false);
   const [userDetail,setuserDetail]=useState({})
+  const [departmentName, setdepartmentName] = useState('')
+  const [loadingQac , setloadingQac]=useState(false)
 
   useEffect(() => {
     var myHeaders = new Headers();
@@ -27,8 +29,10 @@ function ManagementDepartmentAccount () {
     fetch(Url+"/api/Accounts/GetAllUser", requestOptions)
       .then(response => response.json())
       .then(data => {
-        setuserAccounts(data)
+        setuserAccounts(data.returnListUserDto)
+        setdepartmentName(data.departmentName)
         // setreloadpage(!reloadpage)
+        setloadingQac(true)
       })
       .catch(error => {
         console.log('error', error)
@@ -65,12 +69,8 @@ function ManagementDepartmentAccount () {
       </div>
 
       <div className='contentManage'>
-        <div className='text'>List Account</div>
+        <div className='text'>list Accounts of Department : {departmentName}</div>
     </div>
-
-
-
- 
       <table className='tableuser'>
         <thead>
         <tr>
@@ -79,10 +79,13 @@ function ManagementDepartmentAccount () {
           <th>Deatail</th>
         </tr>
         </thead>
+        {loadingQac ?
         <tbody>
           {listAccounts}
           {ModalDepartmentDetailOpen && <ModalDepartmentDetail setOpenModalDepartmentDetail={setModalDepartmentDetail} data={userDetail}/>}
-        </tbody>
+        </tbody>:
+        <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+        }
     </table>
 
   </section>

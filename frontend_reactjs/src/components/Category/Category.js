@@ -7,7 +7,7 @@ import { Url } from '../URL';
 
 function Category() {
     const[alltag,setalltag]=useState([]);
-    const [reloadpage]= useState(false);
+    const [reloadpage,setreloadpage]= useState(false);
     const [ModalCategoryCreateOpen, setOpenModalCategory] = useState(false);
     const [ModalCategoryDeleteOpen, setModalCategoryDelete] = useState(false);
     const [deleteCate,setdelateCate]=useState('')
@@ -59,7 +59,7 @@ function Category() {
 
     <div className='buttonAddUser'>
       <button className='buttonMana' onClick={() => {setOpenModalCategory(true);}}>Add Categories</button>
-      {ModalCategoryCreateOpen && <ModalCategoryCreate setOpenModalCategoryCreate={setOpenModalCategory} addCate={addCate} />}
+      {ModalCategoryCreateOpen && <ModalCategoryCreate setOpenModalCategoryCreate={setOpenModalCategory} addCate={addCate} setreloadpage={setreloadpage}/>}
     </div>
   
     <div className='contentManage'>
@@ -76,7 +76,7 @@ function Category() {
         </thead>
         <tbody>
         {listCategory}
-        {ModalCategoryDeleteOpen && <ModalCategoryDelete setOpenModalCategoryDelete={setModalCategoryDelete} data={deleteCate} />}
+        {ModalCategoryDeleteOpen && <ModalCategoryDelete setOpenModalCategoryDelete={setModalCategoryDelete} data={deleteCate} setreloadpage={setreloadpage} />}
       </tbody>
     </table>
 

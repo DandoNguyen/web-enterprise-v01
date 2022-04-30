@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import './ManageDeadLine.css';
-import ModalDeadlineCreate from './Create/ModalDealineCreate';
-import ModalDeadlineEdit from './Edit/ModalDeadlineEdit';
-import ModalDeadlineDelete from './Delete/ModalDeadlineDelete';
+import './QamDeadLine.css';
+import QamCreate from './Create/QamCreate';
+import QamEdit from './Edit/QamEdit';
+import QamDelete from './Delete/QamDelete';
 import Navbar from '../Navbar';
 import { Url } from '../URL';
 import { Link } from 'react-router-dom';
-import ModalDeadlineDownload from './Download/ModalDealineDownload';
+import QamDownload from './Download/QamDownload';
 
-function ManageDeadLine() {
+function QamDeadLine() {
   const [modalOpenDeadlineCreate, setModalOpenDeadlineCreate] = useState(false);
   const [modalOpenDeadlineEdit, setModalOpenDeadlineEdit] = useState(false);
   const [modalOpenDeadlineDelete, setModalOpenDeadlineDelete] = useState(false);
@@ -73,9 +73,10 @@ function ManageDeadLine() {
     <section className='Managementpage'>
 
       <div className='buttonMana'>
-        <Link to='/ManageAccount'><button type='button' className='buttonAccount'>Account</button></Link>
-        <Link to='/ManageDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
-        <Link to='/AdminDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+      <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
+        <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
+        <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/QamDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
       </div>
 
       <div className='manage-header'>
@@ -84,7 +85,7 @@ function ManageDeadLine() {
 
       <div className='buttonAddUser'>
         <button className='Add-user-bt' onClick={() => { setModalOpenDeadlineCreate(true); }}>Create DeadLine</button>
-        {modalOpenDeadlineCreate && <ModalDeadlineCreate setOpenModalDeadlineCreate={setModalOpenDeadlineCreate} setreloadpage={setreloadpage}/>}
+        {modalOpenDeadlineCreate && <QamCreate setOpenModalDeadlineCreate={setModalOpenDeadlineCreate} />}
       </div>
       <div className='contentManage'>
         <div className='text'>List DeadLine</div>
@@ -106,9 +107,9 @@ function ManageDeadLine() {
         {loading ?
         <tbody>
           {listTopics}
-          {modalOpenDeadlineEdit && <ModalDeadlineEdit setopenModalDeadlineEdit={setModalOpenDeadlineEdit} data={editTopic} setreloadpage={setreloadpage}/>}
-          {modalOpenDeadlineDelete && <ModalDeadlineDelete setOpenModalDeadlineDelete={setModalOpenDeadlineDelete} data={deleteTopics} setreloadpage={setreloadpage}/>}
-          {modalOpenDeadlineDownload && <ModalDeadlineDownload setOpenModalDeadlineDownload={setModalOpenDeadlineDownload} data={downloadTopic} />}
+          {modalOpenDeadlineEdit && <QamEdit setopenModalDeadlineEdit={setModalOpenDeadlineEdit} data={editTopic} setreloadpage={setreloadpage}/>}
+          {modalOpenDeadlineDelete && <QamDelete setOpenModalDeadlineDelete={setModalOpenDeadlineDelete} data={deleteTopics} setreloadpage={setreloadpage}/>}
+          {modalOpenDeadlineDownload && <QamDownload setOpenModalDeadlineDownload={setModalOpenDeadlineDownload} data={downloadTopic} />}
         </tbody>:
         <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
         }
@@ -117,4 +118,4 @@ function ManageDeadLine() {
     </section>
   </div>
 }
-export default ManageDeadLine;
+export default QamDeadLine;

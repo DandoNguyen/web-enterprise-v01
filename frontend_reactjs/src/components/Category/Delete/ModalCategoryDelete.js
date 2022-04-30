@@ -1,9 +1,9 @@
-import React, {useState} from "react";
+import React from "react";
 import "./ModalCategoryDelete.css";
 import { Url } from "../../URL";
 
-function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
-  const [reloadpage,setreloadpage]= useState(false);
+function ModalCategoryDelete({ setOpenModalCategoryDelete , data ,setreloadpage }) {
+  
   const Deletetag = () => {
       var myHeaders = new Headers();
           myHeaders.append("Authorization" , "Bearer "+ sessionStorage.getItem("accessToken"));
@@ -20,13 +20,13 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data }) {
               .then(result => {
                 console.log(result)
                 setOpenModalCategoryDelete(false)
-                setreloadpage(!reloadpage)
+                setreloadpage(true)
                 alert(result)
               })
               .catch(error => {
                 console.log('error', error)
                 setOpenModalCategoryDelete(false)
-                setreloadpage(!reloadpage)
+                setreloadpage(true)
               });
     }
   return (

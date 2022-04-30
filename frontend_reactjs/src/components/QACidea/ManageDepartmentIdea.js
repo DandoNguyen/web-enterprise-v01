@@ -10,6 +10,9 @@ function ManageDepartmentIdea() {
   const [ModalDepartmentIdeaOpen, setModalDepartmentIdea] = useState(false);
   const [QACIdea, setQACIdea] = useState([])
   const [ viewIdeas , setviewIdea]=useState('')
+  const [departmentName, setdepartmentName] = useState('')
+  const[reloadpage,setreloadpage] = useState(false)
+  const [loading , setloading]=useState(false)
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
@@ -24,10 +27,12 @@ function ManageDepartmentIdea() {
     fetch(Url+"/api/Posts/QACListPost", requestOptions)
       .then(response => response.json())
       .then(data => {
-        setQACIdea(data)
+        setQACIdea(data.listPostsDto)
+        setdepartmentName(data.departmentName)
+        setloading(true) 
       })
       .catch(error => console.log('error', error));
-  }, [])
+  }, [reloadpage])
   
   const viewIdea = (data)=>{
     setModalDepartmentIdea(true)
@@ -39,7 +44,7 @@ function ManageDepartmentIdea() {
       <td>{data.title}</td>
       <td>{data.username}</td>
       <td>{data.categoryName}</td>
-      <td>{data.message}</td>
+      {/* <td>{data.message}</td> */}
       <td>
         <button className='View' onClick={() => viewIdea(data)}>View</button>
         
@@ -53,7 +58,7 @@ function ManageDepartmentIdea() {
     <section className='Managementpage'>
       <div className='buttonMana'>
         <Link to='/ManageDepartmentAccount'><button type='button' className='buttonAccount'>Account</button></Link>
-        <Link to='ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
+        <Link to='/ManageDepartmentIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
       </div>
 
       <div className='manage-header'>
@@ -61,7 +66,7 @@ function ManageDepartmentIdea() {
       </div>
 
       <div className='contentManage'>
-        <div className='text'>List Idea</div>
+        <div className='text'>List Idea of {departmentName}</div>
       </div>
       <table className='tableuser'>
         <thead>
@@ -69,14 +74,17 @@ function ManageDepartmentIdea() {
             <th>Idea Title</th>
             <th>Username</th>
             <th>Category</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
             <th>View</th>
           </tr>
         </thead>
+        {loading ? 
         <tbody>
           {listQACidea}
-          {ModalDepartmentIdeaOpen && <ModalDepartmentIdea setOpenModalDepartmentIdea={setModalDepartmentIdea} data={viewIdeas} />}
-        </tbody>
+          {ModalDepartmentIdeaOpen && <ModalDepartmentIdea setOpenModalDepartmentIdea={setModalDepartmentIdea} data={viewIdeas} setreloadpage={setreloadpage}/>}
+        </tbody>:
+        <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+        }
       </table>
 
     </section>

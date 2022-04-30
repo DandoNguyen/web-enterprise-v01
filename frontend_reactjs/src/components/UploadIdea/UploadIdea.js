@@ -30,7 +30,7 @@ function UploadIdea() {
     formdata.append("IsAnonymous", getAnonymous);
     formdata.append("listCategoryId", cateselect);
     formdata.append("TopicId", topicselect);
-    formdata.append("files", files , files.name);
+    formdata.append("files", files, files.name);
 
     console.log(typeof files);
     var requestOptions = {
@@ -41,12 +41,21 @@ function UploadIdea() {
     };
 
     fetch(Url+"/api/Posts/CreatePost", requestOptions)
-      .then(response => response.text())
-      .then(result => 
-      alert(result)
-    )
-      .catch(error => 
-    alert(error));
+    .then(response => {
+      if (response.ok) {
+          return response.text()
+      } else {
+          throw new Error(response.status)
+      }
+  })
+      .then(result => {
+        alert(result);
+      
+    })
+      .catch(error =>{ 
+    console.log(error)
+    alert(error)
+  })
   }
 
   useEffect(() => {
@@ -86,11 +95,11 @@ function UploadIdea() {
       .catch(error => console.log('error', error));
   }, [])
 
-
+  
   const listTopics = Topics.map(data => (
     <option key={data.topicId} value={data.topicId}>{data.topicName}</option>
   ))
-
+    
   const listCategory = alltag.map(data => (
     <option key={data.categoryId} value={data.categoryId}>{data.categoryName}</option>
   ))

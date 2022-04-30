@@ -1,8 +1,8 @@
 import React,{useState} from "react";
-import "./ModalDeadlineCreate.css";
+import "./QamCreate.css";
 import {Url} from '../../URL'
 
-function ModalDeadlineCreate({ setOpenModalDeadlineCreate ,setreloadpage}) {
+function QamCreate({ setOpenModalDeadlineCreate ,setreloadpage }) {
   const[topicName,settopicName]= useState('');
   const[closureDate,setclosureDate]= useState('');
   const[finalClosureDate,setfinalClosureDate]= useState('');
@@ -75,4 +75,4 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate ,setreloadpage}) {
   );
 }
 
-export default ModalDeadlineCreate
+export default QamCreate

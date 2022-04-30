@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Modal.css";
 import { Url } from "../../URL";
 
-function Modal({ setOpenModal }) {
+function Modal({ setOpenModal ,setreloadpage }) {
   const [Email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +33,7 @@ function Modal({ setOpenModal }) {
       .then(result => {
         console.log(result);
         alert('Check Email')
+        setreloadpage(true)
       })
       .catch(error => alert( error.title));
 

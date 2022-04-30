@@ -1,8 +1,8 @@
 import React from "react";
-import "./ModalDeadlineDelete.css";
+import "./QamDelete.css";
 import {Url} from '../../URL'
 
-function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data ,setreloadpage}) {
+function QamDelete({ setOpenModalDeadlineDelete , data ,setreloadpage}) {
 
   const handleDelete = () => {
     var myHeaders = new Headers();
@@ -27,7 +27,7 @@ function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data ,setreloadpage}
         })
         .catch(error => {console.log('error', error)
         setOpenModalDeadlineDelete(false)
-        setreloadpage(true)
+        setreloadpage(!true)
       });
 }
   return (
@@ -49,4 +49,4 @@ function ModalDeadlineDelete({ setOpenModalDeadlineDelete , data ,setreloadpage}
   );
 }
 
-export default ModalDeadlineDelete
+export default QamDelete

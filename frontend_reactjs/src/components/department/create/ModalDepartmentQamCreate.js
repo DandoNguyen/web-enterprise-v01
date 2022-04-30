@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./ModalDepartmentQamCreate.css";
 import { Url } from "../../URL";
 
-function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
+function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate ,setreloadpage}) {
   const [department, setdepartment] = useState('')
   const summitdepartment = () => {
     var myHeaders = new Headers();
@@ -19,6 +19,7 @@ function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate }) {
       .then(response => response.text())
       .then(result => {
         alert(result)
+        setreloadpage(true)
       })
       .catch(error => console.log('error', error));
   }

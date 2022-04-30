@@ -2,7 +2,7 @@ import React from "react";
 import "./ModalManageDelete.css";
 import { Url } from "../../URL";
 
-function ModalManageDelete({ setOpenModalDelete , data ,setreloadpage ,reloadpage}) {
+function ModalManageDelete({ setOpenModalDelete , data ,setreloadpage }) {
   
   const deleteact = () => {
     var myHeaders = new Headers();
@@ -19,7 +19,7 @@ function ModalManageDelete({ setOpenModalDelete , data ,setreloadpage ,reloadpag
       .then(response => response.text())
       .then(result => {
         alert(result)
-        setreloadpage(!reloadpage)
+        setreloadpage(true)
       })
       .catch(error => console.log('error', error));
   }

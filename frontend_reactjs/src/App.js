@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './components/Home';
+import Home from './components/Homepage/Home';
 import Login from './components/Login/Login';
 import UploadIdea from './components/UploadIdea/UploadIdea';
 import './App.css';
@@ -20,11 +20,11 @@ import ManagementDepartmentQamAccount from './components/QAMAccount/Account/Mana
 import ManageDepartmentQamIdea from './components/QAMIdea/ManageDepartmentQamIdea';
 import { ChartPage } from './components/Chart/ChartPage';
 import AdminDepartment from './components/Admin/DepartmentAdmin/AdminDepartment';
-import PostPopular from './components/PostPopular';
-import PostLastComment from './components/PostLastComment';
+import PostPopular from './components/Homepage/PostPopular';
+import PostLastComment from './components/Homepage/PostLastComment';
 import { AdminChartPage } from './components/Admin/AdminChart/AdminChartPage';
-import Navbar from './components/Navbar';
-// import PostDetail from './components/Postdetail/PostDetail';
+import QamDeadLine from './components/QAMTopic/QamDeadLine';
+
 
 
 class App extends Component {
@@ -59,6 +59,7 @@ class App extends Component {
 					<Route exact path='/Popular' element={< PostPopular />}></Route>
 					<Route exact path='/LastComment' element={< PostLastComment />}></Route>
 					<Route exact path='/AdminChart' element={< AdminChartPage />}></Route>
+					<Route exact path='/QamDeadLine' element={< QamDeadLine />}></Route>
 				</Routes>
 			</Router>
 		);

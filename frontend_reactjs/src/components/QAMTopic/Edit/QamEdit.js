@@ -1,8 +1,8 @@
 import React,{useState, useEffect} from "react";
-import "./ModalDeadlineEdit.css";
+import "./QamEdit.css";
 import {Url} from '../../URL'
 
-function ModalDeadlineEdit({ setopenModalDeadlineEdit , data ,setreloadpage}) {
+function QamEdit({ setopenModalDeadlineEdit , data ,setreloadpage}) {
   const[topicName,settopicName]= useState('');
   const[closreDate,setclosreDate]= useState('');
   const[finalClosureDate,setfinalClosureDate]= useState('');
@@ -91,4 +91,4 @@ function ModalDeadlineEdit({ setopenModalDeadlineEdit , data ,setreloadpage}) {
   );
 }
 
-export default ModalDeadlineEdit
+export default QamEdit

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import './PostDetail.css'
 import { Url } from '../URL'
+import CmtChile from './CmtChile/CmtChile'
 
 function PostDetail({ setopendetail, data }) {
-  const [isChild] = useState(false)
+  const [isChild, setChild] = useState(false)
   const [postCmt, setpostCmt] = useState([])
   const [postId, setpostId] = useState('')
   const [voteNumber, setvoteNumber] = useState([])
   const [comment, setcomment] = useState('')
   const [reloadpage, setreloadpage] = useState(false)
-  const [Detail,setDetail]=useState([])
-  const [getVoteStatus,setgetVoteStatus]=useState([])
-  const [IsAnonymous] = useState([false,true]);
-  const [getAnonymous,setgetAnonymous]=useState('')
-  // const [getCmtId, setgetCmtId] = useState('')
+  const [Detail, setDetail] = useState([])
+  const [getVoteStatus, setgetVoteStatus] = useState([])
+  const [IsAnonymous] = useState([false, true]);
+  const [getAnonymous, setgetAnonymous] = useState('')
+  const [getCmtId, setgetCmtId] = useState('')
 
-
-  useEffect(() => { //detail tra ve nhu cc
+  useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
     myHeaders.append("Content-Type", "application/json");
@@ -27,11 +27,12 @@ function PostDetail({ setopendetail, data }) {
       redirect: 'follow'
     };
 
-    fetch( Url +`/api/Posts/PostDetail?postId=${data.postId}`, requestOptions)
+    fetch(Url + `/api/Posts/PostDetail?postId=${data.postId}`, requestOptions)
       .then(response => response.json())
       .then(result => setDetail(result))
       .catch(error => console.log('error', error));
-  }, [])
+  }, [reloadpage])
+
   // summit CMT
   const sumitcmnt = () => {
     setpostId(postId)
@@ -43,8 +44,8 @@ function PostDetail({ setopendetail, data }) {
       "postId": data.postId,
       "content": comment,
       "isAnonymous": getAnonymous,
-      "isChild": isChild,
-      // "parentId": getCmtId
+      "isChild": false
+
     });
 
     var requestOptions = {
@@ -56,12 +57,11 @@ function PostDetail({ setopendetail, data }) {
 
     fetch(Url + "/api/Comments", requestOptions)
       .then(response => {
-        if(response.ok){
+        if (response.ok) {
           response.json()
-        }else{
+        } else {
           throw new Error(response.status)
         }
-        
       })
       .then(() => {
         setreloadpage(!reloadpage)
@@ -69,7 +69,7 @@ function PostDetail({ setopendetail, data }) {
       })
       .catch(error => {
         console.log('error', error)
-        alert("No more comment can be added to this post after final closure date",error)
+        alert("No more comment can be added to this post after final closure date", error)
       });
   }
 
@@ -84,31 +84,47 @@ function PostDetail({ setopendetail, data }) {
       headers: myHeaders,
       redirect: 'follow'
     };
-
     fetch(Url + `/api/Comments/AllComments?PostId=${data.postId}`, requestOptions)
       .then(response => response.json())
-      .then(result => {
-        setpostCmt(result)
+      .then(data => {
+        setpostCmt(data)
+
       })
       .catch(error => console.log('error', error));
   }, [reloadpage])
-  
-  // const handelReply = (data) =>{
-  //   setgetCmtId(data.commentId)
-  //   setChild(!isChild)
-  // }
+
+  const handelReply = (dataCmt) => {
+    setgetCmtId(dataCmt)
+    setChild(!isChild)
+  }
+
+  const handelReplychild = (data) => {
+    setgetCmtId(data)
+    setChild(!isChild)
+  }
   const Cmts = postCmt.map(dataCmt => (
     <div className="Titlcmt" key={dataCmt.commentId}>
-      {dataCmt.isAnonymous === false? 
-      <span className='usernamecmt'>{dataCmt.username}</span>:
-      <span className='usernamecmt'>Anonymous</span>
+      {dataCmt.isAnonymous === false ?
+        <span className='usernamecmt'>{dataCmt.username}</span> :
+        <span className='usernamecmt'>Anonymous</span>
       }
       <br />
-      <span className='contentcmt'>{dataCmt.content}</span>
-      {/* <button onClick={() => handelReply(data)}>Reply</button> */}
-      <br/>
+      <span className='contentcmt'>{dataCmt.content}</span><br />
+      <button className='btnrepcmt' onClick={() => handelReply(dataCmt)}>Reply</button>
+      <br />
+      {dataCmt.childItems.map(data => (
+        <div className="Titlchildcmt" key={data.commentId}>
+          {data.isAnonymous === false ?
+            <span className='usernamecmt'>{data.username}</span> :
+            <span className='usernamecmt'>Anonymous</span>
+          }<br />
+          <span className='contentcmt'>{data.content}</span>
+          <button className='btnrepcmt' onClick={() => handelReplychild(data)}>Reply</button>
+        </div>
+      ))}
     </div>
   ))
+
 
   //vote
   const upvote = () => {
@@ -195,7 +211,7 @@ function PostDetail({ setopendetail, data }) {
       })
       .catch(error => console.log('error', error));
   }, [reloadpage])
-  
+
   return (
     <div className="modalBackground">
       <div className="modalPostContainer">
@@ -229,45 +245,40 @@ function PostDetail({ setopendetail, data }) {
         <div className="Desc">
           <span className="TopicName">Description : {Detail.desc}</span>
           <div className='showselectModal'>
-            {/* <select name="show" id="showid">
-              <option value="Default">Choose your type of comments</option>
-              <option value="Public">Public</option>
-              <option value="Anonymously">Anonymously</option>
-            </select> */}
             <select name="posttyle" id="posttyle" value={getAnonymous} onChange={e => setgetAnonymous(e.target.value)}>
-                <option value=''>Choose your type of comments</option>
-                <option value={IsAnonymous[0]}   >publicly</option>
-                <option  value={IsAnonymous[1]}  >Anonymously</option>
+              <option value=''>Choose your type of comments</option>
+              <option value={IsAnonymous[0]}   >publicly</option>
+              <option value={IsAnonymous[1]}  >Anonymously</option>
             </select>
           </div>
           <div className="iconsPost"  >
-          {getVoteStatus.upVote === true ? 
-            <button className='bt btn1' onClick={upvote} >
-            <i className='bx bx-upvote bx1'>
-              <span className='like' >{voteNumber.upvoteCount}</span>
-            </i>
-          </button>:
-          <button className='bt' onClick={upvote} >
-          <i className='bx bx-upvote'>
-            <span className='like' >{voteNumber.upvoteCount}</span>
-          </i>
-          </button>
-          }
-          {getVoteStatus.downVote === true ?
-            <button className='bt btn1' onClick={downVote}>
-              <i className='bxd bx bx-downvote bx1'>
-                <span className='dislike'>{voteNumber.downVoteCount}</span>
-              </i>
-            </button>:
-            <button className='bt' onClick={downVote}>
-            <i className='bxd bx bx-downvote'>
-              <span className='dislike'>{voteNumber.downVoteCount}</span>
-            </i>
-          </button>
-          }
+            {getVoteStatus.upVote === true ?
+              <button className='bt btn1' onClick={upvote} >
+                <i className='bx bx-upvote bx1'>
+                  <span className='like' >{voteNumber.upvoteCount}</span>
+                </i>
+              </button> :
+              <button className='bt' onClick={upvote} >
+                <i className='bx bx-upvote'>
+                  <span className='like' >{voteNumber.upvoteCount}</span>
+                </i>
+              </button>
+            }
+            {getVoteStatus.downVote === true ?
+              <button className='bt btn1' onClick={downVote}>
+                <i className=' bx bx-downvote bx1 bxd'>
+                  <span className='dislike'>{voteNumber.downVoteCount}</span>
+                </i>
+              </button> :
+              <button className='bt' onClick={downVote}>
+                <i className='bx bx-downvote bxd'>
+                  <span className='dislike'>{voteNumber.downVoteCount}</span>
+                </i>
+              </button>
+            }
             <span>
               <i className='bx bx-show-alt'>
-                <span className='view'>{Detail.viewsCount}</span>
+                <span className='view'>View : {Detail.viewsCount}</span>
               </i>
             </span>
           </div>
@@ -276,11 +287,7 @@ function PostDetail({ setopendetail, data }) {
             <button className='btn' onClick={sumitcmnt}>Summit</button>
           </div>
           {Cmts}
-          {/* { isChild &&
-          <div>
-          <input></input><button >Summit</button>
-          </div>
-          } */}
+          {isChild && <CmtChile setopenChild={setChild} data={getCmtId} setreloadpage={setreloadpage} />}
         </div>
       </div>
     </div>
