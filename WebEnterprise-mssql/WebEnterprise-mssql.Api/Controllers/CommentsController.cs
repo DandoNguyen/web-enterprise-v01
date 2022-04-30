@@ -247,10 +247,9 @@ namespace WebEnterprise_mssql.Api.Controllers
         private async Task AddLevel3ReplyCommentAsync(CommentDto dto, ApplicationUser user)
         {
             //Get author of target parent comment
-            var parentCommentAuthor = await repo.Comments
+            var parentComment = await repo.Comments
                 .FindByCondition(x => x.CommentId.Equals(Guid.Parse(dto.ParentId)))
                 .Include(x => x.ApplicationUser)
-                .Select(x => x.ApplicationUser)
                 .FirstOrDefaultAsync();
                         
             //Create Comment
@@ -270,9 +269,13 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
             //else moveon 
 
-            if (!parentCommentAuthor.Id.Equals(user.Id))
+            if (!parentComment.ApplicationUser.Id.Equals(user.Id))
             {
-                newComment.Content = $"Reply to {parentCommentAuthor.UserName}: {dto.Content}";
+                switch(parentComment.IsAnonymous)
+                {
+                    case true: newComment.Content = $"Reply: {dto.Content}"; break;
+                    case false: newComment.Content = $"Reply to {parentComment.ApplicationUser.UserName}: {dto.Content}"; break;
+                }
             }
             else
             {
@@ -287,10 +290,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
             //Send an email notification to the author of replied comment
-            if (!parentCommentAuthor.Id.Equals(user.Id))
+            if (!parentComment.Id.Equals(user.Id))
             {
                 MailContent mailContent = new MailContent();
-                mailContent.To = parentCommentAuthor.Email;
+                mailContent.To = parentComment.Email;
                 switch (dto.IsAnonymous)
                 {
                     case false:
