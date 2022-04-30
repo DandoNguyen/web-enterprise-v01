@@ -328,6 +328,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             repo.Comments.DeleteListChildren(childrenCommentArray);
             await repo.Save();
         }
+
         private async void DeleteComment(Guid commentId)
         {
             // var existingComment = await context.Comments
