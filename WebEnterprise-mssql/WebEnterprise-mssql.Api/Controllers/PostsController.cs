@@ -107,6 +107,13 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
             }
 
+            //Get Roles of User 
+            var rolesOfUser = await userManager.GetRolesAsync(user);
+            if(rolesOfUser.Contains("qam"))
+            {
+                return Ok(listPostsDto);
+            }
+
             //Get Department Name of logged in User
             var departmentName = await repo.Departments
                 .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
