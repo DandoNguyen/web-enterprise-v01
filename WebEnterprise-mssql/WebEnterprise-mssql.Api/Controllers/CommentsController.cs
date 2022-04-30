@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Threading.Tasks;
 using WebEnterprise_mssql.Api.Dtos;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
@@ -218,6 +218,32 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
         }
 
+        private async Task<dynamic> IsLevel3CommentAsync(string ParentID)
+        {
+            var existingComment = await repo.Comments
+                .FindByCondition(x => x.CommentId.Equals(Guid.Parse(ParentID)))
+                .FirstOrDefaultAsync();
+
+            //Get Parent ID and check if level 2
+            var isLevel2Result = await IsLevel2Comment(existingComment.ParentId);
+            if (isLevel2Result)
+            {
+                return new
+                {
+                    Bool = true,
+                    newParentID = existingComment.ParentId
+                };
+            }
+
+            //if false => it is level 1 => add level 2 comment
+            //Abort!
+            return new
+            {
+                Bool = false,
+                newParentID = ""
+            };
+        }
+
         private async Task AddLevel3ReplyCommentAsync(CommentDto dto, ApplicationUser user)
         {
             //Get author of target parent comment
@@ -226,7 +252,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .Include(x => x.ApplicationUser)
                 .Select(x => x.ApplicationUser)
                 .FirstOrDefaultAsync();
-
+                        
             //Create Comment
             var post = await repo.Posts
                 .FindByCondition(x => x.PostId.Equals(Guid.Parse(dto.PostId)))
@@ -234,7 +260,17 @@ namespace WebEnterprise_mssql.Api.Controllers
             var newComment = mapper.Map<Comments>(dto);
             newComment.CreatedDate = DateTimeOffset.UtcNow;
             newComment.ApplicationUser = user;
-            if(!parentCommentAuthor.Id.Equals(user.Id))
+
+            //Check if the parent comment ID is level 3 => private method return an object with two field which are a bool and a string (dynamic object)
+            //if true => comment battle start => change parent ID to level 2 comment's ID
+            var isLevel3Comment = await IsLevel3CommentAsync(dto.ParentId);
+            if (isLevel3Comment.Bool)
+            {
+                newComment.ParentId = isLevel3Comment.newParentID;
+            }
+            //else moveon 
+
+            if (!parentCommentAuthor.Id.Equals(user.Id))
             {
                 newComment.Content = $"Reply to {parentCommentAuthor.UserName}: {dto.Content}";
             }

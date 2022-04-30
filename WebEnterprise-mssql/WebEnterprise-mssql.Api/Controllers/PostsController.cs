@@ -121,10 +121,14 @@ namespace WebEnterprise_mssql.Api.Controllers
                 .FirstOrDefaultAsync();
             if(listPostsDto.Count().Equals(0))
             {
-                return new JsonResult(new { listPostsDto = new List<string>
+                return new JsonResult(new { listPostsDto = new List<PostDto>
                 {
-                    "No Content"
-                }, departmentName }) { StatusCode = 204 };
+                    new PostDto
+                    {
+                        title = "No Content",
+                        content = "No Content"
+                    }
+                }, departmentName }) { StatusCode = 200 };
             }
 
             return new JsonResult(new { listPostsDto, departmentName }) { StatusCode = 200 };
