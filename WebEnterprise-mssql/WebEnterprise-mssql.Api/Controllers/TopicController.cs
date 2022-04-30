@@ -86,7 +86,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             {
                 var topicDto = mapper.Map<TopicDto>(topic);
                 topicDto.Status = await GetStatus(topic.TopicId);
-                listTopicDto.Add(topicDto);
+                if(!(topicDto.ClosureDate <= DateTimeOffset.UtcNow))
+                {
+                    listTopicDto.Add(topicDto);
+                }
             }
             return Ok(listTopicDto);
         }
