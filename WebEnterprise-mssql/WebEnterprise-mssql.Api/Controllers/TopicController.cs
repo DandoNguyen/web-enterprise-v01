@@ -73,25 +73,34 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet]
         [Route("GetAllTopic")]
         public async Task<IActionResult> GetListTopicAsync() {
-            var listTopics = await repo.Topics
-                .FindAll()
-                .ToListAsync();
-            if (listTopics.Count().Equals(0))
+            var listTopicDto = await GetAllTopicAsync();
+            if (listTopicDto.Count().Equals(0))
+            {
+                return NoContent();
+            }
+            return Ok(listTopicDto);
+        }
+
+        //GET all topic in upload idea
+        [HttpGet]
+        [Route("ValidTopics")]
+        public async Task<IActionResult> GetAllTopicToUpload()
+        {
+            var listTopicDto = await GetAllTopicAsync();
+            if (listTopicDto.Count().Equals(0))
             {
                 return NoContent();
             }
 
-            var listTopicDto = new List<TopicDto>();
-            foreach(var topic in listTopics)
+            List<TopicDto> resultList = new();
+            foreach(var topic in listTopicDto)
             {
-                var topicDto = mapper.Map<TopicDto>(topic);
-                topicDto.Status = await GetStatus(topic.TopicId);
-                if(!(topicDto.ClosureDate <= DateTimeOffset.UtcNow))
+                if(!(topic.ClosureDate <= DateTimeOffset.UtcNow))
                 {
-                    listTopicDto.Add(topicDto);
+                    resultList.Add(topic);
                 }
             }
-            return Ok(listTopicDto);
+            return Ok(resultList);
         }
 
         //GET get Topic Details
@@ -188,6 +197,25 @@ namespace WebEnterprise_mssql.Api.Controllers
             return BadRequest($"Error in updating Topic {dto.TopicName}");
         }
 
+        private async Task<List<TopicDto>> GetAllTopicAsync()
+        {
+            var listTopics = await repo.Topics
+                .FindAll()
+                .ToListAsync();
+            if (listTopics.Count().Equals(0))
+            {
+                return new List<TopicDto>();
+            }
+
+            var listTopicDto = new List<TopicDto>();
+            foreach (var topic in listTopics)
+            {
+                var topicDto = mapper.Map<TopicDto>(topic);
+                topicDto.Status = await GetStatus(topic.TopicId);
+                listTopicDto.Add(topicDto);
+            }
+            return listTopicDto;
+        }
         private async Task<string> GetStatus(Guid topicId)
         {
             var topic = await repo.Topics
