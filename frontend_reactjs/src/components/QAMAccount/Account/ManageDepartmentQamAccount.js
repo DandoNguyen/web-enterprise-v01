@@ -65,6 +65,7 @@ function ManagementDepartmentQamAccount() {
         <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
         <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
         <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/QamDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
       </div>
 
       <div className='manage-header'>

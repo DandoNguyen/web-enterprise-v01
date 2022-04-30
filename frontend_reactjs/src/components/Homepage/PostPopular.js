@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import '../css/Home.css';
-import Navbar from './Navbar';
-import {Url} from './URL.js'
-import PostDetail from './Postdetail/PostDetail';
+import './Home.css';
+import Navbar from '../Navbar';
+import {Url} from '../URL.js'
+import PostDetail from '../Postdetail/PostDetail';
 import { Link } from 'react-router-dom';
-import Pagination from './Pagination';
+import Pagination from '../Pagination';
 
 function PostPopular() {
     const [postHome, setpostHome] = useState([]);

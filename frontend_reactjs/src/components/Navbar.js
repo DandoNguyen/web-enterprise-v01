@@ -45,8 +45,7 @@ function Navbar() {
 
     const logout = () => {
         Navigate('/')
-        sessionStorage.removeItem("accessToken")
-        
+        sessionStorage.removeItem("accessToken")  
         // props.onLogoutSuccess()
     }
 

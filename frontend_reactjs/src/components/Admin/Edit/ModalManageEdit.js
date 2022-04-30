@@ -2,16 +2,16 @@ import React, {useState ,useEffect} from "react";
 import "./ModalManageEdit.css";
 import { Url } from "../../URL";
 
-function ModalManageEdit({ setopenModalManageEdit , data}) {
+function ModalManageEdit({ setopenModalManageEdit , data ,setreloadpage}) {
   const[userName,setuserName]=useState('')
-  // const [age,setage]=useState('')
   const[fullname,setfullname]=useState('')
   const[userEmail,setuserEmail]=useState('')
-
+  const [employeeId, setemployeeId] = useState('')
   useEffect(() => {
-    setuserEmail(data.email)
+    setuserEmail(data.email);
     setuserName(data.username);
-    setfullname(data.fullname)
+    setfullname(data.fullname);
+    setemployeeId(data.employeeId)
   }, [])
   const updateAccout = () => {
     var myHeaders = new Headers();
@@ -23,6 +23,7 @@ function ModalManageEdit({ setopenModalManageEdit , data}) {
       "Email":userEmail,
       "userName": userName,
       "fullname": fullname,
+      "EmployeeId": employeeId
     });
 
     var requestOptions = {
@@ -34,7 +35,10 @@ function ModalManageEdit({ setopenModalManageEdit , data}) {
 
     fetch(Url+"/api/Accounts/updateUser", requestOptions)
       .then(response => response.text())
-      .then(result => alert(result))
+      .then(result => {
+        alert(result)
+        setreloadpage(true)
+      })
       .catch(error => alert(error));
   }
   return (
@@ -55,6 +59,11 @@ function ModalManageEdit({ setopenModalManageEdit , data}) {
           <span className="inputtitle">userName</span>
           <br />
           <input className="inputvl" value={userName} onChange={e=>setuserName(e.target.value)}></input>
+        </div>
+        <div className="modalinput">
+          <span className="inputtitle">EmployeeId</span>
+          <br />
+          <input className="inputvl" value={employeeId} onChange={e=>setemployeeId(e.target.value)}></input>
         </div>
         {/* <div className="modalinput">
           <span className="inputtitle">age</span>

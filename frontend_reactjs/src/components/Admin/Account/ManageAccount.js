@@ -99,7 +99,7 @@ function ManageAccount() {
       <div className='Btncreate'>
         <div className='buttonAddUser'>
           <button className='Add-user-bt' onClick={() => { setModalOpen(true); }}>Create User</button>
-          {modalOpen && <Modal setOpenModal={setModalOpen} />}
+          {modalOpen && <Modal setOpenModal={setModalOpen} setreloadpage={setreloadpage} />}
         </div>
         <div className='buttonAddUser'>
           <button className='Add-user-bt' onClick={() => { setModlaAddroleOpen(true); }}>ADD ROLE</button>
@@ -122,9 +122,9 @@ function ManageAccount() {
         {loading ?
         <tbody>
           {listAccounts}
-          {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={editUser} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
-          {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
-          {ModalManageDeleteOpen && <ModalManageDelete setOpenModalDelete={setModalManageDelete} data={userDelete} setreloadpage={setreloadpage} reloadpage={reloadpage}/>}
+          {ModalManageEditOpen && <ModalManageEdit setopenModalManageEdit={setModalManageEdit} data={editUser} setreloadpage={setreloadpage} />}
+          {ModalManageDetailOpen && <ModalManageDetail setOpenModalDetail={setModalManageDetail} data={userDetail} />}
+          {ModalManageDeleteOpen && <ModalManageDelete setOpenModalDelete={setModalManageDelete} data={userDelete} setreloadpage={setreloadpage} />}
         </tbody>:
         <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
       }

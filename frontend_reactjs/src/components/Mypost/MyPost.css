@@ -116,15 +116,7 @@ position: relative;
     align-items: center;
     justify-content: center;
 }
-.bx-comment{
-    /* margin-left: 100px; */
-    font-size: 20px;
-    min-width: 60px;
-    border-radius: 6px;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-}
+
 .bx-show-alt{
     margin-left: 40px;
     font-size: 20px;

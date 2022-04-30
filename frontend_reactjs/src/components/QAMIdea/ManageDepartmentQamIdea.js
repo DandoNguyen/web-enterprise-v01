@@ -46,7 +46,7 @@ function ManageDepartmentQamIdea () {
       <td>{data.title}</td>
       <td>{data.username}</td>
       <td>{data.categoryName}</td>
-      <td>{data.statusMessage}</td>
+      {/* <td>{data.statusMessage}</td> */}
       <td>
         <button className='View' onClick={() => viewIdeadetail(data)}>View</button>
         
@@ -89,7 +89,7 @@ function ManageDepartmentQamIdea () {
       <td>{data.title}</td>
       <td>{data.username}</td>
       <td>{data.title}</td>
-      <td>{data.statusMessage}</td>
+      {/* <td>{data.statusMessage}</td> */}
       <td>
         <button className='View' onClick={() => viewIdea(data)}>View</button>
         
@@ -104,6 +104,7 @@ function ManageDepartmentQamIdea () {
     <Link to='/ManageDepartmentQamAccount'><button type='button' className='buttonAccount'>Account</button></Link>
         <Link to='/ManageDepartmentQamIdea'><button type='button' className='buttonDeadline'>Idea</button></Link>
         <Link to='/ManageDepartmentQamDepartment'><button type='button' className='buttonDeadline'>Department</button></Link>
+        <Link to='/QamDeadLine'><button type='button' className='buttonDeadline'>DeadLine</button></Link>
     </div>
 
     <div className='manage-header'>
@@ -111,7 +112,7 @@ function ManageDepartmentQamIdea () {
       </div>
 
       <div className='contentManage'>
-        <div className='text'>List Idea Approval</div>
+        <div className='text'>List Idea Approved</div>
     </div>
     <table className='tableuser'>
       <thead>
@@ -119,7 +120,7 @@ function ManageDepartmentQamIdea () {
           <th>Idea Title</th>
           <th>Username</th>
           <th>Title</th>
-          <th>Status</th>
+          {/* <th>Status</th> */}
           <th>View</th>
         </tr>
         </thead>
@@ -140,7 +141,7 @@ function ManageDepartmentQamIdea () {
             <th>Idea Title</th>
             <th>Username</th>
             <th>Category</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
             <th>View</th>
           </tr>
         </thead>

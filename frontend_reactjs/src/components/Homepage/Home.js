@@ -1,30 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import '../css/Home.css';
-import Navbar from './Navbar';
-import {Url} from './URL.js'
-import PostDetail from './Postdetail/PostDetail';
+import './Home.css';
+import Navbar from '../Navbar';
+import { Url } from '../URL.js'
+import PostDetail from '../Postdetail/PostDetail';
 import { Link } from 'react-router-dom';
-import Pagination from './Pagination';
+import Pagination from '../Pagination';
 
-function PostLastComment() {
+
+
+
+function Home() {
     const [postHome, setpostHome] = useState([]);
-    const [errorMes,seterrorMes] = useState('No Posts Avalaible')
+    const [errorMes, seterrorMes] = useState('No Posts Avalaible')
     const [detailopen, setdetailopen] = useState(false)
     const [homePost, sethomePost] = useState({})
-    const [loading , setloading]=useState(false)
     const [currentPage, setcurrentPage] = useState(1)
     const [postsPerPage] = useState(5)
+    const [loading , setloading]=useState(false)
     useEffect(() => {
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + sessionStorage.getItem("accessToken"));
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
         };
 
-        fetch(Url+"/api/Posts/GetAllPostsSortedByCommentsCount", requestOptions)
+        fetch(Url + "/api/Posts/PostFeedSortByCreatedDate", requestOptions)
             .then(response => {
                 if (response.ok) {
                     return response.json()
@@ -33,13 +35,13 @@ function PostLastComment() {
                 }
             })
             .then(data => {
-                if(data.length !== 0){
+                if (data.length !== 0) {
                     setpostHome(data)
-                }else{
+                } else {
                     seterrorMes(data)
                 }
-                setloading(true)
                 // setpostHome(data)
+                setloading(true)
             })
             .catch(error => console.log('error', error));
     }, [])
@@ -62,21 +64,21 @@ function PostLastComment() {
                 <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet' />
                 <div className="header_posts">
                     <i className='bx bx-user-circle icon'></i>
-                {data.isAnonymous === false ? 
-                <div className="userposts_name">
-                        <span className="name_userposts">{data.username}</span>
-                    <div className='day'>
-                        <div className='day-sumit'>{data.createdDate}</div>
-                    </div>
-                </div> 
-                :
-                <div className="userposts_name">
-                        <span className="name_userposts">Anonymous</span>
-                    <div className='day'>
-                        <div className='day-sumit'>{data.createdDate}</div>
-                    </div>
-                </div>
-                }
+                    {data.isAnonymous === false ?
+                        <div className="userposts_name">
+                            <span className="name_userposts">{data.username}</span>
+                            <div className='day'>
+                                <div className='day-sumit'>{data.createdDate}</div>
+                            </div>
+                        </div>
+                        :
+                        <div className="userposts_name">
+                            <span className="name_userposts">Anonymous</span>
+                            <div className='day'>
+                                <div className='day-sumit'>{data.createdDate}</div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </header>
             <div className="Category">
@@ -101,27 +103,25 @@ function PostLastComment() {
             </div>
         </div>
     ))
-  return (
-    <div>
+    return <div>
         <Navbar />
         <section className="home">
             <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet' />
             <div className="text">
-            <Link to='/Home'><button className='Newbtn'>New</button></Link> 
-               <Link to='/Popular'><button className='Mostpplbtn'>Most Popular</button></Link> 
-               <Link to='/LastComment'><button className='cmtbtn'>Last Comments</button></Link> 
+                <Link to='/Home'><button className='Newbtn'>New</button></Link>
+                <Link to='/Popular'><button className='Mostpplbtn'>Most Popular</button></Link>
+                <Link to='/LastComment'><button className='cmtbtn'>Last Comments</button></Link>
             </div>
             {loading ? 
-            <div>
+                <div>
                 {errorMes && listHomepost}
                 {detailopen && <PostDetail setopendetail={setdetailopen} data={homePost} />}
                 <Pagination postsPerPage={postsPerPage} totalPosts={postHome.length} paginate={paginate} />
-            </div>:
-            <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
+                </div>:
+                 <div loading={true} text={"loading..."} className="loading">LOADING . . .</div>
             }
         </section>
     </div>
-  )
 }
 
-export default PostLastComment
+export default Home;
