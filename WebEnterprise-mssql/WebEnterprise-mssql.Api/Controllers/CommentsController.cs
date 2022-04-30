@@ -290,10 +290,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             }
 
             //Send an email notification to the author of replied comment
-            if (!parentComment.Id.Equals(user.Id))
+            if (!parentComment.ApplicationUser.Id.Equals(user.Id))
             {
                 MailContent mailContent = new MailContent();
-                mailContent.To = parentComment.Email;
+                mailContent.To = parentComment.ApplicationUser.Email;
                 switch (dto.IsAnonymous)
                 {
                     case false:
