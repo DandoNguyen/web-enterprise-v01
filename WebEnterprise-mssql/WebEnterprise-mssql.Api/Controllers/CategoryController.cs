@@ -84,6 +84,7 @@ namespace WebEnterprise_mssql.Api.Controllers
             foreach(var post in listPosts)
             {
                 var postDto = mapper.Map<PostDto>(post);
+                postDto.CategoryName.Add(targetCate.CategoryName);
                 listResult.Add(postDto);
             }
             return Ok(listResult);

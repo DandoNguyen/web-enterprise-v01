@@ -23,5 +23,9 @@ namespace WebEnterprise_mssql.Api.Dtos
         public List<string> CategoryName { get; set; }
         public List<string> FilesPaths { get; set; }
         public List<string> Message { get; set; }
+        public PostDto()
+        {
+            CategoryName = new List<string>();
+        }
     }
 }

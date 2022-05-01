@@ -359,7 +359,10 @@ namespace WebEnterprise_mssql.Api.Controllers
             //     });
             // }
 
-            var post = await repo.Posts.GetPostByIDAsync(Guid.Parse(postId));
+            var post = await repo.Posts
+                .FindByCondition(x => x.PostId.Equals(Guid.Parse(postId)))
+                .Include(x => x.categories)
+                .FirstOrDefaultAsync();
             if (post is null)
             {
                 return NotFound();
