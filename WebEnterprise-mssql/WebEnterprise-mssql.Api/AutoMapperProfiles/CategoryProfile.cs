@@ -10,6 +10,7 @@ namespace WebEnterprise_mssql.Api.Profiles
         {
             CreateMap<Categories, CreateCategoryDto>();
             CreateMap<Categories, CreateCategoryDto>().ReverseMap();
+            CreateMap<Categories, CateDto>();
         }
     }
 }
