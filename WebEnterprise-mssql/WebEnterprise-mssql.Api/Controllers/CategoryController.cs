@@ -76,18 +76,15 @@ namespace WebEnterprise_mssql.Api.Controllers
         {
             var targetCate = await repo.Categories
                 .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
+                .Include(x => x.posts)
                 .FirstOrDefaultAsync();
-            var listPosts = await repo.Posts
-                .FindAll().Include(x => x.categories)
-                .ToListAsync();
+            var listPosts = targetCate.posts;
+            
             List<PostDto> listResult = new();
             foreach(var post in listPosts)
             {
-                if (post.categories.Contains(targetCate))
-                {
-                    var postDto = mapper.Map<PostDto>(post);
-                    listResult.Add(postDto);
-                }
+                var postDto = mapper.Map<PostDto>(post);
+                listResult.Add(postDto);
             }
             return Ok(listResult);
         }
