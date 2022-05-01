@@ -260,4 +260,8 @@ body.dark .switch::before{
     left: 20px;
 }
 
+.bottom-content{
+    background-color: #70707000;
+    border: 1px solid #b1154900;
+}
 

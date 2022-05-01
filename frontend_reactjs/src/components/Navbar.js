@@ -55,11 +55,6 @@ function Navbar() {
         Navbarrole = (
             <div className="menu">
 
-                <li className="search-box">
-                    <i className='bx bx-search icon'></i>
-                    <input className="text" placeholder="Search..." />
-                </li>
-
                 <ul className="menu-links">
                     <li className="nav-link">
                         <Link to='/Home'>
@@ -106,7 +101,7 @@ function Navbar() {
 
 
                     <li className="nav-link">
-                        <Link to='/AboutUs'>
+                        <Link to='/INTRODUCTION'>
                             <i className='bx bx-buildings icon' ></i>
                             <span className="text nav-text">About Company</span>
                         </Link>
@@ -117,10 +112,6 @@ function Navbar() {
     }  else if (userrole[0] === 'qac') {
         Navbarrole = (
             <div className="menu">
-                <li className="search-box">
-                    <i className='bx bx-search icon'></i>
-                    <input className="text" placeholder="Search..." />
-                </li>
 
                 <ul className="menu-links">
                     <li className="nav-link">
@@ -159,7 +150,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/AboutUs'>
+                        <Link to='/INTRODUCTION'>
                             <i className='bx bx-buildings icon' ></i>
                             <span className="text nav-text">About Company</span>
                         </Link>
@@ -170,10 +161,6 @@ function Navbar() {
     } else if (userrole[0] === 'qam') {
         Navbarrole = (
             <div className="menu">
-                <li className="search-box">
-                    <i className='bx bx-search icon'></i>
-                    <input className="text" placeholder="Search..." />
-                </li>
                 <ul className="menu-links">
                     <li className="nav-link">
                         <Link to='/Home'>
@@ -227,7 +214,7 @@ function Navbar() {
 
 
                     <li className="nav-link">
-                        <Link to='/AboutUs'>
+                        <Link to='/INTRODUCTION'>
                             <i className='bx bx-buildings icon' ></i>
                             <span className="text nav-text">About Company</span>
                         </Link>
@@ -238,10 +225,6 @@ function Navbar() {
     }else if (userrole[0] === 'staff') {
         Navbarrole = (
             <div className="menu">
-                <li className="search-box">
-                    <i className='bx bx-search icon'></i>
-                    <input className="text" placeholder="Search..." />
-                </li>
 
                 <ul className="menu-links">
                     <li className="nav-link">
@@ -273,7 +256,7 @@ function Navbar() {
                     </li>
 
                     <li className="nav-link">
-                        <Link to='/AboutUs'>
+                        <Link to='/INTRODUCTION'>
                             <i className='bx bx-buildings icon' ></i>
                             <span className="text nav-text">About Company</span>
                         </Link>
@@ -297,14 +280,12 @@ function Navbar() {
                 </header>
                 <div className="menu-bar">
                     {Navbarrole}
-                    <div className="bottom-content">
-                        <li className="">
-                            <Link to="/">
-                                <i className='bx bx-log-out icon' ></i>
-                                <span className="text nav-text" onClick={logout}>Logout</span>
-                            </Link>
+                    <button className="bottom-content" onClick={logout}>
+                        <li>
+                            <i className='bx bx-log-out icon' ></i>
+                            <span className="text nav-text">Logout</span>
                         </li>
-                    </div>
+                    </button>
                 </div>
             </nav>
         </div>

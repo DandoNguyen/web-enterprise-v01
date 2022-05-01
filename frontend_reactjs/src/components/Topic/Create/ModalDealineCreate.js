@@ -31,6 +31,7 @@ function ModalDeadlineCreate({ setOpenModalDeadlineCreate ,setreloadpage}) {
           .then(result =>{
             alert(result);
             setreloadpage(true)
+            setOpenModalDeadlineCreate(false)
           })
           .catch(error => {console.log('error', error)
           alert('Full information needed')

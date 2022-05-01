@@ -26,7 +26,6 @@ function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
 
   const listuserdpm = user.map(data => (
     <tr key={data.id}>
-      <td>{data.id}</td>
       <td>{data.userName}</td>
       <td>{data.email}</td>
     </tr>
@@ -43,7 +42,6 @@ function ModalDepartmentQamView({ setOpenDepartmentQamView, data }) {
         <table className='tableuser'>
           <thead>
             <tr>
-              <th>System Management</th>
               <th>User</th>
               <th>Email</th>
             </tr>

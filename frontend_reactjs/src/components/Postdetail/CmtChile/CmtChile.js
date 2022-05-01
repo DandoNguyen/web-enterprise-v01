@@ -38,6 +38,7 @@ function CmtChile ({ setopenChild ,data ,setreloadpage}) {
           .then(() => {
             alert('Success')
             setreloadpage(true)
+            setopenChild(false)
           })
           .catch(error => {
             console.log('error', error)

@@ -29,13 +29,13 @@ function Modal({ setOpenModal ,setreloadpage }) {
     };
 
     fetch(Url+"/api/AuthManagement/Register", requestOptions)
-      .then(response => response.json())
+      .then(response => response.text())
       .then(result => {
-        console.log(result);
-        alert('Check Email')
+        alert(result)
         setreloadpage(true)
+        setOpenModal(false)
       })
-      .catch(error => alert( error.title));
+      .catch(error => alert( error));
 
   }
 

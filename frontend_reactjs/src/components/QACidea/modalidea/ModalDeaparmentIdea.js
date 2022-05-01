@@ -57,6 +57,7 @@ function ModalDepartmentIdea({ setOpenModalDepartmentIdea ,data ,setreloadpage})
       .then(response => response.json())
       .then(result => {
         console.log(result)
+        setOpenModalDepartmentIdea(false)
         alert('Approve success')
         setreloadpage(true)
     })
