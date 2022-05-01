@@ -70,6 +70,28 @@ namespace WebEnterprise_mssql.Api.Controllers
             return Ok(listResult);
         }
 
+        [HttpGet]
+        [Route("GetListPostsOfThisCate")]
+        public async Task<IActionResult> GetAllPostInCateAsync(string cateId)
+        {
+            var targetCate = await repo.Categories
+                .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
+                .FirstOrDefaultAsync();
+            var listPosts = await repo.Posts
+                .FindAll().Include(x => x.categories)
+                .ToListAsync();
+            List<PostDto> listResult = new();
+            foreach(var post in listPosts)
+            {
+                if (post.categories.Contains(targetCate))
+                {
+                    var postDto = mapper.Map<PostDto>(post);
+                    listResult.Add(postDto);
+                }
+            }
+            return Ok(listResult);
+        }
+
         //Post Add Cate Tag to Post
         [HttpPost]
         [Route("AddTagToPost")]
