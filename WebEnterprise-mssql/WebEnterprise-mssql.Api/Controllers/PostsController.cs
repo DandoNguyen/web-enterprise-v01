@@ -77,6 +77,9 @@ namespace WebEnterprise_mssql.Api.Controllers
         {
             //Get current Logged in user
             var user = await DecodeToken(Authorization);
+            
+            //Get Roles of User 
+            var rolesOfUser = await userManager.GetRolesAsync(user);
 
             //Get all Ideas
             var listPosts = await repo.Posts
@@ -98,21 +101,24 @@ namespace WebEnterprise_mssql.Api.Controllers
                         listCateId.Add(category.CategoryId.ToString());
                     }
                     newPostDto.CategoryName = await GetListCategoriesNameAsync(listCateId);
+                                                           
+                    if (post.TopicId is not null && rolesOfUser.Contains("qam"))
+                    {
+                        listPostsDto.Add(newPostDto);
+                    }
 
                     //Check if Topic still Exist and department is the same as department of QAC
-                    if(post.TopicId is not null && department.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
+                    if (post.TopicId is not null && department.DepartmentId.Equals(Guid.Parse(user.DepartmentId)) && rolesOfUser.Contains("qac"))
                     {
                         listPostsDto.Add(newPostDto);
                     }
                 }
             }
 
-            //Get Roles of User 
-            var rolesOfUser = await userManager.GetRolesAsync(user);
-            if(rolesOfUser.Contains("qam"))
-            {
-                return Ok(listPostsDto);
-            }
+            //if (rolesOfUser.Contains("qam"))
+            //{
+            //    return Ok(listPostsDto);
+            //}
 
             //Get Department Name of logged in User
             var departmentName = await repo.Departments
@@ -312,6 +318,7 @@ namespace WebEnterprise_mssql.Api.Controllers
 
             var listPosts = await repo.Posts
                 .FindByCondition(x => x.UserId.Equals(user.Id))
+                .Include(x => x.categories)
                 .ToListAsync();
             var sortedListPosts = listPosts.OrderBy(x => x.Status).ToList();
 
@@ -441,7 +448,7 @@ namespace WebEnterprise_mssql.Api.Controllers
                 newPostDto.ListCategoryName = await GetListCategoriesNameAsync(dto.listCategoryId);
                 newPostDto.FilesPaths = await UploadFiles(files, user.UserName, newPost.PostId);
 
-                return Ok("Idea Submssion Successful!");
+                return Ok("Idea Submission Successful!");
                 // return Ok($"Post {newPost.PostId} created!");
             }
             return new JsonResult("Error in creating Post") { StatusCode = 500 };
