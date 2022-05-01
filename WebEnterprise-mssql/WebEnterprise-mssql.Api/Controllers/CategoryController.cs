@@ -9,6 +9,7 @@ using WebEnterprise_mssql.Api.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Collections.Generic;
 
 namespace WebEnterprise_mssql.Api.Controllers
 {
@@ -58,8 +59,15 @@ namespace WebEnterprise_mssql.Api.Controllers
         [HttpGet]
         [Route("AllTag")]
         public async Task<IActionResult> GetAllCateTagAsync() {
-            var listCate = await repo.Categories.FindAll().ToListAsync();
-            return Ok(listCate);
+            var listCate = await repo.Categories.FindAll().Include(x => x.posts).ToListAsync();
+            List<CateDto> listResult = new();
+            foreach (var cate in listCate)
+            {
+                var newCateDto = mapper.Map<CateDto>(cate);
+                newCateDto.postCount = cate.posts.Count;
+                listResult.Add(newCateDto);
+            }
+            return Ok(listResult);
         }
 
         //Post Add Cate Tag to Post

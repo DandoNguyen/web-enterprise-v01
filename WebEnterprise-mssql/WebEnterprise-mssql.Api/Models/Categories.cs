@@ -6,7 +6,7 @@ namespace WebEnterprise_mssql.Api.Models
 {
     public class Categories
     {
-        [KeyAttribute]
+        [Key]
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
         public string Desc { get; set; }
