@@ -20,6 +20,7 @@ function ModalManageDelete({ setOpenModalDelete , data ,setreloadpage }) {
       .then(result => {
         alert(result)
         setreloadpage(true)
+        setOpenModalDelete(false)
       })
       .catch(error => console.log('error', error));
   }
