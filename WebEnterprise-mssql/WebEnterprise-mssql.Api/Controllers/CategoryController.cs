@@ -110,8 +110,14 @@ namespace WebEnterprise_mssql.Api.Controllers
         public async Task<IActionResult> DeleteCateTagAsync(string cateId) {
             var cate = await repo.Categories
                 .FindByCondition(x => x.CategoryId.Equals(Guid.Parse(cateId)))
+                .Include(x => x.posts)
                 .FirstOrDefaultAsync();
-            
+
+            if (!cate.posts.Count.Equals(0))
+            {
+                return BadRequest($"{cate.CategoryName} is in used!");
+            }
+
             try 
             {
                 repo.Categories.Delete(cate);

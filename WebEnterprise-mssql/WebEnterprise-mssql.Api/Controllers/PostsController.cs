@@ -115,10 +115,10 @@ namespace WebEnterprise_mssql.Api.Controllers
                 }
             }
 
-            //if (rolesOfUser.Contains("qam"))
-            //{
-            //    return Ok(listPostsDto);
-            //}
+            if (rolesOfUser.Contains("qam"))
+            {
+                return Ok(listPostsDto);
+            }
 
             //Get Department Name of logged in User
             var departmentName = await repo.Departments
