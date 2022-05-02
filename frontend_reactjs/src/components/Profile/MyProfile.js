@@ -59,6 +59,9 @@ function MyProfile (){
         <span className="TopicName">Username : {User.username} </span>
         </div>
         <div className="In4">
+        <span className="TopicName">EmployeeId : {User.employeeId} </span>
+        </div>
+        <div className="In4">
         <span className="TopicName">Email : {User.email} </span>
         </div>
         <div className="In4">

@@ -20,6 +20,7 @@ function ModalDepartmentQamCreate({ setOpenModalDepartmentQamCreate ,setreloadpa
       .then(result => {
         alert(result)
         setreloadpage(true)
+        setOpenModalDepartmentQamCreate(false)
       })
       .catch(error => console.log('error', error));
   }

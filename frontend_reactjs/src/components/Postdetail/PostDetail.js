@@ -231,7 +231,7 @@ function PostDetail({ setopendetail, data }) {
           </div>
         </header>
         <div className="Category">
-          <span className="TopicName">{data.listCategoryName}</span>
+          <span className="TopicName">{Detail.listCategoryName}</span>
         </div>
         <div className="TitlePost">
           <p className="TopicName">Title : {Detail.title}</p>
@@ -284,7 +284,7 @@ function PostDetail({ setopendetail, data }) {
           </div>
           <div className="modalInput">
             <textarea placeholder='Write your comments here...' className="Commentbox" value={comment} onChange={e => setcomment(e.target.value)}></textarea>
-            <button className='btn' onClick={sumitcmnt}>Summit</button>
+            <button className='btn' onClick={sumitcmnt}>Submit</button>
           </div>
           {Cmts}
           {isChild && <CmtChile setopenChild={setChild} data={getCmtId} setreloadpage={setreloadpage} />}

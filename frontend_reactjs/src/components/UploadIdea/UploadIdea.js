@@ -18,6 +18,7 @@ function UploadIdea() {
   const [topicselect, settopicselect] = useState('')
   const [modalOpen, setModalOpen] = useState(false);
   const [getAnonymous,setgetAnonymous]=useState('')
+  const[reloadpage,setreloadpage]=useState(false)
 
   const sumbmitidea = () => {
     var myHeaders = new Headers();
@@ -48,14 +49,16 @@ function UploadIdea() {
           throw new Error(response.status)
       }
   })
-      .then(result => {
-        alert(result);
-      
-    })
-      .catch(error =>{ 
-    console.log(error)
+      .then(result => 
+       {alert(result)
+        setModalOpen(false)
+        setreloadpage(!reloadpage)
+      }
+    )
+      .catch(error => 
+    // console.log(error)
     alert(error)
-  })
+  )
   }
 
   useEffect(() => {
@@ -68,14 +71,14 @@ function UploadIdea() {
       redirect: 'follow'
     };
 
-    fetch( Url+"/api/Topics/GetAllTopic", requestOptions)
+    fetch( Url+"/api/topics/ValidTopics", requestOptions)
       .then(response => response.json())
       .then(data => {
         setTopics(data)
 
       })
       .catch(error => console.log('error', error))
-  }, [])
+  }, [reloadpage])
 
   useEffect(() => {
     var myHeaders = new Headers();
@@ -93,9 +96,8 @@ function UploadIdea() {
         setalltag(data)
       })
       .catch(error => console.log('error', error));
-  }, [])
+  }, [reloadpage])
 
-  
   const listTopics = Topics.map(data => (
     <option key={data.topicId} value={data.topicId}>{data.topicName}</option>
   ))
@@ -151,8 +153,6 @@ function UploadIdea() {
             </div>
             <button className='SubmitIdea1' onClick={() => setModalOpen(true)}>Submit</button>
                 {modalOpen && <ModalPolicy setOpenModal={setModalOpen} sumbmitidea={sumbmitidea}/>}
-            {/* <button className='SubmitIdea'>Submit</button> */}
-            <button className='CancelButton'>Cancel</button>
         </div>
     </section>
 </div>

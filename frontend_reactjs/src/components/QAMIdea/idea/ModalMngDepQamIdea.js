@@ -135,13 +135,6 @@ function ModalMngDepQamIdea({ setOpenModalMngDepQamIdea ,data}) {
         </div>
         <div className="Desc">
           <span className="TopicName">Description : {data.desc}</span>
-          <div className='showselectModal'>
-            <select name="show" id="showid">
-              <option value="Default">Choose your type of comments</option>
-              <option value="Public">Public</option>
-              <option value="Anonymously">Anonymously</option>
-            </select>
-          </div>
           <div className="iconsPost"  >
             <button className='btn' onClick={upvote} >
               <i className='bx bx-upvote'>

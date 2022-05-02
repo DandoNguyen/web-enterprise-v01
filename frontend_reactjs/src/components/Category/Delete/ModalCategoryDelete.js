@@ -16,15 +16,14 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data ,setreloadpage 
             };
 
             fetch(Url+`/api/Category/DeleteCate?cateid=${data.categoryId}`, requestOptions)
-              .then(response => response.json())
+              .then(response => response.text())
               .then(result => {
-                console.log(result)
+                alert(result)
                 setOpenModalCategoryDelete(false)
                 setreloadpage(true)
-                alert(result)
               })
               .catch(error => {
-                console.log('error', error)
+                alert(error)
                 setOpenModalCategoryDelete(false)
                 setreloadpage(true)
               });
@@ -40,7 +39,7 @@ function ModalCategoryDelete({ setOpenModalCategoryDelete , data ,setreloadpage 
         
         <div className="Modalfooter">
           <button className="cancelBtn" onClick={() => {setOpenModalCategoryDelete(false);}} id="cancelBtn">Cancel</button>
-          <button className="SubmitBtn" onClick={Deletetag}>Confrim</button>
+          <button className="SubmitBtn" onClick={Deletetag}>Confirm</button>
         </div>
        
       </div>

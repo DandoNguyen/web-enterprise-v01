@@ -4,6 +4,7 @@ import './Category.css'
 import ModalCategoryCreate from './Create/ModalCategoryCreate';
 import ModalCategoryDelete from './Delete/ModalCategoryDelete'
 import { Url } from '../URL';
+import ViewCatepost from './View/ViewCatepost';
 
 function Category() {
     const[alltag,setalltag]=useState([]);
@@ -11,6 +12,8 @@ function Category() {
     const [ModalCategoryCreateOpen, setOpenModalCategory] = useState(false);
     const [ModalCategoryDeleteOpen, setModalCategoryDelete] = useState(false);
     const [deleteCate,setdelateCate]=useState('')
+    const [viewCatepost,setviewCatepost]=useState(false)
+    const [catePosts,setcatePosts]=useState('')
   
     useEffect(() => {
       var myHeaders = new Headers();
@@ -29,14 +32,24 @@ function Category() {
         })
         .catch(error => console.log('error', error));
     }, [reloadpage])
+
     const handaleDelete = (data) => {
       setModalCategoryDelete(true)
       setdelateCate(data)
+    }
+
+    const handaleView = (data) =>{
+      setviewCatepost(true)
+      setcatePosts(data)
     }
     const listCategory = alltag.map( data => (
       <tr key={data.categoryId}>
       <td >{data.categoryName}</td>
       <td >{data.desc}</td>
+      <td>{data.postCount}</td>
+      <td>
+        <button className='submit-user' onClick={() => handaleView(data)}>View</button>
+      </td>
       <td>
         <button className='submit-user' onClick={() => handaleDelete(data)}>Delete</button>
       </td>
@@ -71,12 +84,15 @@ function Category() {
         <tr>
           <th>Category Name</th>
           <th>Description</th>
-          <th></th>
+          <th>Post Count</th>
+          <th>View Post</th>
+          <th>Delate category</th>
         </tr>
         </thead>
         <tbody>
         {listCategory}
         {ModalCategoryDeleteOpen && <ModalCategoryDelete setOpenModalCategoryDelete={setModalCategoryDelete} data={deleteCate} setreloadpage={setreloadpage} />}
+        {viewCatepost && <ViewCatepost setviewCatepost={setviewCatepost}  data={catePosts}/>}
       </tbody>
     </table>
 
