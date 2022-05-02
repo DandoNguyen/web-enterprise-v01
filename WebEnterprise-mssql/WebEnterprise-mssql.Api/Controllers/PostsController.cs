@@ -432,19 +432,25 @@ namespace WebEnterprise_mssql.Api.Controllers
                 repo.Posts.CreatePostAsync(newPost);
                 await repo.Save();
 
-                var qacEmail = await repo.Users
-                    .FindByCondition(x => x.RoleName.RoleName.Equals("qac"))
-                    .Select(x => x.Email)
-                    .FirstOrDefaultAsync();
-                var qamEmail = await repo.Users
-                    .FindByCondition(x => x.DepartmentId.Equals(Guid.Parse(user.DepartmentId)))
-                    .Select(x => x.Email)
-                    .FirstOrDefaultAsync();
+                var userList = await repo.Users
+                    .FindAll()
+                    .ToListAsync();
+                
                 MailContent mailContent = new();
                 mailContent.Subject = $"New Idea Submission!";
                 mailContent.Body = $"User {user.UserName} has submitted an Idea on {DateTimeOffset.UtcNow}";
-                await SendNotiToEmail(qacEmail, mailContent);
-                await SendNotiToEmail(qamEmail, mailContent);
+                
+                if(!userList.Count.Equals(0))
+                {
+                    foreach (var userItem in userList)
+                    {
+                        var role = await userManager.GetRolesAsync(userItem);
+                        if (role.Contains("qac") && userItem.DepartmentId.Equals(user.DepartmentId))
+                        {
+                            await SendNotiToEmail(userItem.Email, mailContent);
+                        }
+                    }
+                }
 
                 var newPostDto = mapper.Map<PostDetailDto>(newPost);
 

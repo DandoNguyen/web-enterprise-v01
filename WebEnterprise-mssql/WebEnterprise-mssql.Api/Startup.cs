@@ -22,6 +22,7 @@ using WebEnterprise_mssql.Api.Data;
 using WebEnterprise_mssql.Api.Models;
 using WebEnterprise_mssql.Api.Repository;
 using WebEnterprise_mssql.Api.Services;
+using WebEnterprise_mssql.Scheduler.Scheduler;
 
 namespace WebEnterprise_mssql.Api
 {
@@ -29,6 +30,8 @@ namespace WebEnterprise_mssql.Api
     {
         public Startup(IConfiguration configuration)
         {
+            //The Schedular Class
+            ScheduleCheckTopic.StartAsync().GetAwaiter().GetResult();
             Configuration = configuration;
         }
 
@@ -49,23 +52,23 @@ namespace WebEnterprise_mssql.Api
             //     )
             // );
 
-            // services.AddDbContext<ApiDbContext>(options => 
-            //     options.UseSqlServer(
-            //         Configuration.GetConnectionString("DefaultConnection")
-            //     )
-            // );
-
             //services.AddDbContext<ApiDbContext>(options =>
             //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("LocalConnection")
+            //        Configuration.GetConnectionString("DefaultConnection")
             //    )
             //);
 
             services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("SmarterASPNETConnection")
+                    Configuration.GetConnectionString("LocalConnection")
                 )
             );
+
+            //services.AddDbContext<ApiDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("SmarterASPNETConnection")
+            //    )
+            //);
 
             services.AddTransient<IPostsRepository, PostsRepository>();
             services.AddTransient<IFilesPathRepository, FilesPathRepository>();
