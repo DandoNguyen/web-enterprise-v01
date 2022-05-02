@@ -24,7 +24,7 @@ namespace WebEnterprise_mssql.Scheduler.Scheduler
                 {
                     await scheduler.Start();
                 }
-                var job1 = JobBuilder.Create<CheckTopicDeadline>().WithIdentity("ExecuteTaskServiceCallJob1", "group1").Build();
+                var job1 = JobBuilder.Create<CheckTopicDeadlineJob>().WithIdentity("ExecuteTaskServiceCallJob1", "group1").Build();
                 var trigger1 = TriggerBuilder.Create().WithIdentity("ExecuteTaskServiceCallTrigger1", "group1").WithCronSchedule(ScheduleCronExpression).Build();
                 await scheduler.ScheduleJob(job1, trigger1);
             }

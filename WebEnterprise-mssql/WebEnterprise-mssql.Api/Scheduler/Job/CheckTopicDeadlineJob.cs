@@ -10,13 +10,14 @@ using WebEnterprise_mssql.Api.Services;
 
 namespace WebEnterprise_mssql.Scheduler.Job
 {
-    public class CheckTopicDeadline : IJob
+    [DisallowConcurrentExecution]
+    public class CheckTopicDeadlineJob : IJob
     {
         private readonly IRepositoryWrapper repo;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ISendMailService mailService;
 
-        public CheckTopicDeadline(
+        public CheckTopicDeadlineJob(
             IRepositoryWrapper repo,
             UserManager<ApplicationUser> userManager,
             ISendMailService mailService
@@ -28,19 +29,33 @@ namespace WebEnterprise_mssql.Scheduler.Job
         }
         public Task Execute(IJobExecutionContext context)
         {
-            var task = Task.Run(() => CheckAllTopicAsync()); ;
+            var task = Task.Run(async () => await CheckAllTopicAsync());
             return task;
         }
+        //private void LogConsole()
+        //{
+        //    Console.WriteLine(DateTimeOffset.UtcNow.ToString());
+        //}
         private async Task CheckAllTopicAsync()
         {
+           
             var listTopic = await repo.Topics
                 .FindAll().ToListAsync();
-            if (listTopic.Count.Equals(0))
+            if (!listTopic.Count.Equals(0))
+            {
                 foreach (var topic in listTopic)
                 {
                     //Send mail
-                    await SendMailNoti(topic.TopicName);
+                    try
+                    {
+                        await SendMailNoti(topic.TopicName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
+            }
         }
 
         private async Task SendMailNoti(string topicName)
@@ -65,7 +80,14 @@ namespace WebEnterprise_mssql.Scheduler.Job
             foreach (var user in listQam)
             {
                 mailContent.To = user.Email;
-                await mailService.SendMail(mailContent);
+                try
+                {
+                    await mailService.SendMail(mailContent);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
     }
